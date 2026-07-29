@@ -4,6 +4,10 @@ Per-crop sowing and germination docs, plus the shared method. The 30-pod
 target layout and nutrient targets live in
 [../planting-plan.md](../planting-plan.md).
 
+> **Start here: [poc.md](poc.md).** The full 30-pod sowing is deliberately on
+> hold behind a **5-sponge proof of concept** (3 strawberry + 2 lettuce)
+> until the seedling technique and the sensor/MQTT/Grafana stack are proven.
+
 ## Per-crop docs
 
 | Crop | Doc | Sowing status |
