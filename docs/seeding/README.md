@@ -20,8 +20,18 @@ Full sowing schedule with dates and spare counts: Trello #219, comment
 
 ## Shared method — starter sponges
 
-Starter medium is **grow sponges** (on hand). Sponges are inert and
-pH-neutral, so unlike rockwool they need no acid pre-conditioning.
+Starter medium is **grow sponges** for every crop (decided 2026-07-29).
+Sponges are inert and pH-neutral, so unlike rockwool they need no acid
+pre-conditioning — and their surface stays evenly damp, which is what
+surface-sown light germinators need. Rockwool was considered and dropped:
+it is alkaline (pH ~7.5–8, needs a pH 5.5 pre-soak), its top crusts dry, and
+a wet lit rockwool surface algaes up.
+
+**Sponge shape:** cross-cut into four wedges, gaping when dry and closing as
+it swells when wet. Soak before sowing, then sow on the **wedge top faces**,
+not down the slit — fine seed dropped into the cut is lost in the dark. The
+same four wedges grip the seedling stem at transplant. See
+[strawberry.md](strawberry.md) for the placement and pipette techniques.
 
 1. **Prep:** dunk in plain demin water, squeeze under water a few times to
    expel air, let absorb fully, drain. No pH correction of the soak water.

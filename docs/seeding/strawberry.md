@@ -40,9 +40,27 @@ rather than follow the pepper/basil batches.
 
 1. Soak the sponges in plain demin water, squeezing under water to expel
    air. Drain; **damp, not dripping**.
-2. **Do not use the sponge's centre hole.** Lay the seed on the **flat top
-   surface** of the sponge and press it down with a fingertip just enough to
-   make contact. **Cover it with nothing at all** — it needs light.
+2. **Sow on the wedge tops, not down the slit.** These sponges are
+   **cross-cut into four wedges**, and the cut gapes open when the sponge is
+   dry — dust-fine seed dropped into it falls into the dark and will not
+   germinate. Two things fix this: soak the sponge fully first (wet sponge
+   swells and the slits close up on their own), and place each seed on the
+   **flat top face of a wedge**, right next to the centre junction rather
+   than in it. Press it down with a fingertip just enough to make contact.
+   **Cover it with nothing at all** — it needs light.
+
+   *Best of both: pinch the sponge so the cross closes, set the seed on top
+   of the junction, then release — the four wedges spring back together
+   underneath and cradle the seed at the surface, in the light, without
+   burying it. That also puts the seedling's stem right where the wedges will
+   grip it later.*
+
+   *Placing seed this fine by hand is fiddly. Easiest method, using the 3 ml
+   pipettes already on the shopping list: tip the seed into a few ml of
+   water, stir, draw it up, and dispense one drop per spot on the sponge rim.
+   The drop carries the seed and leaves it sitting wet at the surface —
+   standard practice for dust-fine light germinators. A damp toothpick works
+   too, one seed at a time.*
 3. Dome or cover the tray (clear lid, bag, cling film) to hold humidity, but
    keep it in **bright indirect light** — dark is what kills a light
    germinator.
