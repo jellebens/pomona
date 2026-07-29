@@ -28,37 +28,43 @@ Grows true from seed, so saving seed later is viable.
 crop; from seed they are now the *slowest* thing in the plan, so they lead
 rather than follow the pepper/basil batches.
 
-### ⚠ Right now, sow only 3 — the PoC
+### ✅ SOWN 2026-07-29 — 12 sponges, ~5 seeds each
 
-**The first sowing is the 5-sponge PoC ([poc.md](poc.md)), which allots
-strawberry just 3 sponges.** The full quantity below applies to the main
-sowing *after* the PoC exit criteria pass. Do not sow 12 sponges today.
+**As-built, not a plan.** The owner sowed the **full main quantity — 12
+sponges × ~5 seeds ≈ 60 seeds** — rather than the 3 sponges the PoC allotted.
+The 5-sponge PoC ([poc.md](poc.md)) is therefore **superseded for strawberry**;
+its hardware/software exit criteria still stand and now carry a real deadline
+(see the timeline below), but the "prove it on 15 seeds first" hedge is spent.
 
-For the PoC: 3 sponges × ~5 seeds ≈ 15 seeds, everything else in this doc
-(placement, method, care, transplant) applies unchanged.
+What this changes:
 
-### Full sowing quantity — after the PoC
+- **No top-up wave is expected.** At ~5 seeds per sponge nearly every sponge
+  yields a plant, so 12 sponges should comfortably fill the 10 pods with 2
+  spares. Only re-sow if the 3-week count comes in low (below).
+- **More seed is committed to one technique.** If the surface-sowing or the
+  light/moisture regime is wrong, ~60 seeds are at risk instead of 15. The
+  mitigation is the fridge reserve, below.
+- **Sow 2 lettuce sponges now anyway.** Lettuce is up in 2–7 days versus
+  14–30 for strawberry, so it is the early-warning signal on tray moisture,
+  temperature and light — three weeks before the strawberries would reveal a
+  problem. That is worth more now, not less, with 60 seeds committed.
 
-**Only 10 pods are reserved for strawberry**, so do not sow 20 sponges at
-once — at ~5 seeds per sponge nearly every sponge produces a plant, and
-you would grow ~19 candidates for 10 slots.
+### Reserve and the 3-week count
 
-- **Main sowing: 12 sponges × ~5 seeds** ≈ 60 seeds. Twelve covers the
-  10 pods plus 2 for losses at transplant. One small tray, easy to dome.
-  Subtract whatever the PoC already yielded — if all 3 PoC sponges came
-  good, 9 more is enough.
-- **Hold the rest of the packet in the fridge**, damp in a sealed bag. Cold
-  stratification for 2–4 weeks costs nothing and both lifts and evens out
-  *F. vesca* germination, so the reserve seed comes out *better* than the
-  PoC seed was.
-- **A top-up wave is conditional, not automatic.** At ~3 weeks after the main
-  sowing, count how many sponges show seedlings:
-  - **8 or more** → you have your 10. Skip the top-up and keep the seed for
-    next season.
+- **Put the rest of the packet in the fridge**, damp in a sealed bag. Cold
+  stratification for 2–4 weeks costs nothing, lifts and evens out *F. vesca*
+  germination, and is now the entire fallback if this sowing disappoints.
+- **Count germinating sponges at ~3 weeks (≈19 Aug):**
+  - **8 or more** → the 10 pods are covered. Keep the reserve seed for next
+    season.
   - **4–7** → sow ~6 stratified sponges to top up.
-  - **under 4** → something went wrong (surface dried out, seed buried,
-    too cold, mould). Fix the cause first, then re-sow properly — do not
-    just repeat it.
+  - **under 4** → something went wrong (surface dried out, seed fell into the
+    cuts, too cold, too dark, mould). Diagnose before re-sowing — do not
+    simply repeat it with the reserve.
+
+**Only 10 pods are reserved for strawberry**, which is why 12 sponges is the
+right number and 20 would have been waste: at ~5 seeds each, nearly every
+sponge produces a plant.
 
 Seed germinates patchily (40–60% is normal), which is why sponges are
 overplanted rather than pods.
@@ -118,8 +124,8 @@ crop.
 ## Transplant into the tower
 
 **Gate:** roots showing through the sponge **and** 3–4 true leaves. For
-seed-grown alpines that is roughly **6–8 weeks after sowing**, so late
-September / early October for an early-August sowing.
+seed-grown alpines that is roughly **6–8 weeks after sowing** — sown
+2026-07-29, that means **≈9–23 September**.
 
 1. Reservoir first: 7.5 L demin → A+B to **EC 0.8–1.0** (half strength for
    young plants) → measure with the PH-201H pen → pH-Down to **~6.0**.
@@ -136,13 +142,39 @@ September / early October for an early-August sowing.
    (there is no tomato in the plan). While the tower is strawberry-only, run
    **~1.2** — alpines sulk at high EC.
 
-## ⚠ Light is now on the critical path
+## Timeline — anchored to the real sow date
 
-Sown in August, these seedlings hit their growth phase in September–October
-as Belgian daylight collapses, and they will try to flower into it. With
-plugs the grow light (#220) was a nice-to-have; **from seed it is required,
-and it must be running by mid-September.** Without it, expect leggy
-seedlings and no fruit until spring.
+Sown **2026-07-29**. Everything below follows from that date, not from the
+earlier early-August estimate.
+
+| When | What |
+|---|---|
+| 12–28 Aug | Germination window (14–30 d), uneven. Do not write the tray off early. |
+| **≈19 Aug** | **3-week count** — decide whether a top-up sowing from the fridge reserve is needed (thresholds above). |
+| late Aug – mid Sept | First true leaves → start quarter-strength A+B (EC 0.4–0.8, pH ~5.8); thin to one seedling per sponge. |
+| **by ≈1 Sept** | **pH-Down and EC calibration fluid must be in hand** — see the purchase deadline below. |
+| **by mid-Sept** | **Grow light running** — see the light deadline below. |
+| **≈9–23 Sept** | Transplant window (6–8 weeks from sowing, at 3–4 true leaves). |
+| Oct onward | First flowers; pinch them for the first 2–3 weeks after transplant. |
+
+### ⚠ Purchase deadline — pH-Down, by ~1 September
+
+The transplant gate requires a **dosed** reservoir: A+B to EC 0.8–1.0, then
+pH corrected to ~6.0. **pH-Down/Up and the EC calibration fluid (1413 µS/cm)
+are still unbought** (#220). They are no longer "someday" items — they must be
+on hand before the transplant window opens in early September, and buying with
+slack means ordering by ~1 September at the latest. Without pH-Down there is
+no way to bring a freshly dosed reservoir to 6.0, and the seedlings cannot go
+in.
+
+### ⚠ Light is on the critical path
+
+These seedlings hit their growth phase in September–October as Belgian
+daylight collapses, and they will try to flower into it. With plugs the grow
+light (#220) was a nice-to-have; **from seed it is required, and it must be
+running by mid-September** — which now coincides almost exactly with the
+transplant window. Without it, expect leggy seedlings and no fruit until
+spring.
 
 Sources: [magicgardenseeds.de — Erdbeere 'Rote Baron Solemacher'](https://www.magicgardenseeds.de/Erdbeere-Rote-Baron-Solemacher-Fragaria-vesca-var-semperflorens-Samen),
 [samenhaus.de — Monatserdbeeren Rügen Baron von Solemacher](https://www.samenhaus.de/monatserdbeeren-ruegen-baron-von-solemacher-erdbeersamen-von-buzzy-seeds/a-544686),

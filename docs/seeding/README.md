@@ -4,16 +4,22 @@ Per-crop sowing and germination docs, plus the shared method. The 30-pod
 target layout and nutrient targets live in
 [../planting-plan.md](../planting-plan.md).
 
-> **Start here: [poc.md](poc.md).** The full 30-pod sowing is deliberately on
-> hold behind a **5-sponge proof of concept** (3 strawberry + 2 lettuce)
-> until the seedling technique and the sensor/MQTT/Grafana stack are proven.
+> **✅ Strawberry SOWN 2026-07-29 — 12 sponges, ~5 seeds each.** The full
+> strawberry quantity went in, superseding the 3-sponge PoC allocation. See
+> [strawberry.md](strawberry.md) for the as-built record and the dated
+> timeline: germination 12–28 Aug, 3-week count ≈19 Aug, transplant ≈9–23 Sept.
+>
+> Two dates are now hard: **pH-Down + EC cal fluid in hand by ~1 Sept**
+> (no dosed reservoir, no transplant) and **grow light running by mid-Sept**.
+> [poc.md](poc.md) is superseded for strawberry but its hardware/software exit
+> criteria still apply — and now have that September deadline.
 
 ## Per-crop docs
 
 | Crop | Doc | Sowing status |
 |---|---|---|
-| Strawberry (alpine 'Rote Baron Solemacher') | [strawberry.md](strawberry.md) | **in the PoC — 3 sponges now**, seed on hand |
-| Lettuce — seed on hand | _to write_ | **in the PoC — 2 sponges now**; keep the tray cool, germinates poorly above ~24 °C |
+| Strawberry (alpine 'Rote Baron Solemacher') | [strawberry.md](strawberry.md) | **✅ SOWN 2026-07-29 — 12 sponges, ~5 seeds each** |
+| Lettuce — seed on hand | _to write_ | **sow 2 sponges now** as the fast early-warning on tray conditions; keep the tray cool, germinates poorly above ~24 °C |
 | Peppers (paprika, Dulce Italiano, chili) | _to write_ | main sowing, batch 1 |
 | Parsley | _to write_ | main sowing, batch 1 |
 | Basil | _to write_ | main sowing, batch 2 |
@@ -59,22 +65,22 @@ same four wedges grip the seedling stem at transplant. See
 
 ## Sowing order rationale
 
-**0. The PoC comes first** — 3 strawberry + 2 lettuce, 5 sponges total, see
-[poc.md](poc.md). Everything below is the main sowing, gated behind it.
+Sow slowest-first so everything reaches the tower together:
 
-Then sow slowest-first so everything reaches the tower together:
+1. **Strawberry — ✅ done 2026-07-29** (12 sponges). 14–30 d germination,
+   6–8 weeks to transplant size; slowest by a wide margin now that it is
+   seed-grown rather than plugs, which is why it led.
+2. **Batch 1 — peppers, chili, parsley: 7–28 d.** Sow these next and soon.
+   They are the longest-lead crops after strawberry, so every week of delay
+   pushes their fruiting further into winter.
+3. **Batch 2 — basil, dill, lettuce: 2–14 d.** Lettuce is the fastest and
+   turns over continuously afterwards — re-sow a couple of sponges every
+   2–3 weeks. Sow 2 lettuce now regardless, as the early-warning signal on
+   tray conditions for the strawberry tray that is already running.
 
-1. **Strawberry** — 14–30 d germination, 6–8 weeks to transplant size.
-   Slowest by a wide margin now that it is seed-grown rather than plugs.
-2. **Batch 1** — peppers, chili, parsley: 7–28 d. The doc's recommendation is
-   to run this alongside the PoC rather than behind it: they are the
-   longest-lead crops and their buried-seed technique carries little risk.
-3. **Batch 2** — basil, dill, lettuce: 2–14 d.
-   Lettuce is the fastest and turns over continuously afterwards — re-sow a
-   couple of sponges every 2–3 weeks.
-
-Batch dates are no longer fixed to the estimated early-August ones; they key
-off the **actual PoC sow date**, recorded on Trello #219.
+Dates key off the **actual strawberry sow date, 2026-07-29** (recorded on
+Trello #219), not the earlier early-August estimates. Aim to have batch 1 in
+within a week or two of that so the whole cohort reaches the tower together.
 
 ## Reservoir state gate
 
