@@ -2,6 +2,9 @@
 
 Status: final, owner-decided 2026-07-29 (Trello #219). All-edible — the
 flower trial (chamomile, lavender) was cut and the pods reallocated.
+Revised later the same day: **lettuce ×4 and tros (vine) tomato ×2 added —
+both seed on hand** — replacing the cherry-tomato purchase and trimming
+basil/parsley/dill/chili by one pod each. Strawberry keeps its 10 pods.
 
 ## Layout
 
@@ -9,15 +12,18 @@ Hocomay tower, 6 tiers × 5 pods. Tier 1 = bottom.
 
 | Tier | Pods |
 |---|---|
-| 6 (top) | Dill ×2 · Basil ×1 · Strawberry ×2 |
-| 5 | Basil ×2 · Parsley ×3 |
+| 6 (top) | Dill ×1 · Basil ×2 · Strawberry ×2 |
+| 5 | Parsley ×2 · Lettuce ×3 |
 | 4 | Basil ×2 · Strawberry ×3 |
 | 3 | Strawberry ×5 |
-| 2 | Dulce Italiano ×3 · Chili ×2 |
-| 1 (bottom) | Cherry tomato ×2 · Paprika ×3 |
+| 2 | Dulce Italiano ×3 · Chili ×1 · Lettuce ×1 |
+| 1 (bottom) | Tros tomato ×2 · Paprika ×3 |
 
-**Totals (30):** strawberry 10 · basil 5 · paprika 3 · Dulce Italiano 3 ·
-parsley 3 · cherry tomato 2 · chili 2 · dill 2
+**Totals (30):** strawberry 10 · basil 4 · lettuce 4 · paprika 3 ·
+Dulce Italiano 3 · parsley 2 · tros tomato 2 · chili 1 · dill 1
+
+Strawberry placement (tier 3 ×5, tier 4 ×3, tier 6 ×2) is unchanged and
+matches [seeding/strawberry.md](seeding/strawberry.md).
 
 ### Placement rationale
 
@@ -28,9 +34,13 @@ parsley 3 · cherry tomato 2 · chili 2 · dill 2
   height.
 - **Cut-and-come-again herbs (tiers 4–5):** basil, parsley.
 - **Tall/airy on top (tier 6):** dill needs the headroom.
-- **Cherry over normal tomato:** a dwarf/determinate cherry (Tiny Tim /
-  Red Robin) fits the small pods and 10 L reservoir; a full-size tomato
-  would overwhelm the tower.
+- **Tros (vine) tomato — seed on hand, needs discipline:** indeterminate,
+  so it would happily eat the whole tower. Single-stem each plant up an
+  external stake/string, strip side shoots weekly, and pinch the top after
+  4–5 trusses. Two plants max, bottom tier only.
+- **Lettuce is the turnover crop:** ~30–45 days pod-to-plate. Re-sow a
+  couple of sponges every 2–3 weeks and the 4 lettuce pods rotate
+  continuously.
 
 ## Nutrients — one shared reservoir
 
@@ -49,9 +59,10 @@ Per-crop ideal hydro pH, all covered by the 5.8–6.2 window:
 | Crop | Ideal pH |
 |---|---|
 | Strawberry (alpine) | 5.5–6.2 |
-| Cherry tomato | 5.8–6.3 |
+| Tomato (tros) | 5.8–6.3 |
 | Paprika / Dulce Italiano / chili | 5.8–6.3 |
 | Basil / parsley / dill | 5.5–6.5 |
+| Lettuce | 5.5–6.0 |
 
 ## Commissioning sequence
 
@@ -83,15 +94,17 @@ schedule".
 
 ## Seeds & supplies (shopping list, checklist lives on Trello #219)
 
-- Cherry tomato — dwarf/determinate (Tiny Tim / Red Robin), 2 plants
+- ~~Cherry tomato~~ — **not needed, seed on hand**: tros (vine) tomato,
+  2 plants
+- ~~Salad~~ — **seed on hand**: lettuce, 4 plants (succession re-sow)
 - Paprika — compact/snack mini bell, 3 plants
 - Sweet pepper 'Dulce Italiano', 3 plants
-- Chili — compact variety (Apache / rawit), 2 plants
+- Chili — compact variety (Apache / rawit), 1 plant
 - ~~Strawberry plugs~~ — **not needed, seed on hand**: alpine 'Rote Baron
   Solemacher' (*Fragaria vesca* var. *semperflorens*), 10 plants
-- Basil — Genovese, 5 plants
-- Parsley — flat-leaf (Gigante d'Italia), 3 plants
-- Dill, 2 plants
+- Basil — Genovese, 4 plants
+- Parsley — flat-leaf (Gigante d'Italia), 2 plants
+- Dill, 1 plant
 - Starter medium: grow sponges (on hand)
 - Already tracked on #220: pH-Down/Up, EC cal fluid 1413 µS/cm, grow light,
   Fibaro plug
@@ -102,3 +115,6 @@ schedule".
   summer; the water-level sensor (#220) makes this visible.
 - Top up with plain (demin) water between full nutrient changes; re-dose by
   EC reading.
+- Lettuce at the shared EC 1.6–1.8 risks **tip burn** — harvest heads young
+  and keep airflow over the tower; that's the cost of the one-reservoir
+  compromise.
