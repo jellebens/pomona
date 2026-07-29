@@ -28,19 +28,33 @@ Grows true from seed, so saving seed later is viable.
 crop; from seed they are now the *slowest* thing in the plan, so they lead
 rather than follow the pepper/basil batches.
 
+### ⚠ Right now, sow only 3 — the PoC
+
+**The first sowing is the 5-sponge PoC ([poc.md](poc.md)), which allots
+strawberry just 3 sponges.** The full quantity below applies to the main
+sowing *after* the PoC exit criteria pass. Do not sow 12 sponges today.
+
+For the PoC: 3 sponges × ~5 seeds ≈ 15 seeds, everything else in this doc
+(placement, method, care, transplant) applies unchanged.
+
+### Full sowing quantity — after the PoC
+
 **Only 10 pods are reserved for strawberry**, so do not sow 20 sponges at
 once — at ~5 seeds per sponge nearly every sponge produces a plant, and
 you would grow ~19 candidates for 10 slots.
 
-- **Batch 1 (sow now): 12 sponges × ~5 seeds** ≈ 60 seeds. Twelve covers the
+- **Main sowing: 12 sponges × ~5 seeds** ≈ 60 seeds. Twelve covers the
   10 pods plus 2 for losses at transplant. One small tray, easy to dome.
+  Subtract whatever the PoC already yielded — if all 3 PoC sponges came
+  good, 9 more is enough.
 - **Hold the rest of the packet in the fridge**, damp in a sealed bag. Cold
   stratification for 2–4 weeks costs nothing and both lifts and evens out
-  *F. vesca* germination, so the reserve seed gets *better* than batch 1 was.
-- **Batch 2 is conditional, not automatic.** At ~3 weeks, count how many of
-  batch 1's sponges show seedlings:
-  - **8 or more** → you have your 10. Skip batch 2 and keep the seed for next
-    season.
+  *F. vesca* germination, so the reserve seed comes out *better* than the
+  PoC seed was.
+- **A top-up wave is conditional, not automatic.** At ~3 weeks after the main
+  sowing, count how many sponges show seedlings:
+  - **8 or more** → you have your 10. Skip the top-up and keep the seed for
+    next season.
   - **4–7** → sow ~6 stratified sponges to top up.
   - **under 4** → something went wrong (surface dried out, seed buried,
     too cold, mould). Fix the cause first, then re-sow properly — do not
@@ -49,7 +63,7 @@ you would grow ~19 candidates for 10 slots.
 Seed germinates patchily (40–60% is normal), which is why sponges are
 overplanted rather than pods.
 
-⚠ A deliberate second wave has a cost: sown three weeks later, those plants
+⚠ A deliberate later wave has a cost: sown three weeks behind, those plants
 transplant three weeks deeper into the dark season and will likely wait until
 spring to fruit. That is fine for insurance, but it is not a free succession
 crop.
@@ -77,11 +91,17 @@ crop.
    dust-fine light germinators. A damp toothpick works too, one seed at a
    time.*
 
-3. Dome or cover the tray (clear lid, bag, cling film) to hold humidity, but
-   keep it in **bright indirect light** — dark is what kills a light
-   germinator.
-4. Hold **20–24 °C**. A few mm of water in the tray only; never let the
-   sponge tops dry out, since surface-sown seed has no moisture reserve.
+3. **Never germinate this crop in the dark.** The instinct to put a seed tray
+   in a warm dark cupboard is right for most seed and *wrong* here — a
+   Lichtkeimer needs light on the seed to trigger germination at all. Dome or
+   cover the tray (clear lid, bag, cling film) to hold humidity, but keep it
+   in **bright indirect light**: a north/east windowsill, or beside a
+   south-facing window rather than in its beam. Avoid direct midday sun
+   through glass while domed — that cooks the tray.
+4. Hold **20–24 °C** (20–22 °C if lettuce shares the tray). **2–3 mm of plain
+   demin water in the tray** — no nutrients until the first true leaves.
+   Never let the sponge tops dry out, since surface-sown seed has no moisture
+   reserve.
 5. Ventilate briefly each day to keep mould and damping-off away.
 6. **Expect 14–30 days**, uneven. Do not give up on a tray at three weeks.
 
