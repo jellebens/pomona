@@ -35,8 +35,11 @@ Cluster side follows the zeus pattern; the gitops landing zone is
 
 ## Documentation
 
+Start at the docs index: **[docs/README.md](docs/README.md)**.
+
 - [docs/design.md](docs/design.md) — system choice, sensor loadout v1, monitoring architecture
 - [docs/planting-plan.md](docs/planting-plan.md) — the 30-pod planting layout, EC/pH targets, commissioning steps
+- [docs/seeding/](docs/seeding/README.md) — sowing & germination, per crop
 
 ## Status / roadmap (Trello cards)
 

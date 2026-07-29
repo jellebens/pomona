@@ -40,11 +40,15 @@ Single 10 L reservoir → one compromise mix for all crops:
   the herbs — acceptable middle)
 - **pH: 5.8–6.2, set point ~6.0**
 
+While the tower is **strawberry-only** (first weeks), run the lower
+strawberry-optimal **EC ~1.2** instead of the compromise, and ramp to
+1.6–1.8 as the fruiters go in. Alpines sulk at high EC.
+
 Per-crop ideal hydro pH, all covered by the 5.8–6.2 window:
 
 | Crop | Ideal pH |
 |---|---|
-| Strawberry | 5.5–6.2 |
+| Strawberry (alpine) | 5.5–6.2 |
 | Cherry tomato | 5.8–6.3 |
 | Paprika / Dulce Italiano / chili | 5.8–6.3 |
 | Basil / parsley / dill | 5.5–6.5 |
@@ -55,33 +59,23 @@ State 2026-07-27: reservoir holds **7.5 L plain demineralised water** — EC ~0,
 unbuffered pH. Demin water is unbuffered, so pH readings before nutrients go
 in are meaningless (they drift).
 
-1. Add A+B nutrients (on hand) to target EC 1.6–1.8 mS/cm.
+1. Add A+B nutrients (on hand). Target **EC 0.8–1.0** for the first young
+   transplants, not the full 1.6–1.8 — that comes later as plants mature.
 2. Measure pH with the PH-201H pen (nutrients buffer the water, readings now
    stable). Later the SEN0169-V2 probe provides continuous readings.
 3. Correct toward pH 6.0 with pH-Down/Up (to buy).
-4. Germinate seeds in starter sponges (see below); transplant into pods
-   once roots show through the sponge.
-5. Strawberries: prefer day-neutral **bare-root/runner plugs** (Albion /
-   Ostara) over seed — months faster to fruit.
+4. Germinate seeds in starter sponges; transplant into pods once roots show
+   through the sponge. See [seeding/](seeding/README.md).
+5. Strawberries are **seed-grown alpines** ('Rote Baron Solemacher', on
+   hand) — sown first because they are the slowest crop, and they make the
+   grow light mandatory by mid-September. See
+   [seeding/strawberry.md](seeding/strawberry.md).
 
-## Germination in starter sponges
+## Seeding
 
-Starter medium is grow sponges (the Hocomay-style seed plugs). Sponges are
-inert and pH-neutral — no pre-conditioning needed, unlike rockwool:
-
-1. **Prep:** dunk the sponges in plain demin water and squeeze under water a
-   few times to drive the air out, then let them absorb fully. No pH
-   correction of the soak water needed.
-2. **Damp, not saturated.** Stand the sponges in only a few mm of water in
-   the tray; waterlogged sponges rot seed and invite damping-off.
-3. Sow into the pre-made hole/slit, dome/cover until sprouted, then give
-   light. Keep exposed sponge tops shaded once under light — constantly wet
-   surfaces grow algae.
-4. After first true leaves, water/tray-feed with **quarter-strength A+B at
-   pH ~5.8** — demin water has zero buffering, so the nutrient solution is
-   what holds the pH.
-5. Transplant the whole sponge into the net pod once roots show through; the
-   drip keeps it wet, the sponge must not sit in standing water.
+Sowing and germination now live in **[seeding/](seeding/README.md)** — the
+shared sponge method, sowing order, and per-crop docs. Start with
+[seeding/strawberry.md](seeding/strawberry.md).
 
 Full sowing schedule (two batches, spare counts, transplant gate) is on
 Trello #219 — comment "Seedling plan (2026-07-29)" + checklist "Seedling
@@ -93,7 +87,8 @@ schedule".
 - Paprika — compact/snack mini bell, 3 plants
 - Sweet pepper 'Dulce Italiano', 3 plants
 - Chili — compact variety (Apache / rawit), 2 plants
-- Strawberry — day-neutral plugs (Albion / Ostara), 8–10 plants
+- ~~Strawberry plugs~~ — **not needed, seed on hand**: alpine 'Rote Baron
+  Solemacher' (*Fragaria vesca* var. *semperflorens*), 10 plants
 - Basil — Genovese, 5 plants
 - Parsley — flat-leaf (Gigante d'Italia), 3 plants
 - Dill, 2 plants

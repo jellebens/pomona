@@ -1,0 +1,55 @@
+# Seeding
+
+Per-crop sowing and germination docs, plus the shared method. The 30-pod
+target layout and nutrient targets live in
+[../planting-plan.md](../planting-plan.md).
+
+## Per-crop docs
+
+| Crop | Doc | Sowing status |
+|---|---|---|
+| Strawberry (alpine 'Rote Baron Solemacher') | [strawberry.md](strawberry.md) | first to sow — seed on hand |
+| Peppers (paprika, Dulce Italiano, chili) | _to write_ | batch 1 |
+| Parsley | _to write_ | batch 1 |
+| Cherry tomato | _to write_ | batch 2 |
+| Basil | _to write_ | batch 2 |
+| Dill | _to write_ | batch 2 |
+
+Full sowing schedule with dates and spare counts: Trello #219, comment
+"Seedling plan (2026-07-29)" + checklist "Seedling schedule".
+
+## Shared method — starter sponges
+
+Starter medium is **grow sponges** (on hand). Sponges are inert and
+pH-neutral, so unlike rockwool they need no acid pre-conditioning.
+
+1. **Prep:** dunk in plain demin water, squeeze under water a few times to
+   expel air, let absorb fully, drain. No pH correction of the soak water.
+2. **Damp, not saturated.** A few mm of water in the tray only; waterlogged
+   sponges rot seed and invite damping-off.
+3. **Sow** into the pre-made hole for normal seed — **except light
+   germinators, which go on the surface uncovered** (see
+   [strawberry.md](strawberry.md)). Dome until sprouted, then give light.
+4. Keep exposed sponge tops shaded once under light; permanently wet
+   surfaces grow algae.
+5. At first true leaves, tray-feed **quarter-strength A+B, pH ~5.8**. Demin
+   water has no buffering, so the nutrient solution holds the pH.
+6. **Transplant gate:** roots through the sponge + true leaves (2 for most
+   crops, 3–4 for strawberry). Move the **whole sponge** into the net pod;
+   it must not sit in standing water.
+
+## Sowing order rationale
+
+Sow slowest-first so everything reaches the tower together:
+
+1. **Strawberry** — 14–30 d germination, 6–8 weeks to transplant size.
+   Slowest by a wide margin now that it is seed-grown rather than plugs.
+2. **Batch 1** (~02 Aug) — peppers, chili, parsley: 7–28 d.
+3. **Batch 2** (~08–10 Aug) — tomato, basil, dill: 5–14 d.
+
+## Reservoir state gate
+
+Nothing is transplanted while the reservoir holds plain demineralised water
+(EC ~0, unbuffered). Dose A+B to **EC 0.8–1.0** for young transplants,
+correct pH to **~6.0** with the PH-201H pen, then plant. Ramp to the shared
+**EC 1.6–1.8** over 2–3 weeks as the fruiters go in.
