@@ -18,9 +18,13 @@ Monitoring-first; automated control is deferred.
 
 - Tower assembled; reservoir holds **7.5 L plain demineralised water** — no
   nutrients yet, so EC ~0 and pH is unbuffered and meaningless to measure.
-- **Nothing is planted.** First sowing is the **5-sponge PoC** (3 strawberry
-  + 2 lettuce) — full 30-pod sowing is gated behind it, see
-  [seeding/poc.md](seeding/poc.md).
+- **Strawberry sown 2026-07-29** — 12 sponges, ~5 seeds each, superseding the
+  3-sponge PoC allocation. Germination expected 12–28 Aug, transplant window
+  ≈9–23 Sept. See [seeding/strawberry.md](seeding/strawberry.md).
+- **Two hard dates follow from that:** pH-Down + EC calibration fluid in hand
+  by **~1 Sept** (a dosed reservoir is a precondition for transplanting), and
+  the grow light running by **mid-Sept**. Both are #220 purchases still
+  outstanding.
 - Sensors not yet wired; no landing zone or Argo app yet.
 
 Work is tracked on Trello (label **pomona**): #218 hardware inventory,

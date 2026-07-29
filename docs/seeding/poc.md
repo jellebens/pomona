@@ -1,6 +1,18 @@
 # Seeding PoC — 5 sponges
 
-Status: active, owner-decided 2026-07-29. **Sow a 5-sponge proof of concept
+> **Status: SUPERSEDED for strawberry (2026-07-29).** The owner sowed the full
+> **12 sponges × ~5 seeds** the same day, not the 3 this PoC allotted, so the
+> "prove the technique on 15 seeds" hedge no longer applies — see
+> [strawberry.md](strawberry.md) for the as-built sowing and its dated
+> timeline.
+>
+> **What still stands:** the hardware/software exit criteria below, which now
+> carry a hard date. The seedlings will be transplant-ready ≈9–23 September, so
+> the sensor/telemetry work and the pH-Down purchase have to land before then
+> rather than whenever the PoC happened to finish. The 2 lettuce sponges are
+> also still worth sowing as the fast early-warning signal on tray conditions.
+
+Original rationale, kept for the record. **Sow a 5-sponge proof of concept
 first**, and hold the full 30-pod sowing until the seedling technique *and*
 the hardware/software stack are nailed down.
 
