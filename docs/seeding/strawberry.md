@@ -40,27 +40,25 @@ rather than follow the pepper/basil batches.
 
 1. Soak the sponges in plain demin water, squeezing under water to expel
    air. Drain; **damp, not dripping**.
-2. **Sow on the wedge tops, not down the slit.** These sponges are
-   **cross-cut into four wedges**, and the cut gapes open when the sponge is
-   dry — dust-fine seed dropped into it falls into the dark and will not
-   germinate. Two things fix this: soak the sponge fully first (wet sponge
-   swells and the slits close up on their own), and place each seed on the
-   **flat top face of a wedge**, right next to the centre junction rather
-   than in it. Press it down with a fingertip just enough to make contact.
-   **Cover it with nothing at all** — it needs light.
+2. **Sow on the quadrant faces — avoid the hole and the cuts.** The sponge
+   has a **small central hole with four cuts running radially out from it**,
+   so the top is four quadrant faces around a little bore. The hole and cuts
+   are for the seedling stem and its roots at transplant, *not* for sowing:
+   dust-fine seed dropped in falls into the dark and will not germinate.
 
-   *Best of both: pinch the sponge so the cross closes, set the seed on top
-   of the junction, then release — the four wedges spring back together
-   underneath and cradle the seed at the surface, in the light, without
-   burying it. That also puts the seedling's stem right where the wedges will
-   grip it later.*
+   Soak the sponge first — wet sponge swells and the cuts close up — then
+   place each seed on a **quadrant face, ~5 mm out from the central hole**,
+   and press it down with a fingertip just enough to make contact. Spread the
+   4–6 seeds of a position across different quadrants. **Cover them with
+   nothing at all** — they need light.
 
    *Placing seed this fine by hand is fiddly. Easiest method, using the 3 ml
    pipettes already on the shopping list: tip the seed into a few ml of
-   water, stir, draw it up, and dispense one drop per spot on the sponge rim.
-   The drop carries the seed and leaves it sitting wet at the surface —
-   standard practice for dust-fine light germinators. A damp toothpick works
-   too, one seed at a time.*
+   water, stir, draw it up, and dispense one drop per spot. The drop carries
+   the seed and leaves it sitting wet at the surface — standard practice for
+   dust-fine light germinators. A damp toothpick works too, one seed at a
+   time.*
+
 3. Dome or cover the tray (clear lid, bag, cling film) to hold humidity, but
    keep it in **bright indirect light** — dark is what kills a light
    germinator.
