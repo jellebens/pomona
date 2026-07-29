@@ -59,10 +59,35 @@ in are meaningless (they drift).
 2. Measure pH with the PH-201H pen (nutrients buffer the water, readings now
    stable). Later the SEN0169-V2 probe provides continuous readings.
 3. Correct toward pH 6.0 with pH-Down/Up (to buy).
-4. Germinate seeds in starter plugs/sponges; transplant into pods once roots
-   show through the plug.
+4. Germinate seeds in rockwool starter cubes (see below); transplant into
+   pods once roots show through the cube.
 5. Strawberries: prefer day-neutral **bare-root/runner plugs** (Albion /
    Ostara) over seed — months faster to fruit.
+
+## Germination in rockwool
+
+Starter medium is rockwool-type cubes. Rockwool quirks that matter:
+
+1. **Pre-condition before sowing — mandatory.** Fresh rockwool is alkaline
+   (pH ~7.5–8) and will push seedling-zone pH way off target. Soak the cubes
+   1–24 h in water adjusted to **pH ~5.5** with pH-Down (verify with the
+   PH-201H pen), then let them drain freely.
+2. **Never squeeze a cube** to wring it out — that collapses the fibre
+   structure and it stays waterlogged. Lift and let it drain on its own.
+3. **Damp, not saturated.** Stand the cubes in only a few mm of water in the
+   tray; soaked-through cubes rot seed and invite damping-off.
+4. Sow into the pre-made hole, dome/cover until sprouted, then give light.
+   Cover exposed cube tops (foil/collar) once under light — bare wet rockwool
+   grows algae.
+5. After first true leaves, water/tray-feed with **quarter-strength A+B at
+   pH ~5.8** — demin water has zero buffering, so the nutrient solution is
+   what holds the pH.
+6. Transplant the whole cube into the net pod once roots show through; the
+   drip keeps it wet, the cube must not sit in standing water.
+
+Full sowing schedule (two batches, spare counts, transplant gate) is on
+Trello #219 — comment "Seedling plan (2026-07-29)" + checklist "Seedling
+schedule".
 
 ## Seeds & supplies (shopping list, checklist lives on Trello #219)
 
@@ -74,7 +99,7 @@ in are meaningless (they drift).
 - Basil — Genovese, 5 plants
 - Parsley — flat-leaf (Gigante d'Italia), 3 plants
 - Dill, 2 plants
-- Starter plugs/sponges (check what the Hocomay kit includes)
+- Starter medium: rockwool-type cubes (on hand)
 - Already tracked on #220: pH-Down/Up, EC cal fluid 1413 µS/cm, grow light,
   Fibaro plug
 
