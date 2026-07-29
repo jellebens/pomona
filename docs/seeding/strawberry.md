@@ -28,13 +28,31 @@ Grows true from seed, so saving seed later is viable.
 crop; from seed they are now the *slowest* thing in the plan, so they lead
 rather than follow the pepper/basil batches.
 
-- **Quantity: sow ~20 sponge positions to land 10 plants.** *F. vesca* seed
-  germinates patchily (roughly 40–60% is normal). Seed is dust-fine — a
-  pinch of 4–6 seeds per position is fine, thin later.
-- **Optional insurance — cold stratification.** 2–4 weeks in the fridge in a
-  damp, sealed bag lifts and evens out germination. Best of both: sow half
-  the packet now, stratify the other half and sow it in ~3 weeks. The second
-  half doubles as the replacement pool.
+**Only 10 pods are reserved for strawberry**, so do not sow 20 sponges at
+once — at ~5 seeds per sponge nearly every sponge produces a plant, and
+you would grow ~19 candidates for 10 slots.
+
+- **Batch 1 (sow now): 12 sponges × ~5 seeds** ≈ 60 seeds. Twelve covers the
+  10 pods plus 2 for losses at transplant. One small tray, easy to dome.
+- **Hold the rest of the packet in the fridge**, damp in a sealed bag. Cold
+  stratification for 2–4 weeks costs nothing and both lifts and evens out
+  *F. vesca* germination, so the reserve seed gets *better* than batch 1 was.
+- **Batch 2 is conditional, not automatic.** At ~3 weeks, count how many of
+  batch 1's sponges show seedlings:
+  - **8 or more** → you have your 10. Skip batch 2 and keep the seed for next
+    season.
+  - **4–7** → sow ~6 stratified sponges to top up.
+  - **under 4** → something went wrong (surface dried out, seed buried,
+    too cold, mould). Fix the cause first, then re-sow properly — do not
+    just repeat it.
+
+Seed germinates patchily (40–60% is normal), which is why sponges are
+overplanted rather than pods.
+
+⚠ A deliberate second wave has a cost: sown three weeks later, those plants
+transplant three weeks deeper into the dark season and will likely wait until
+spring to fruit. That is fine for insurance, but it is not a free succession
+crop.
 
 ### Method — sponges, surface-sown
 
