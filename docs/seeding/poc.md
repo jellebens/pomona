@@ -27,6 +27,14 @@ nothing and improves the later full sowing.
 >20 °C, lettuce germinates poorly above ~24 °C. Do not put this tray
 anywhere that bakes.
 
+**Tray water: 2–3 mm of plain demin water, no nutrients.** Feeding starts at
+the first true leaves, not before — see [strawberry.md](strawberry.md).
+
+**⚠ Not in the dark.** Both crops in this PoC want light on the seed
+(strawberry is a Lichtkeimer, lettuce germinates better lit), so the usual
+warm-dark-cupboard habit is exactly wrong here. Domed, warm, and in bright
+indirect light.
+
 ## Exit criteria — what "nailed down" means
 
 Sow the full plan only when **all** of these hold.
@@ -74,7 +82,8 @@ Two ways to handle it:
   the PoC's real purpose is proving the *system* and the *strawberry*
   technique, neither of which the peppers depend on.
 - **Strict serial.** Everything waits for the PoC. Simpler and cheaper in
-  seed, but accept a spring fruit harvest for the peppers and tomato.
+  seed, but accept a spring fruit harvest for the peppers (there is no tomato
+  in the plan — it was dropped 2026-07-29).
 
 Either way the **grow light deadline of mid-September stands** — the PoC
 seedlings hit their growth phase exactly as Belgian daylight collapses.

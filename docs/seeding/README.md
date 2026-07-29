@@ -12,12 +12,12 @@ target layout and nutrient targets live in
 
 | Crop | Doc | Sowing status |
 |---|---|---|
-| Strawberry (alpine 'Rote Baron Solemacher') | [strawberry.md](strawberry.md) | first to sow — seed on hand |
-| Peppers (paprika, Dulce Italiano, chili) | _to write_ | batch 1 |
-| Parsley | _to write_ | batch 1 |
-| Basil | _to write_ | batch 2 |
-| Dill | _to write_ | batch 2 |
-| Lettuce — seed on hand | _to write_ | batch 2 — keep tray cool, germinates poorly above ~24 °C |
+| Strawberry (alpine 'Rote Baron Solemacher') | [strawberry.md](strawberry.md) | **in the PoC — 3 sponges now**, seed on hand |
+| Lettuce — seed on hand | _to write_ | **in the PoC — 2 sponges now**; keep the tray cool, germinates poorly above ~24 °C |
+| Peppers (paprika, Dulce Italiano, chili) | _to write_ | main sowing, batch 1 |
+| Parsley | _to write_ | main sowing, batch 1 |
+| Basil | _to write_ | main sowing, batch 2 |
+| Dill | _to write_ | main sowing, batch 2 |
 
 Full sowing schedule with dates and spare counts: Trello #219, comment
 "Seedling plan (2026-07-29)" + checklist "Seedling schedule".
@@ -39,29 +39,42 @@ same four wedges grip the seedling stem at transplant. See
 
 1. **Prep:** dunk in plain demin water, squeeze under water a few times to
    expel air, let absorb fully, drain. No pH correction of the soak water.
-2. **Damp, not saturated.** A few mm of water in the tray only; waterlogged
-   sponges rot seed and invite damping-off.
+2. **Damp, not saturated.** **2–3 mm of plain demin water** in the tray only,
+   no nutrients yet; waterlogged sponges rot seed and invite damping-off.
 3. **Sow** into the pre-made hole for normal seed — **except light
    germinators, which go on the surface uncovered** (see
-   [strawberry.md](strawberry.md)). Dome until sprouted, then give light.
-4. Keep exposed sponge tops shaded once under light; permanently wet
+   [strawberry.md](strawberry.md)).
+4. **Dome for humidity, but do not use a dark cupboard.** Light germinators
+   (strawberry, and lettuce prefers it) must have light on the seed from day
+   one; only buried-seed crops are indifferent to it. Bright *indirect* light
+   is the safe default for a shared tray — direct midday sun through glass
+   cooks a domed tray.
+5. Keep exposed sponge tops shaded once under light; permanently wet
    surfaces grow algae.
-5. At first true leaves, tray-feed **quarter-strength A+B, pH ~5.8**. Demin
+6. At first true leaves, tray-feed **quarter-strength A+B, pH ~5.8**. Demin
    water has no buffering, so the nutrient solution holds the pH.
-6. **Transplant gate:** roots through the sponge + true leaves (2 for most
+7. **Transplant gate:** roots through the sponge + true leaves (2 for most
    crops, 3–4 for strawberry). Move the **whole sponge** into the net pod;
    it must not sit in standing water.
 
 ## Sowing order rationale
 
-Sow slowest-first so everything reaches the tower together:
+**0. The PoC comes first** — 3 strawberry + 2 lettuce, 5 sponges total, see
+[poc.md](poc.md). Everything below is the main sowing, gated behind it.
+
+Then sow slowest-first so everything reaches the tower together:
 
 1. **Strawberry** — 14–30 d germination, 6–8 weeks to transplant size.
    Slowest by a wide margin now that it is seed-grown rather than plugs.
-2. **Batch 1** (~02 Aug) — peppers, chili, parsley: 7–28 d.
-3. **Batch 2** (~08–10 Aug) — basil, dill, lettuce: 2–14 d.
+2. **Batch 1** — peppers, chili, parsley: 7–28 d. The doc's recommendation is
+   to run this alongside the PoC rather than behind it: they are the
+   longest-lead crops and their buried-seed technique carries little risk.
+3. **Batch 2** — basil, dill, lettuce: 2–14 d.
    Lettuce is the fastest and turns over continuously afterwards — re-sow a
    couple of sponges every 2–3 weeks.
+
+Batch dates are no longer fixed to the estimated early-August ones; they key
+off the **actual PoC sow date**, recorded on Trello #219.
 
 ## Reservoir state gate
 
