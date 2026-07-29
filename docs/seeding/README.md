@@ -11,7 +11,6 @@ target layout and nutrient targets live in
 | Strawberry (alpine 'Rote Baron Solemacher') | [strawberry.md](strawberry.md) | first to sow — seed on hand |
 | Peppers (paprika, Dulce Italiano, chili) | _to write_ | batch 1 |
 | Parsley | _to write_ | batch 1 |
-| Tomato (tros) — seed on hand | _to write_ | batch 2 |
 | Basil | _to write_ | batch 2 |
 | Dill | _to write_ | batch 2 |
 | Lettuce — seed on hand | _to write_ | batch 2 — keep tray cool, germinates poorly above ~24 °C |
@@ -56,7 +55,7 @@ Sow slowest-first so everything reaches the tower together:
 1. **Strawberry** — 14–30 d germination, 6–8 weeks to transplant size.
    Slowest by a wide margin now that it is seed-grown rather than plugs.
 2. **Batch 1** (~02 Aug) — peppers, chili, parsley: 7–28 d.
-3. **Batch 2** (~08–10 Aug) — tomato (tros), basil, dill, lettuce: 2–14 d.
+3. **Batch 2** (~08–10 Aug) — basil, dill, lettuce: 2–14 d.
    Lettuce is the fastest and turns over continuously afterwards — re-sow a
    couple of sponges every 2–3 weeks.
 
@@ -65,4 +64,4 @@ Sow slowest-first so everything reaches the tower together:
 Nothing is transplanted while the reservoir holds plain demineralised water
 (EC ~0, unbuffered). Dose A+B to **EC 0.8–1.0** for young transplants,
 correct pH to **~6.0** with the PH-201H pen, then plant. Ramp to the shared
-**EC 1.6–1.8** over 2–3 weeks as the fruiters go in.
+**EC 1.4–1.6** over 2–3 weeks as the fruiters go in.

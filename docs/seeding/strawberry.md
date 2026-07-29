@@ -112,9 +112,9 @@ September / early October for an early-August sowing.
 4. Placement per the layout: **tier 3 ×5, tier 4 ×3, tier 6 ×2.**
 5. Pinch off every flower for the first 2–3 weeks after transplant to force
    root and crown growth. It costs a few early berries and repays them.
-6. Step EC up toward the shared **1.6–1.8** only once the peppers and tomato
-   join. While the tower is strawberry-only, run **~1.2** — alpines sulk at
-   high EC.
+6. Step EC up toward the shared **1.4–1.6** only once the peppers join
+   (there is no tomato in the plan). While the tower is strawberry-only, run
+   **~1.2** — alpines sulk at high EC.
 
 ## ⚠ Light is now on the critical path
 
