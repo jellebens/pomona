@@ -1,13 +1,13 @@
 # Seeding PoC — 5 sponges
 
-> **Status: SUPERSEDED for strawberry (2026-07-29).** The owner sowed the full
+> **Status: SUPERSEDED for strawberry (2026-08-03).** The owner sowed the full
 > **12 sponges × ~5 seeds** the same day, not the 3 this PoC allotted, so the
 > "prove the technique on 15 seeds" hedge no longer applies — see
 > [strawberry.md](strawberry.md) for the as-built sowing and its dated
 > timeline.
 >
 > **What still stands:** the hardware/software exit criteria below, which now
-> carry a hard date. The seedlings will be transplant-ready ≈9–23 September, so
+> carry a hard date. The seedlings will be transplant-ready ≈14–28 September, so
 > the sensor/telemetry work and the pH-Down purchase have to land before then
 > rather than whenever the PoC happened to finish. The 2 lettuce sponges are
 > also still worth sowing as the fast early-warning signal on tray conditions.
@@ -95,7 +95,7 @@ Two ways to handle it:
   technique, neither of which the peppers depend on.
 - **Strict serial.** Everything waits for the PoC. Simpler and cheaper in
   seed, but accept a spring fruit harvest for the peppers (there is no tomato
-  in the plan — it was dropped 2026-07-29).
+  in the plan — it was dropped 2026-08-03).
 
 Either way the **grow light deadline of mid-September stands** — the PoC
 seedlings hit their growth phase exactly as Belgian daylight collapses.
@@ -113,4 +113,4 @@ seedlings hit their growth phase exactly as Belgian daylight collapses.
 | Decision point | Exit criteria reviewed → full 30-pod sowing |
 
 Record the actual sow date on Trello #219 so the batch dates key off reality
-rather than the estimated early-August ones.
+rather than an estimate. *(Done: strawberry went in 2026-08-03.)*

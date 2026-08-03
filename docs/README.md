@@ -14,15 +14,15 @@ Monitoring-first; automated control is deferred.
 | [seeding/poc.md](seeding/poc.md) | **Start here** — the 5-sponge proof of concept and the exit criteria gating full sowing |
 | [seeding/strawberry.md](seeding/strawberry.md) | Alpine strawberry 'Rote Baron Solemacher' from seed — light-germinator sowing, transplant, light deadline |
 
-## Current state (2026-07-29)
+## Current state (2026-08-03)
 
 - Tower assembled; reservoir holds **7.5 L plain demineralised water** — no
   nutrients yet, so EC ~0 and pH is unbuffered and meaningless to measure.
-- **Strawberry sown 2026-07-29** — 12 sponges, ~5 seeds each, superseding the
-  3-sponge PoC allocation. Germination expected 12–28 Aug, transplant window
-  ≈9–23 Sept. See [seeding/strawberry.md](seeding/strawberry.md).
+- **Strawberry sown 2026-08-03** — 12 sponges, ~5 seeds each, superseding the
+  3-sponge PoC allocation. Germination expected 17 Aug – 2 Sept, transplant window
+  ≈14–28 Sept. See [seeding/strawberry.md](seeding/strawberry.md).
 - **Two hard dates follow from that:** pH-Down + EC calibration fluid in hand
-  by **~1 Sept** (a dosed reservoir is a precondition for transplanting), and
+  by **~7 Sept** (a dosed reservoir is a precondition for transplanting), and
   the grow light running by **mid-Sept**. Both are #220 purchases still
   outstanding.
 - Sensors not yet wired; no landing zone or Argo app yet.
