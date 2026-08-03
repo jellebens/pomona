@@ -108,6 +108,14 @@ crop.
    demin water in the tray** — no nutrients until the first true leaves.
    Never let the sponge tops dry out, since surface-sown seed has no moisture
    reserve.
+
+   ⚠ **Too warm is a real failure mode, not just slower.** Above ~25 °C
+   germination falls off; a domed tray in a hot room with sun on it can pass
+   35 °C and cook the seed. Ambient was **28 °C** when this batch was sown
+   (2026-07-29), so the tray belongs in the coolest spot available — cellar,
+   north room, tiled floor — and must be ventilated daily against
+   damping-off. See the hot weather section in
+   [README.md](README.md).
 5. Ventilate briefly each day to keep mould and damping-off away.
 6. **Expect 14–30 days**, uneven. Do not give up on a tray at three weeks.
 

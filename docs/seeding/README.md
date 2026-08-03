@@ -64,15 +64,52 @@ sits at 20–24 °C. One tray cannot serve both:
 Dill at 15–21 °C is the odd one out; the cool tray's lower end suits it well
 enough.
 
+### ⚠ Hot weather (ambient ≈28 °C) — what it helps and what it breaks
+
+Recorded 2026-07-29, ambient **28 °C**. This is not a neutral condition:
+
+**Helps.** The warm tray needs no heat mat at all — 28 °C sits right in the
+pepper/chili band. Sow peppers on the worktop and be done.
+
+**Breaks.** There is no cool tray at 28 °C ambient, and three things need one:
+
+| Crop | Wants | At 28 °C |
+|---|---|---|
+| Lettuce | 15–20 °C, poor above 24 | **Thermodormancy** — above ~27 °C the seed actively refuses to germinate. Sowing now largely wastes it. |
+| Strawberry | 20–24 °C | Above ~25 °C germination falls off and slows. The sown tray is in the wrong band. |
+| Dill | 15–21 °C | Too warm; patchy. |
+| Parsley | 18–24 °C | Warm, and it is already the most erratic germinator in the plan. |
+| Basil | 20–25 °C | Fine — basil is heat-tolerant and germinates fast at 25–28 °C. |
+
+**What to do:**
+
+1. **Move the strawberry tray to the coolest spot available** — cellar,
+   north-facing room, tiled floor, lowest shelf. This matters most: 12
+   sponges of slow seed are already committed. Check it is not near a sunny
+   window; a domed tray in 28 °C ambient with sun on it can exceed 35 °C,
+   which is lethal rather than merely slow.
+2. **Ventilate daily, without fail.** Heat plus a sealed humid dome is ideal
+   damping-off and algae weather.
+3. **Do not sow lettuce or dill until it cools**, or fridge-prime the seed:
+   soak 12–24 h, then 24–48 h in the fridge before sowing. Delaying lettuce
+   costs little — it is the fastest crop and is re-sown on succession anyway.
+4. **Peppers and chili: sow now**, ambient is ideal.
+5. If nothing cooler than ~26 °C exists in the house, accept slower and
+   patchier strawberry germination and treat the fridge reserve seed as the
+   real backup, re-sown when the weather breaks.
+
 ### Sowing order now that everything is on hand
 
-- **Sow now:** peppers and chili (warm tray — longest lead after strawberry,
-  every week of delay pushes fruiting deeper into winter), lettuce (2–3
-  sponges), and put the parsley seed in to soak so it can be sown a day
-  later.
-- **Sow in ~1 week:** basil and dill. They germinate in 5–14 days and grow
-  fast; sown alongside the peppers they would be transplant-ready long before
-  the rest of the cohort and go leggy waiting in the tray.
+- **Sow now:** peppers and chili — longest lead after strawberry, every week
+  of delay pushes fruiting deeper into winter, and at 28 °C ambient they need
+  no heat source.
+- **Hold until it cools (or fridge-prime):** lettuce and dill — see the hot
+  weather section above. At 28 °C lettuce will not germinate reliably.
+- **Parsley:** soak the seed 12–24 h and sow into the coolest spot available,
+  or hold it with the lettuce if nothing is below ~26 °C.
+- **Sow in ~1 week:** basil. It germinates in 5–10 days (and is happy at
+  28 °C), so sowing it alongside the peppers would leave it transplant-ready
+  long before the rest of the cohort and leggy while it waits.
 
 ## Shared method — starter sponges
 
