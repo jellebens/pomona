@@ -113,15 +113,18 @@ schedule".
 - ~~Cherry tomato~~ / ~~tros tomato~~ — **no tomato in the plan**, nothing to
   buy or sow (owner dropped it 2026-07-29)
 - ~~Salad~~ — **seed on hand**: lettuce, 4 plants (succession re-sow)
-- Paprika — compact/snack mini bell, 3 plants
-- Sweet pepper 'Dulce Italiano', 3 plants
-- Chili — compact variety (Apache / rawit), 1 plant
+- ✅ Paprika — compact/snack mini bell, 3 plants
+- ✅ Sweet pepper 'Dulce Italiano', 3 plants
+- ✅ Chili — compact variety (Apache / rawit), 1 plant
 - ~~Strawberry plugs~~ — **not needed, seed on hand**: alpine 'Rote Baron
   Solemacher' (*Fragaria vesca* var. *semperflorens*), 10 plants
-- Basil — Genovese, 5 plants
-- Parsley — flat-leaf (Gigante d'Italia), 3 plants
-- Dill, 1 plant
-- Starter medium: grow sponges (on hand)
+- ✅ Basil — Genovese, 5 plants
+- ✅ Parsley — flat-leaf (Gigante d'Italia), 3 plants
+- ✅ Dill, 1 plant
+- ✅ Starter medium: grow sponges (on hand)
+
+**All seed is bought (2026-07-29) — nothing is waiting on a purchase.** The
+remaining outstanding items are the #220 hardware ones below.
 - Already tracked on #220: pH-Down/Up, EC cal fluid 1413 µS/cm, grow light,
   Fibaro plug
 
