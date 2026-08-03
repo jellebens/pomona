@@ -1,11 +1,12 @@
 # Planting plan — 30-pod layout, nutrients, commissioning
 
-Status: final, owner-decided 2026-07-29 (Trello #219). All-edible — the
-flower trial (chamomile, lavender) was cut and the pods reallocated.
-Revised later the same day: **lettuce ×4 added (seed on hand)**, trimming
-dill and chili by one pod each. Strawberry keeps its 10 pods.
+Status: final. Crops and the 30-pod layout were owner-decided **2026-07-29**
+(Trello #219), all-edible — the flower trial (chamomile, lavender) was cut
+and the pods reallocated. Revised **2026-08-03**: **lettuce ×4 added (seed on
+hand)**, trimming dill and chili by one pod each. Strawberry keeps its 10
+pods.
 
-**Tomato is out of the plan entirely (owner, 2026-07-29).** The tros (vine)
+**Tomato is out of the plan entirely (owner, 2026-08-03).** The tros (vine)
 tomato added earlier that day was dropped, and with the cherry tomato already
 replaced there is now **no tomato in the tower**. Its 2 pods went back to
 basil and parsley. Reasons it went: indeterminate at 1.5–2 m with heavy
@@ -105,13 +106,13 @@ shared sponge method, sowing order, and per-crop docs. Start with
 [seeding/strawberry.md](seeding/strawberry.md).
 
 Full sowing schedule (two batches, spare counts, transplant gate) is on
-Trello #219 — comment "Seedling plan (2026-07-29)" + checklist "Seedling
+Trello #219 — comment "Seedling plan (2026-08-03)" + checklist "Seedling
 schedule".
 
 ## Seeds & supplies (shopping list, checklist lives on Trello #219)
 
 - ~~Cherry tomato~~ / ~~tros tomato~~ — **no tomato in the plan**, nothing to
-  buy or sow (owner dropped it 2026-07-29)
+  buy or sow (owner dropped it 2026-08-03)
 - ~~Salad~~ — **seed on hand**: lettuce, 4 plants (succession re-sow)
 - ✅ Paprika — compact/snack mini bell, 3 plants
 - ✅ Sweet pepper 'Dulce Italiano', 3 plants
@@ -123,7 +124,7 @@ schedule".
 - ✅ Dill, 1 plant
 - ✅ Starter medium: grow sponges (on hand)
 
-**All seed is bought (2026-07-29) — nothing is waiting on a purchase.** The
+**All seed is bought (2026-08-03) — nothing is waiting on a purchase.** The
 remaining outstanding items are the #220 hardware ones below.
 - Already tracked on #220: pH-Down/Up, EC cal fluid 1413 µS/cm, grow light,
   Fibaro plug

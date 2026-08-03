@@ -1,6 +1,6 @@
 # Seeding — strawberry (alpine, 'Rote Baron Solemacher')
 
-Status: active plan, 2026-07-29. Owner has **seed**, not plugs — this
+Status: active plan, 2026-08-03. Owner has **seed**, not plugs — this
 supersedes the "buy day-neutral plugs" line in
 [../planting-plan.md](../planting-plan.md).
 
@@ -28,7 +28,7 @@ Grows true from seed, so saving seed later is viable.
 crop; from seed they are now the *slowest* thing in the plan, so they lead
 rather than follow the pepper/basil batches.
 
-### ✅ SOWN 2026-07-29 — 12 sponges, ~5 seeds each
+### ✅ SOWN 2026-08-03 — 12 sponges, ~5 seeds each
 
 **As-built, not a plan.** The owner sowed the **full main quantity — 12
 sponges × ~5 seeds ≈ 60 seeds** — rather than the 3 sponges the PoC allotted.
@@ -54,7 +54,7 @@ What this changes:
 - **Put the rest of the packet in the fridge**, damp in a sealed bag. Cold
   stratification for 2–4 weeks costs nothing, lifts and evens out *F. vesca*
   germination, and is now the entire fallback if this sowing disappoints.
-- **Count germinating sponges at ~3 weeks (≈19 Aug):**
+- **Count germinating sponges at ~3 weeks (≈24 Aug):**
   - **8 or more** → the 10 pods are covered. Keep the reserve seed for next
     season.
   - **4–7** → sow ~6 stratified sponges to top up.
@@ -112,7 +112,7 @@ crop.
    ⚠ **Too warm is a real failure mode, not just slower.** Above ~25 °C
    germination falls off; a domed tray in a hot room with sun on it can pass
    35 °C and cook the seed. Ambient was **28 °C** when this batch was sown
-   (2026-07-29), so the tray belongs in the coolest spot available — cellar,
+   (2026-08-03), so the tray belongs in the coolest spot available — cellar,
    north room, tiled floor — and must be ventilated daily against
    damping-off. See the hot weather section in
    [README.md](README.md).
@@ -133,7 +133,7 @@ crop.
 
 **Gate:** roots showing through the sponge **and** 3–4 true leaves. For
 seed-grown alpines that is roughly **6–8 weeks after sowing** — sown
-2026-07-29, that means **≈9–23 September**.
+2026-08-03, that means **≈14–28 September**.
 
 1. Reservoir first: 7.5 L demin → A+B to **EC 0.8–1.0** (half strength for
    young plants) → measure with the PH-201H pen → pH-Down to **~6.0**.
@@ -152,26 +152,25 @@ seed-grown alpines that is roughly **6–8 weeks after sowing** — sown
 
 ## Timeline — anchored to the real sow date
 
-Sown **2026-07-29**. Everything below follows from that date, not from the
-earlier early-August estimate.
+Sown **2026-08-03**. Everything below is derived from that date.
 
 | When | What |
 |---|---|
-| 12–28 Aug | Germination window (14–30 d), uneven. Do not write the tray off early. |
-| **≈19 Aug** | **3-week count** — decide whether a top-up sowing from the fridge reserve is needed (thresholds above). |
+| 17 Aug – 2 Sept | Germination window (14–30 d), uneven. Do not write the tray off early. |
+| **≈24 Aug** | **3-week count** — decide whether a top-up sowing from the fridge reserve is needed (thresholds above). |
 | late Aug – mid Sept | First true leaves → start quarter-strength A+B (EC 0.4–0.8, pH ~5.8); thin to one seedling per sponge. |
-| **by ≈1 Sept** | **pH-Down and EC calibration fluid must be in hand** — see the purchase deadline below. |
+| **by ≈7 Sept** | **pH-Down and EC calibration fluid must be in hand** — see the purchase deadline below. |
 | **by mid-Sept** | **Grow light running** — see the light deadline below. |
-| **≈9–23 Sept** | Transplant window (6–8 weeks from sowing, at 3–4 true leaves). |
+| **≈14–28 Sept** | Transplant window (6–8 weeks from sowing, at 3–4 true leaves). |
 | Oct onward | First flowers; pinch them for the first 2–3 weeks after transplant. |
 
-### ⚠ Purchase deadline — pH-Down, by ~1 September
+### ⚠ Purchase deadline — pH-Down, by ~7 September
 
 The transplant gate requires a **dosed** reservoir: A+B to EC 0.8–1.0, then
 pH corrected to ~6.0. **pH-Down/Up and the EC calibration fluid (1413 µS/cm)
 are still unbought** (#220). They are no longer "someday" items — they must be
 on hand before the transplant window opens in early September, and buying with
-slack means ordering by ~1 September at the latest. Without pH-Down there is
+slack means ordering by ~7 September at the latest. Without pH-Down there is
 no way to bring a freshly dosed reservoir to 6.0, and the seedlings cannot go
 in.
 

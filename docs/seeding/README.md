@@ -4,12 +4,12 @@ Per-crop sowing and germination docs, plus the shared method. The 30-pod
 target layout and nutrient targets live in
 [../planting-plan.md](../planting-plan.md).
 
-> **✅ Strawberry SOWN 2026-07-29 — 12 sponges, ~5 seeds each.** The full
+> **✅ Strawberry SOWN 2026-08-03 — 12 sponges, ~5 seeds each.** The full
 > strawberry quantity went in, superseding the 3-sponge PoC allocation. See
 > [strawberry.md](strawberry.md) for the as-built record and the dated
-> timeline: germination 12–28 Aug, 3-week count ≈19 Aug, transplant ≈9–23 Sept.
+> timeline: germination 17 Aug – 2 Sept, 3-week count ≈24 Aug, transplant ≈14–28 Sept.
 >
-> Two dates are now hard: **pH-Down + EC cal fluid in hand by ~1 Sept**
+> Two dates are now hard: **pH-Down + EC cal fluid in hand by ~7 Sept**
 > (no dosed reservoir, no transplant) and **grow light running by mid-Sept**.
 > [poc.md](poc.md) is superseded for strawberry but its hardware/software exit
 > criteria still apply — and now have that September deadline.
@@ -20,7 +20,7 @@ target layout and nutrient targets live in
 
 | Crop | Doc | Sowing status |
 |---|---|---|
-| Strawberry (alpine 'Rote Baron Solemacher') | [strawberry.md](strawberry.md) | **✅ SOWN 2026-07-29 — 12 sponges, ~5 seeds each** |
+| Strawberry (alpine 'Rote Baron Solemacher') | [strawberry.md](strawberry.md) | **✅ SOWN 2026-08-03 — 12 sponges, ~5 seeds each** |
 | Peppers (paprika, Dulce Italiano, chili) | _to write_ | **sow now — warm tray 25–28 °C** |
 | Parsley | _to write_ | **soak seed now, sow a day later** — cool tray |
 | Lettuce | _to write_ | **sow 2–3 now**, then succession every 2–3 wks; cool tray, fails above ~24 °C |
@@ -28,7 +28,7 @@ target layout and nutrient targets live in
 | Dill | _to write_ | sow in ~1 week — fast, and hates root disturbance later |
 
 Full sowing schedule with dates and spare counts: Trello #219, comment
-"Seedling plan (2026-07-29)" + checklist "Seedling schedule".
+"Seedling plan (2026-08-03)" + checklist "Seedling schedule".
 
 ## Per-crop sowing table
 
@@ -66,7 +66,7 @@ enough.
 
 ### ⚠ Hot weather (ambient ≈28 °C) — what it helps and what it breaks
 
-Recorded 2026-07-29, ambient **28 °C**. This is not a neutral condition:
+Recorded 2026-08-03, ambient **28 °C**. This is not a neutral condition:
 
 **Helps.** The warm tray needs no heat mat at all — 28 °C sits right in the
 pepper/chili band. Sow peppers on the worktop and be done.
@@ -113,7 +113,7 @@ pepper/chili band. Sow peppers on the worktop and be done.
 
 ## Shared method — starter sponges
 
-Starter medium is **grow sponges** for every crop (decided 2026-07-29).
+Starter medium is **grow sponges** for every crop (decided 2026-08-03).
 Sponges are inert and pH-neutral, so unlike rockwool they need no acid
 pre-conditioning — and their surface stays evenly damp, which is what
 surface-sown light germinators need. Rockwool was considered and dropped:
@@ -152,7 +152,7 @@ The principle behind the order above: stagger sowing by germination speed so
 the whole cohort reaches transplant size together, instead of the fast crops
 going leggy in the tray while the slow ones are still bare sponge.
 
-1. **Strawberry — ✅ done 2026-07-29** (12 sponges). 14–30 d germination,
+1. **Strawberry — ✅ done 2026-08-03** (12 sponges). 14–30 d germination,
    6–8 weeks to transplant size; slowest by a wide margin now that it is
    seed-grown rather than plugs, which is why it led.
 2. **Peppers, chili, parsley: 7–28 d** — the longest lead after strawberry.
@@ -160,8 +160,8 @@ going leggy in the tray while the slow ones are still bare sponge.
 3. **Basil, dill, lettuce: 2–14 d** — fastest, so they go last. Lettuce then
    turns over continuously; re-sow a couple of sponges every 2–3 weeks.
 
-Dates key off the **actual strawberry sow date, 2026-07-29** (recorded on
-Trello #219), not the earlier early-August estimates.
+Dates key off the **actual strawberry sow date, 2026-08-03** (recorded on
+Trello #219).
 
 ## Reservoir state gate
 
