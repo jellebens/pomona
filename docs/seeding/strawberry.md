@@ -159,12 +159,19 @@ Sown **2026-08-03**. Everything below is derived from that date.
 | 17 Aug – 2 Sept | Germination window (14–30 d), uneven. Do not write the tray off early. |
 | **≈24 Aug** | **3-week count** — decide whether a top-up sowing from the fridge reserve is needed (thresholds above). |
 | late Aug – mid Sept | First true leaves → start quarter-strength A+B (EC 0.4–0.8, pH ~5.8); thin to one seedling per sponge. |
-| **by ≈7 Sept** | **pH-Down and EC calibration fluid must be in hand** — see the purchase deadline below. |
+| **by ≈14 Aug** | **pH-Down and EC calibration fluid must be in hand** — pulled forward from 7 Sept because the lettuce transplants ≈17–24 Aug. |
 | **by mid-Sept** | **Grow light running** — see the light deadline below. |
 | **≈14–28 Sept** | Transplant window (6–8 weeks from sowing, at 3–4 true leaves). |
 | Oct onward | First flowers; pinch them for the first 2–3 weeks after transplant. |
 
-### ⚠ Purchase deadline — pH-Down, by ~7 September
+### ⚠ Purchase deadline — pH-Down, now ~14 August
+
+**Superseded by the lettuce.** It germinated 2026-08-03 and transplants
+≈17–24 August, so the reservoir has to be dosed a month before the
+strawberries need it. See [lettuce.md](lettuce.md). The strawberry-derived
+date below is kept for reference but is no longer the binding one.
+
+### Original strawberry-derived deadline — ~7 September
 
 The transplant gate requires a **dosed** reservoir: A+B to EC 0.8–1.0, then
 pH corrected to ~6.0. **pH-Down/Up and the EC calibration fluid (1413 µS/cm)

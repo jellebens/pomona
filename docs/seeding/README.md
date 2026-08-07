@@ -9,10 +9,16 @@ target layout and nutrient targets live in
 > [strawberry.md](strawberry.md) for the as-built record and the dated
 > timeline: germination 17 Aug – 2 Sept, 3-week count ≈24 Aug, transplant ≈14–28 Sept.
 >
-> Two dates are now hard: **pH-Down + EC cal fluid in hand by ~7 Sept**
-> (no dosed reservoir, no transplant) and **grow light running by mid-Sept**.
-> [poc.md](poc.md) is superseded for strawberry but its hardware/software exit
-> criteria still apply — and now have that September deadline.
+> **✅ Lettuce GERMINATED 2026-08-03** — first crop up, and it transplants
+> **≈17–24 Aug**, roughly a month ahead of the strawberries. See
+> [lettuce.md](lettuce.md).
+>
+> **⚠ That pulls the hard deadline forward: pH-Down + EC cal fluid are needed
+> by ~14 Aug, not ~7 Sept** — the lettuce reaches the tower first, and no
+> dosed reservoir means no transplant. **Grow light by mid-Sept** still holds
+> for the strawberries, but sprouted lettuce wants strong light *now*.
+> [poc.md](poc.md) is superseded for strawberry, though its hardware/software
+> exit criteria still apply — against the August date now, not September.
 
 ## Per-crop docs
 
@@ -23,7 +29,7 @@ target layout and nutrient targets live in
 | Strawberry (alpine 'Rote Baron Solemacher') | [strawberry.md](strawberry.md) | **✅ SOWN 2026-08-03 — 12 sponges, ~5 seeds each** |
 | Peppers (paprika, Dulce Italiano, chili) | _to write_ | **sow now — warm tray 25–28 °C** |
 | Parsley | _to write_ | **soak seed now, sow a day later** — cool tray |
-| Lettuce | _to write_ | **sow 2–3 now**, then succession every 2–3 wks; cool tray, fails above ~24 °C |
+| Lettuce (iceberg) | [lettuce.md](lettuce.md) | **✅ GERMINATED 2026-08-03** — first crop up; transplants ≈17–24 Aug, ahead of everything else |
 | Basil | _to write_ | sow in ~1 week — fast, would outgrow the cohort |
 | Dill | _to write_ | sow in ~1 week — fast, and hates root disturbance later |
 
@@ -75,7 +81,7 @@ pepper/chili band. Sow peppers on the worktop and be done.
 
 | Crop | Wants | At 28 °C |
 |---|---|---|
-| Lettuce | 15–20 °C, poor above 24 | **Thermodormancy** — above ~27 °C the seed actively refuses to germinate. Sowing now largely wastes it. |
+| Lettuce | 15–20 °C, poor above 24 | Thermodormancy above ~27 °C in theory — **but this seed lot germinated fine at 28 °C on 2026-08-03.** Variety and lot dependent; test rather than assume. |
 | Strawberry | 20–24 °C | Above ~25 °C germination falls off and slows. The sown tray is in the wrong band. |
 | Dill | 15–21 °C | Too warm; patchy. |
 | Parsley | 18–24 °C | Warm, and it is already the most erratic germinator in the plan. |
@@ -90,9 +96,11 @@ pepper/chili band. Sow peppers on the worktop and be done.
    which is lethal rather than merely slow.
 2. **Ventilate daily, without fail.** Heat plus a sealed humid dome is ideal
    damping-off and algae weather.
-3. **Do not sow lettuce or dill until it cools**, or fridge-prime the seed:
-   soak 12–24 h, then 24–48 h in the fridge before sowing. Delaying lettuce
-   costs little — it is the fastest crop and is re-sown on succession anyway.
+3. **Dill: hold until it cools**, or fridge-prime the seed (soak 12–24 h,
+   then 24–48 h in the fridge before sowing). *Lettuce turned out not to need
+   this — it germinated at 28 °C anyway on 2026-08-03. Tolerance varies by
+   variety and seed lot, so try a couple of sponges before assuming the heat
+   will stop it.*
 4. **Peppers and chili: sow now**, ambient is ideal.
 5. If nothing cooler than ~26 °C exists in the house, accept slower and
    patchier strawberry germination and treat the fridge reserve seed as the
@@ -103,8 +111,9 @@ pepper/chili band. Sow peppers on the worktop and be done.
 - **Sow now:** peppers and chili — longest lead after strawberry, every week
   of delay pushes fruiting deeper into winter, and at 28 °C ambient they need
   no heat source.
-- **Hold until it cools (or fridge-prime):** lettuce and dill — see the hot
-  weather section above. At 28 °C lettuce will not germinate reliably.
+- **Hold until it cools (or fridge-prime):** dill. Lettuce is already up —
+  see [lettuce.md](lettuce.md) — and gets re-sown on succession every 2–3
+  weeks from here.
 - **Parsley:** soak the seed 12–24 h and sow into the coolest spot available,
   or hold it with the lettuce if nothing is below ~26 °C.
 - **Sow in ~1 week:** basil. It germinates in 5–10 days (and is happy at
