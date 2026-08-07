@@ -19,18 +19,17 @@ Monitoring-first; automated control is deferred.
 
 - Tower assembled; reservoir holds **7.5 L plain demineralised water** — no
   nutrients yet, so EC ~0 and pH is unbuffered and meaningless to measure.
-- **Strawberry sown 2026-08-03** — 12 sponges, ~5 seeds each, superseding the
-  3-sponge PoC allocation. Germination expected 17 Aug – 2 Sept, transplant window
-  ≈14–28 Sept. See [seeding/strawberry.md](seeding/strawberry.md).
-- **✅ Lettuce germinated 2026-08-03** — the first crop up, and it transplants
-  **≈17–24 Aug**, about a month ahead of the strawberries. See
-  [seeding/lettuce.md](seeding/lettuce.md).
-- **⚠ Most time-critical item in the project:** pH-Down + EC calibration fluid
-  in hand by **~14 Aug** — pulled forward from ~7 Sept because the lettuce now
-  reaches the tower first, and an undosed reservoir means no transplant. The
-  grow light is still needed by **mid-Sept** for the strawberries, though the
-  sprouted lettuce wants strong light immediately. Both are #220 purchases
-  still outstanding.
+- **✅ Both crops germinated 2026-08-07**, from an early-August sowing —
+  lettuce, and strawberry on **day 4** against a 14–30 day book figure (the
+  28 °C ambient accelerated it). Strawberry is 12 sponges × ~5 seeds,
+  superseding the 3-sponge PoC allocation.
+- **Transplant windows: lettuce ≈21–28 Aug, strawberry ≈31 Aug – 14 Sept** —
+  both about two weeks earlier than planned.
+- **⚠ The critical path is now purchases, not plants.** pH-Down + EC
+  calibration fluid in hand by **~14 Aug** (an undosed reservoir means nothing
+  transplants), and the **grow light by end of August**, pulled forward from
+  mid-September because seedlings that raced up in a hot room stretch just as
+  fast in weak light. Both are #220 purchases still outstanding.
 - Sensors not yet wired; no landing zone or Argo app yet.
 
 Work is tracked on Trello (label **pomona**): #218 hardware inventory,
