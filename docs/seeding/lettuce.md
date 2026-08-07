@@ -1,6 +1,10 @@
 # Seeding — lettuce (iceberg)
 
-Status: **✅ germinated 2026-08-03.** First crop in the project to sprout.
+Status: **✅ germinated by 2026-08-07** (sown early August). First crop in the
+project to sprout — the strawberries followed on 2026-08-07 as well.
+
+*Correction: this was first recorded as germinating 2026-08-03. That was the
+sow date, not the germination date; the observation is 08-07.*
 
 ## What just happened, and what it does and does not prove
 
@@ -14,10 +18,10 @@ seed is cheap.
 **What it proves:** the sponge prep, the 2–3 mm tray water, the humidity and
 the general setup all work. Seed put into these sponges germinates.
 
-**What it does not prove:** anything about the strawberries. Those are
-surface-sown light germinators on a completely different technique, and they
-have 14–30 days to run. A sprouted lettuce is good news about the *tray*, not
-about the strawberry method.
+**What it does not prove:** it was, at the time, no evidence about the
+strawberries — a different technique on a 14–30 day clock. *That question has
+since been answered directly: the strawberries germinated on day 4 too. The
+surface-sowing technique works.*
 
 ## Care from sprouting onward — the first 48 hours matter
 
@@ -43,18 +47,19 @@ delay:
 ## Transplant — sooner than the strawberries
 
 **Gate:** roots through the sponge + 2 true leaves, typically **2–3 weeks
-after sprouting**, so **≈17–24 August**.
+after sprouting**, so **≈21–28 August**.
 
-That makes lettuce the **first crop into the tower**, roughly a month ahead of
-the strawberries (≈14–28 September). The consequences are on the project, not
+Lettuce is still the **first crop into the tower**, though the margin shrank
+when the strawberries germinated early too — they now follow at ≈31 Aug –
+14 Sept rather than late September. The consequences are on the project, not
 the plant:
 
-- **The reservoir must be dosed by ~mid-August**, not September.
-- **⚠ pH-Down and EC calibration fluid are needed by ~14 August**, not the
-  ~7 September date derived from the strawberry timeline. This is the single
-  most time-critical item in the project right now. Without pH-Down there is
-  no way to bring a freshly dosed reservoir to 6.0, and the lettuce cannot go
-  in.
+- **The reservoir must be dosed by ~20 August**, not September, and the
+  strawberries want it barely a week later.
+- **⚠ pH-Down and EC calibration fluid are needed by ~14 August** to leave any
+  slack. This is the single most time-critical item in the project. Without
+  pH-Down there is no way to bring a freshly dosed reservoir to 6.0, and
+  nothing can be transplanted.
 - Dose to **EC 0.8–1.0, pH ~6.0** for these first transplants. With only
   lettuce in the tower, staying at the low end suits it (lettuce likes
   0.8–1.2); step up later as the peppers and strawberries arrive.

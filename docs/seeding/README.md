@@ -9,16 +9,20 @@ target layout and nutrient targets live in
 > [strawberry.md](strawberry.md) for the as-built record and the dated
 > timeline: germination 17 Aug – 2 Sept, 3-week count ≈24 Aug, transplant ≈14–28 Sept.
 >
-> **✅ Lettuce GERMINATED 2026-08-03** — first crop up, and it transplants
-> **≈17–24 Aug**, roughly a month ahead of the strawberries. See
-> [lettuce.md](lettuce.md).
+> **✅ BOTH CROPS GERMINATED 2026-08-07** — lettuce and strawberry, from an
+> early-August sowing. The strawberries came up on **day 4** against a 14–30
+> day book figure; the 28 °C ambient that looked like a problem accelerated
+> them. See [lettuce.md](lettuce.md) and [strawberry.md](strawberry.md).
 >
-> **⚠ That pulls the hard deadline forward: pH-Down + EC cal fluid are needed
-> by ~14 Aug, not ~7 Sept** — the lettuce reaches the tower first, and no
-> dosed reservoir means no transplant. **Grow light by mid-Sept** still holds
-> for the strawberries, but sprouted lettuce wants strong light *now*.
-> [poc.md](poc.md) is superseded for strawberry, though its hardware/software
-> exit criteria still apply — against the August date now, not September.
+> **Transplant windows: lettuce ≈21–28 Aug, strawberry ≈31 Aug – 14 Sept** —
+> both roughly two weeks earlier than planned.
+>
+> **⚠ Two deadlines moved forward, and they are now the whole critical path:**
+> pH-Down + EC cal fluid in hand by **~14 Aug** (no dosed reservoir, nothing
+> transplants), and the **grow light by end of August**, not mid-September —
+> seedlings that raced up in a hot room stretch just as fast in weak light.
+> [poc.md](poc.md) is superseded for strawberry; its hardware/software exit
+> criteria now have an August deadline, not a September one.
 
 ## Per-crop docs
 
@@ -26,10 +30,10 @@ target layout and nutrient targets live in
 
 | Crop | Doc | Sowing status |
 |---|---|---|
-| Strawberry (alpine 'Rote Baron Solemacher') | [strawberry.md](strawberry.md) | **✅ SOWN 2026-08-03 — 12 sponges, ~5 seeds each** |
+| Strawberry (alpine 'Rote Baron Solemacher') | [strawberry.md](strawberry.md) | **✅ GERMINATED 2026-08-07** (day 4!) — sown 08-03, 12 sponges × ~5 seeds |
 | Peppers (paprika, Dulce Italiano, chili) | _to write_ | **sow now — warm tray 25–28 °C** |
 | Parsley | _to write_ | **soak seed now, sow a day later** — cool tray |
-| Lettuce (iceberg) | [lettuce.md](lettuce.md) | **✅ GERMINATED 2026-08-03** — first crop up; transplants ≈17–24 Aug, ahead of everything else |
+| Lettuce (iceberg) | [lettuce.md](lettuce.md) | **✅ GERMINATED 2026-08-07** — transplants ≈21–28 Aug, first crop into the tower |
 | Basil | _to write_ | sow in ~1 week — fast, would outgrow the cohort |
 | Dill | _to write_ | sow in ~1 week — fast, and hates root disturbance later |
 
@@ -82,7 +86,7 @@ pepper/chili band. Sow peppers on the worktop and be done.
 | Crop | Wants | At 28 °C |
 |---|---|---|
 | Lettuce | 15–20 °C, poor above 24 | Thermodormancy above ~27 °C in theory — **but this seed lot germinated fine at 28 °C on 2026-08-03.** Variety and lot dependent; test rather than assume. |
-| Strawberry | 20–24 °C | Above ~25 °C germination falls off and slows. The sown tray is in the wrong band. |
+| Strawberry | 20–24 °C | Textbook says germination falls off above ~25 °C. **In practice this batch germinated on day 4 at 28 °C** — heat accelerated it. The remaining risk is total germination *rate* and stretched seedlings, not a stalled tray. |
 | Dill | 15–21 °C | Too warm; patchy. |
 | Parsley | 18–24 °C | Warm, and it is already the most erratic germinator in the plan. |
 | Basil | 20–25 °C | Fine — basil is heat-tolerant and germinates fast at 25–28 °C. |

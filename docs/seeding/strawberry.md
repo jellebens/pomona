@@ -121,19 +121,31 @@ crop.
 
 ### After germination
 
-- Seedlings start minuscule — two rounded seed leaves, slower than
-  everything else in the plan. Patience is normal here, not a fault.
-- Keep them domed until the first true leaf, then vent progressively.
+- Seedlings start minuscule — two rounded seed leaves, and they stay tiny for
+  a while even after a fast start. Patience is normal here, not a fault.
+- **Vent the dome progressively, never all at once.** Alpine seedlings this
+  small dry out within hours if the humidity drops off a cliff. Crack it open,
+  widen the gap over several days, and only then remove it. This is the
+  opposite of the lettuce, which wants the dome off promptly.
+- **⚠ Damping-off is now the main risk**, not germination. Fast warm
+  germination means a hot, humid, crowded tray full of hair-thin stems, which
+  is exactly the condition that kills seedlings overnight at soil level. Daily
+  ventilation is not optional, and standing water in the tray must stay at
+  2–3 mm rather than creeping up.
+- **Light matters more than it did an hour ago.** Seedlings that raced up in
+  warmth will stretch just as fast in weak light, and a stretched alpine
+  seedling stays weak. Brightest indirect spot available.
 - At first true leaves, begin **A+B at quarter strength, EC 0.4–0.8, pH
   ~5.8**. Alpine seedlings burn easily; err lean.
 - Thin to the single strongest seedling per position once they have 2 true
-  leaves.
+  leaves — scissors at the base, not fingers.
 
 ## Transplant into the tower
 
-**Gate:** roots showing through the sponge **and** 3–4 true leaves. For
-seed-grown alpines that is roughly **6–8 weeks after sowing** — sown
-2026-08-03, that means **≈14–28 September**.
+**Gate:** roots showing through the sponge **and** 3–4 true leaves. Normally
+6–8 weeks from sowing, but germination ran ~10 days ahead of book, so the
+window pulls back to **≈31 August – 14 September**. Gate on the plant, not the
+date — a fast start does not guarantee the rest keeps pace.
 
 1. Reservoir first: 7.5 L demin → A+B to **EC 0.8–1.0** (half strength for
    young plants) → measure with the PH-201H pen → pH-Down to **~6.0**.
@@ -150,45 +162,53 @@ seed-grown alpines that is roughly **6–8 weeks after sowing** — sown
    (there is no tomato in the plan). While the tower is strawberry-only, run
    **~1.2** — alpines sulk at high EC.
 
-## Timeline — anchored to the real sow date
+## Timeline — as-built
 
-Sown **2026-08-03**. Everything below is derived from that date.
+Sown **2026-08-03**. **✅ Germinated 2026-08-07 — day 4.**
+
+That is dramatically ahead of the 14–30 day figure this doc predicted, and
+worth understanding rather than just celebrating: the 28 °C ambient that the
+hot-weather section flagged as a *problem* almost certainly caused it. Warmth
+accelerates germination; the risk it carries is a lower total germination rate
+and leggier seedlings, not a slower start. So the speed is real, but expect
+the sponge count to matter (below) and watch for stretching.
 
 | When | What |
 |---|---|
-| 17 Aug – 2 Sept | Germination window (14–30 d), uneven. Do not write the tray off early. |
-| **≈24 Aug** | **3-week count** — decide whether a top-up sowing from the fridge reserve is needed (thresholds above). |
-| late Aug – mid Sept | First true leaves → start quarter-strength A+B (EC 0.4–0.8, pH ~5.8); thin to one seedling per sponge. |
-| **by ≈14 Aug** | **pH-Down and EC calibration fluid must be in hand** — pulled forward from 7 Sept because the lettuce transplants ≈17–24 Aug. |
-| **by mid-Sept** | **Grow light running** — see the light deadline below. |
-| **≈14–28 Sept** | Transplant window (6–8 weeks from sowing, at 3–4 true leaves). |
-| Oct onward | First flowers; pinch them for the first 2–3 weeks after transplant. |
+| ~~17 Aug – 2 Sept~~ | ~~Germination window (14–30 d)~~ — **superseded, it germinated on day 4** |
+| **now** | **Count sprouted sponges out of 12** — this replaces the ≈24 Aug 3-week count. 8+ → no top-up, keep the reserve seed. Under 4 → the fast warm germination came at the cost of rate; sow stratified reserve in a cooler spot. |
+| **≈14–21 Aug** | First true leaves → start quarter-strength A+B (EC 0.4–0.8, pH ~5.8); thin to one seedling per sponge at 2 true leaves. |
+| **by ≈14 Aug** | **pH-Down and EC calibration fluid must be in hand** — the binding date, set by the lettuce. |
+| **≈31 Aug – 14 Sept** | Transplant window, pulled ~2 weeks earlier by the fast germination (3–4 true leaves, roots through the sponge). Gate on the plant, not the date. |
+| **by end Aug** | **Grow light running** — pulled forward from mid-Sept. Seedlings that came up on day 4 are growing *now*, in a hot room, and August daylight indoors is already marginal for stopping them stretching. |
+| Sept onward | First flowers; pinch them for the first 2–3 weeks after transplant. |
 
-### ⚠ Purchase deadline — pH-Down, now ~14 August
-
-**Superseded by the lettuce.** It germinated 2026-08-03 and transplants
-≈17–24 August, so the reservoir has to be dosed a month before the
-strawberries need it. See [lettuce.md](lettuce.md). The strawberry-derived
-date below is kept for reference but is no longer the binding one.
-
-### Original strawberry-derived deadline — ~7 September
+### ⚠ Purchase deadline — pH-Down, ~14 August
 
 The transplant gate requires a **dosed** reservoir: A+B to EC 0.8–1.0, then
 pH corrected to ~6.0. **pH-Down/Up and the EC calibration fluid (1413 µS/cm)
-are still unbought** (#220). They are no longer "someday" items — they must be
-on hand before the transplant window opens in early September, and buying with
-slack means ordering by ~7 September at the latest. Without pH-Down there is
-no way to bring a freshly dosed reservoir to 6.0, and the seedlings cannot go
-in.
+are still unbought** (#220), and without pH-Down there is no way to bring a
+freshly dosed reservoir to 6.0.
+
+The binding date is set by the **lettuce**, which transplants first (see
+[lettuce.md](lettuce.md)) — but the strawberries' fast germination has now
+pulled their own window back to ≈31 Aug – 14 Sept, so both crops want the
+reservoir live in the second half of August. **~14 August, and it is the most
+time-critical item in the project.**
 
 ### ⚠ Light is on the critical path
 
 These seedlings hit their growth phase in September–October as Belgian
 daylight collapses, and they will try to flower into it. With plugs the grow
-light (#220) was a nice-to-have; **from seed it is required, and it must be
-running by mid-September** — which now coincides almost exactly with the
-transplant window. Without it, expect leggy seedlings and no fruit until
-spring.
+light (#220) was a nice-to-have; **from seed it is required.**
+
+**The deadline moved forward to ~end of August.** It was mid-September, keyed
+to a mid-September transplant. Two things changed it: germination ran ~10 days
+early, so the plants are growing *now*, and they are doing it in a 28 °C room
+where weak light produces stretched, permanently weak seedlings within days.
+Waiting until the original date risks arriving with a tray of leggy plants and
+no fruit until spring — the light is needed for the seedling phase, not just
+for the tower.
 
 Sources: [magicgardenseeds.de — Erdbeere 'Rote Baron Solemacher'](https://www.magicgardenseeds.de/Erdbeere-Rote-Baron-Solemacher-Fragaria-vesca-var-semperflorens-Samen),
 [samenhaus.de — Monatserdbeeren Rügen Baron von Solemacher](https://www.samenhaus.de/monatserdbeeren-ruegen-baron-von-solemacher-erdbeersamen-von-buzzy-seeds/a-544686),
