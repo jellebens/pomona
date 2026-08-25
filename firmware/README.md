@@ -10,6 +10,18 @@ everything below is in [docs/wiring.md](../docs/wiring.md).
 | [`bringup/`](bringup/bringup.ino) | Bench verification: boot I²C scan + read every v1 sensor, print a status block over serial every 2 s. No WiFi/MQTT, no display. |
 | [`leveltest/`](leveltest/leveltest.ino) | Grove level strip calibration: dumps all 20 raw pad values 1×/s for mount testing + threshold tuning (procedure in [docs/wiring.md](../docs/wiring.md#level-strip-mount-test--threshold)). |
 
+## Shared libraries
+
+Sensor drivers shared between sketches live in [`libraries/`](libraries/):
+
+| Library | Purpose |
+|---|---|
+| [`GroveWaterLevel`](libraries/GroveWaterLevel/src/GroveWaterLevel.h) | Grove 10 cm level strip driver (0x77+0x78): raw pads, wet threshold, wet count / percent / depth. |
+
+**Arduino IDE:** set File → Preferences → *Sketchbook location* to this
+`firmware/` folder — the IDE then picks up `libraries/` automatically.
+**arduino-cli:** pass `--libraries libraries` (as below).
+
 Firmware v1 proper (MQTT publish + LVGL current-readings screen) comes after
 bring-up, once the #222 topic schema exists.
 
@@ -29,10 +41,12 @@ level strip needs no library — raw `Wire` reads.)
 Build & flash:
 
 ```sh
-arduino-cli compile --fqbn arduino:mbed_giga:giga bringup
+arduino-cli compile --fqbn arduino:mbed_giga:giga --libraries libraries bringup
 arduino-cli upload -p /dev/ttyACM0 --fqbn arduino:mbed_giga:giga bringup
 arduino-cli monitor -p /dev/ttyACM0 -c baudrate=115200
 ```
+
+(run from this `firmware/` directory; same commands with `leveltest`.)
 
 On Windows the port is `COMx` (check `arduino-cli board list`).
 

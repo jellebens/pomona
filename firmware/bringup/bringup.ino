@@ -12,6 +12,7 @@
 #include <BH1750.h>
 #include <OneWire.h>
 #include <DallasTemperature.h>
+#include <GroveWaterLevel.h> // libraries/GroveWaterLevel (sketchbook = firmware/)
 
 // ---- pins ------------------------------------------------------------
 const int PIN_TDS = A0;      // Grove TDS, powered from 3V3
@@ -24,10 +25,10 @@ const int ADC_BITS = 12;
 const float ADC_MAX = 4095.0f;
 
 // ---- I2C addresses ---------------------------------------------------
-const uint8_t ADDR_BME280 = 0x76;     // strapped! 0x77 belongs to the level strip
-const uint8_t ADDR_LEVEL_LOW = 0x77;  // low 8 pads
-const uint8_t ADDR_LEVEL_HIGH = 0x78; // high 12 pads
-const uint8_t LEVEL_WET_THRESHOLD = 100;
+const uint8_t ADDR_BME280 = 0x76; // strapped! 0x77 belongs to the level strip
+// Level strip (0x77+0x78) lives in libraries/GroveWaterLevel; set the wet
+// threshold below once calibrated per docs/wiring.md.
+const uint8_t LEVEL_WET_THRESHOLD = GroveWaterLevel::DEFAULT_WET_THRESHOLD;
 
 // ---- calibration (see docs/wiring.md#calibration) --------------------
 // EC: single-point against 1413 uS/cm fluid. 1.0 = uncalibrated.
@@ -41,6 +42,7 @@ Adafruit_BME280 bme;
 BH1750 lux(0x23);
 OneWire oneWire(PIN_ONEWIRE);
 DallasTemperature ds18b20(&oneWire);
+GroveWaterLevel level(Wire, LEVEL_WET_THRESHOLD);
 
 bool bmeOk = false;
 bool luxOk = false;
@@ -68,31 +70,6 @@ float readVoltageAvg(int pin, int samples = 32) {
     delay(2);
   }
   return (sum / (float)samples) * VREF / ADC_MAX;
-}
-
-// Grove 10 cm level strip: 20 capacitive pads across two I2C targets.
-// Returns 0..100 (%), or -1 on bus error. Pad bitmap goes to `bitmap`.
-int readWaterLevel(uint32_t &bitmap) {
-  uint8_t low[8], high[12];
-  Wire.requestFrom(ADDR_LEVEL_LOW, (uint8_t)8);
-  for (int i = 0; i < 8; i++) {
-    if (!Wire.available()) return -1;
-    low[i] = Wire.read();
-  }
-  Wire.requestFrom(ADDR_LEVEL_HIGH, (uint8_t)12);
-  for (int i = 0; i < 12; i++) {
-    if (!Wire.available()) return -1;
-    high[i] = Wire.read();
-  }
-  bitmap = 0;
-  int wet = 0;
-  for (int i = 0; i < 8; i++) {
-    if (low[i] > LEVEL_WET_THRESHOLD) { bitmap |= 1UL << i; wet++; }
-  }
-  for (int i = 0; i < 12; i++) {
-    if (high[i] > LEVEL_WET_THRESHOLD) { bitmap |= 1UL << (8 + i); wet++; }
-  }
-  return wet * 5; // 20 pads over 10 cm -> 5 % per pad
 }
 
 // Grove TDS: cubic ppm curve (TDS-500 scale), temp-compensated to 25 C.
@@ -147,8 +124,9 @@ void loop() {
   float tdsV, phV;
   float ec = readEC(waterTempOk ? waterC : 25.0f, tdsV);
   float ph = readPH(phV);
-  uint32_t padBitmap = 0;
-  int levelPct = readWaterLevel(padBitmap);
+  level.read();
+  int levelPct = level.percent();
+  uint32_t padBitmap = level.bitmap();
 
   Serial.println("---");
   Serial.print("water: temp=");
