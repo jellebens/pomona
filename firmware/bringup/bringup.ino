@@ -32,7 +32,7 @@ const uint8_t ADDR_BME280 = 0x76; // strapped! 0x77 belongs to the level strip
 // threshold below once calibrated per docs/wiring.md.
 const uint8_t LEVEL_WET_THRESHOLD = GroveWaterLevel::DEFAULT_WET_THRESHOLD;
 
-// ---- calibration (see docs/wiring.md#calibration) --------------------
+// ---- calibration (see docs/sensors/) ---------------------------------
 // EC: single-point against 1413 uS/cm fluid. 1.0 = uncalibrated.
 const float EC_CAL_K = 1.0f;
 // pH: two-point. Record the measured voltages in the buffers; NAN = not yet

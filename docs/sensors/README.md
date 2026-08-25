@@ -9,7 +9,7 @@ first-power-on checklist — stays in [../wiring.md](../wiring.md).
 |---|---|---|---|---|
 | CQRobot CQRSENYW003 probe | water level (top-up ladder) | frequency / D3 | ✅ wired + calibrated 2026-08-25 | [level-probe.md](level-probe.md) |
 | Grove 10 cm level strip | water level (coarse range, optional) | I²C 0x77+0x78 | mount test pending | [level-strip.md](level-strip.md) |
-| DS18B20 | water temperature | 1-Wire / D2 | to wire | [water-temp.md](water-temp.md) |
+| DS18B20 | water temperature | 1-Wire / D2 (via old pH module's T2) | ✅ wired + ice-bath verified 2026-08-25 | [water-temp.md](water-temp.md) |
 | Grove TDS | EC / nutrients | analog / A0 | to wire; cal blocked on 1413 µS/cm fluid | [ec-tds.md](ec-tds.md) |
 | DFRobot SEN0169-V2 (+ DFR0504) | pH (continuous) | analog / A1 | to wire; cal blocked on buffers | [ph.md](ph.md) |
 | BME280 (STEMMA QT) | air temp / RH / pressure | I²C 0x76 | to wire — ⚠ strap SDO first | [air-bme280.md](air-bme280.md) |
