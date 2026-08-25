@@ -23,7 +23,8 @@ no automated control in v1.
 |---|---|---|
 | EC / nutrients | Grove TDS | analog, 3.3 V |
 | Water temperature | DS18B20 | on hand |
-| Water level | Grove 10 cm I²C strip | ⚠ occupies I²C 0x77+0x78 → strap the BME280 to 0x76 |
+| Water level (low-water alarm) | CQRobot CQRSENYW003 contact photoelectric probe (on hand, added 2026-08-25) | 4 points over ~3 cm at pump-intake height; frequency output on D3 |
+| Water level (coarse range, optional) | Grove 10 cm I²C strip | mounted OUTSIDE, through-wall; ⚠ occupies I²C 0x77+0x78 → strap the BME280 to 0x76 |
 | Air temp/humidity/pressure | BME280 STEMMA QT | address 0x76 (see above) |
 | Light | BH1750 | I²C |
 | Pump power | Fibaro Wall Plug Type E | via Home Assistant zwave_js (to buy) |

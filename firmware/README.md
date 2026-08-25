@@ -9,6 +9,7 @@ everything below is in [docs/wiring.md](../docs/wiring.md).
 |---|---|
 | [`bringup/`](bringup/bringup.ino) | Bench verification: boot I²C scan + read every v1 sensor, print a status block over serial every 2 s. No WiFi/MQTT, no display. |
 | [`leveltest/`](leveltest/leveltest.ino) | Grove level strip calibration: dumps all 20 raw pad values 1×/s for mount testing + threshold tuning (procedure in [docs/wiring.md](../docs/wiring.md#level-strip-mount-test--threshold)). |
+| [`levelprobe/`](levelprobe/levelprobe.ino) | CQRSENYW003 photoelectric probe test: prints output frequency + decoded submerged points 1×/s. |
 
 ## Shared libraries
 
@@ -17,6 +18,7 @@ Sensor drivers shared between sketches live in [`libraries/`](libraries/):
 | Library | Purpose |
 |---|---|
 | [`GroveWaterLevel`](libraries/GroveWaterLevel/src/GroveWaterLevel.h) | Grove 10 cm level strip driver (0x77+0x78): raw pads, wet threshold, wet count / percent / depth. |
+| [`PhotoLevelProbe`](libraries/PhotoLevelProbe/src/PhotoLevelProbe.h) | CQRSENYW003 contact photoelectric probe driver: frequency measurement → submerged points 0–4. |
 
 **Arduino IDE:** set File → Preferences → *Sketchbook location* to this
 `firmware/` folder — the IDE then picks up `libraries/` automatically.
