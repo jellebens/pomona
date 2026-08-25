@@ -10,6 +10,7 @@ Monitoring-first; automated control is deferred.
 |---|---|
 | [design.md](design.md) | System choice, sensor loadout v1, monitoring architecture, open items |
 | [wiring.md](wiring.md) | Sensor unit wiring (GIGA pin map, I²C addresses), first power-on checklist, calibration |
+| [assumptions.md](assumptions.md) | Working assumptions (basis, impact if wrong, how to verify) — currently the level-probe calibration set |
 | [planting-plan.md](planting-plan.md) | The 30-pod tier layout, nutrient/pH targets, commissioning sequence, shopping list |
 | [seeding/](seeding/README.md) | Sowing and germination — shared sponge method, sowing order, per-crop docs |
 | [seeding/lettuce.md](seeding/lettuce.md) | Iceberg lettuce — germinated, seedling care, and why it reaches the tower first |
