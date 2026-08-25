@@ -107,6 +107,37 @@ config) — record the measured values in this doc when done.
 - Temperature compensation for EC (and pH) uses the DS18B20 automatically —
   calibrate with the probe and the DS18B20 in the same liquid.
 
+### Level strip: mount test + threshold
+
+The strip is capacitive, so "calibration" means: pick the mount, verify the
+wet/dry raw values are cleanly separated, set the threshold, and map pads to
+actual water depth. Use [`firmware/leveltest/`](../firmware/leveltest/leveltest.ino),
+which dumps all 20 raw pad values (bottom pad first) once per second.
+
+1. **Dry baseline:** strip dry and mounted → note the highest raw value
+   (`dry_max`). Seeed's reference: dry < 100, direct-wet ≈ 250.
+2. **Mount test — try through-wall first:** tape the strip vertically on the
+   *outside* of the reservoir, pads toward the wall, bottom pad level with
+   the tank floor. Fill past a few pads → covered pads' raw values must
+   jump. Note the lowest covered-pad value (`wet_min`).
+   - `wet_min` clearly above `dry_max` (≥ 50 apart) → through-wall works;
+     no waterproofing needed. Set the threshold midway.
+   - Barely separated or not at all (wall too thick) → fall back to
+     **inside the tank in a waterproof sleeve** (heat-shrink or a sealed
+     bag, pads facing out against the wall) and redo both baselines.
+3. **Depth map:** pads are numbered bottom→top, 0.5 cm each (20 over
+   10 cm). With the ~25×25 cm reservoir that's roughly **0.3 L per pad**.
+   Verify against the mechanical indicator at 2–3 known fills and record
+   below.
+4. Copy the chosen threshold into `LEVEL_WET_THRESHOLD` in `bringup.ino`
+   (and later the real firmware); record everything in the table.
+5. **Alarm point:** note which pad sits at the pump intake's minimum safe
+   depth — that % is the low-water alert line for #222's dashboard.
+
+| Date | Mount (through-wall / sleeve) | dry_max | wet_min | Threshold | Pads↔depth check | Alarm % |
+|---|---|---|---|---|---|---|
+| _(pending)_ | | | | | | |
+
 ### Recorded calibration values
 
 | Date | EC_CAL_K | PH_V_NEUTRAL (V @ 6.86) | PH_V_ACID (V @ 4.01) | Notes |

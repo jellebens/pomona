@@ -8,6 +8,7 @@ everything below is in [docs/wiring.md](../docs/wiring.md).
 | Sketch | Purpose |
 |---|---|
 | [`bringup/`](bringup/bringup.ino) | Bench verification: boot I²C scan + read every v1 sensor, print a status block over serial every 2 s. No WiFi/MQTT, no display. |
+| [`leveltest/`](leveltest/leveltest.ino) | Grove level strip calibration: dumps all 20 raw pad values 1×/s for mount testing + threshold tuning (procedure in [docs/wiring.md](../docs/wiring.md#level-strip-mount-test--threshold)). |
 
 Firmware v1 proper (MQTT publish + LVGL current-readings screen) comes after
 bring-up, once the #222 topic schema exists.
