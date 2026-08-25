@@ -9,8 +9,8 @@ Monitoring-first; automated control is deferred.
 | Doc | What's in it |
 |---|---|
 | [design.md](design.md) | System choice, sensor loadout v1, monitoring architecture, open items |
-| [wiring.md](wiring.md) | Sensor unit wiring (GIGA pin map, I²C addresses), first power-on checklist, calibration |
-| [assumptions.md](assumptions.md) | Working assumptions (basis, impact if wrong, how to verify) — currently the level-probe calibration set |
+| [wiring.md](wiring.md) | Shared wiring rules, combined GIGA pin map, first power-on checklist |
+| [sensors/](sensors/README.md) | **One doc per sensor**: wiring, verification, calibration + recorded values, assumptions |
 | [planting-plan.md](planting-plan.md) | The 30-pod tier layout, nutrient/pH targets, commissioning sequence, shopping list |
 | [seeding/](seeding/README.md) | Sowing and germination — shared sponge method, sowing order, per-crop docs |
 | [seeding/lettuce.md](seeding/lettuce.md) | Iceberg lettuce — germinated, seedling care, and why it reaches the tower first |
@@ -35,7 +35,8 @@ Monitoring-first; automated control is deferred.
 - **Sensor bring-up in progress (#242, since 2026-08-25):** the first
   sensor is live — the CQRSENYW003 photoelectric level probe is wired
   (D3), dip-tested and calibrated as a top-up gauge (point 1 = 8.2 L,
-  point 3 = 9.7 L; ladder + caveats in [wiring.md](wiring.md)). Remaining:
+  point 3 = 9.7 L; ladder + caveats in
+  [sensors/level-probe.md](sensors/level-probe.md)). Remaining:
   DS18B20, BME280 (⚠ SDO strap first), BH1750, TDS (awaits cal fluid),
   pH (awaits buffers), optional Grove-strip through-wall test.
 - No landing zone or Argo app yet.

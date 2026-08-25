@@ -1,11 +1,12 @@
 # Sensor unit wiring & bring-up — Arduino GIGA R1 WiFi
 
-Status: wiring plan finalized 2026-08-07 (Trello #220). Covers the settled
-sensor loadout v1 from [design.md](design.md); the matching bench-verification
-sketch lives in [`firmware/bringup/`](../firmware/bringup/bringup.ino).
+Shared wiring rules, the combined pin map and the first-power-on checklist.
+**Per-sensor detail (wiring, verification, calibration, assumptions) lives
+in [sensors/](sensors/README.md) — one doc per sensor.** Bench sketches:
+[`firmware/`](../firmware/README.md).
 
 Scope: wiring + serial bring-up + calibration only. MQTT publishing and the
-LVGL screen are the firmware v1 card; cluster-side ingestion is #222.
+LVGL screen are the firmware v1 card (#229); cluster-side ingestion is #222.
 
 ## Ground rules
 
@@ -16,29 +17,26 @@ LVGL screen are the firmware v1 card; cluster-side ingestion is #222.
   touch, BMI270 IMU) sit on `Wire1`, so they never clash with our sensors.
 - The Display Shield mounts on the underside of the GIGA; the pin headers
   stay accessible.
+- All electronics boards stay dry above the waterline; only probes designed
+  for immersion go in the tank.
 
 ## Pin map
 
-| Sensor | Interface | GIGA connection | Address | Power |
+| Sensor | Interface | GIGA connection | Address | Doc |
 |---|---|---|---|---|
-| BME280 (air T/RH/P, STEMMA QT) | I²C | SDA/SCL header pins | **0x76 — strap required, see below** | 3V3 |
-| BH1750 (light, STEMMA QT) | I²C | QT daisy-chain off the BME280 | 0x23 (ADDR low, default) | 3V3 |
-| Grove water level 10 cm | I²C | SDA/SCL header pins | 0x77 (low 8 pads) + 0x78 (high 12 pads) | 3V3 |
-| Grove TDS (EC) | analog | **A0** | — | **3V3, not 5 V** |
-| pH — SEN0169-V2 via DFR0504 isolator | analog | **A1** | — | 3V3 |
-| DS18B20 (water temp) | 1-Wire | **D2**, 4.7 kΩ pull-up D2→3V3 | — | 3V3 |
-| CQRSENYW003 photoelectric level probe | frequency (open collector) | **D3** (internal pull-up, no resistor) | — | 3V3 (⚠ draws up to ~80 mA) |
+| CQRSENYW003 level probe | frequency (open collector) | **D3** (internal pull-up) | — | [sensors/level-probe.md](sensors/level-probe.md) |
+| Grove water level 10 cm (optional) | I²C | SDA/SCL header pins | 0x77 + 0x78 | [sensors/level-strip.md](sensors/level-strip.md) |
+| DS18B20 (water temp) | 1-Wire | **D2**, 4.7 kΩ pull-up to 3V3 | — | [sensors/water-temp.md](sensors/water-temp.md) |
+| Grove TDS (EC) | analog | **A0** | — | [sensors/ec-tds.md](sensors/ec-tds.md) |
+| pH — SEN0169-V2 via DFR0504 | analog | **A1** | — | [sensors/ph.md](sensors/ph.md) |
+| BME280 (air T/RH/P) | I²C | SDA/SCL header pins | **0x76 — strap required!** | [sensors/air-bme280.md](sensors/air-bme280.md) |
+| BH1750 (light) | I²C | QT daisy-chain off the BME280 | 0x23 | [sensors/light-bh1750.md](sensors/light-bh1750.md) |
+| Fibaro Wall Plug (pump watts) | Z-Wave → Home Assistant | — (nothing on the GIGA) | — | [sensors/pump-power.md](sensors/pump-power.md) |
 
 I²C address map after strapping: `0x23` BH1750 · `0x76` BME280 · `0x77` +
-`0x78` level strip. No conflicts.
-
-### ⚠ BME280 must be strapped to 0x76 BEFORE first power-on
-
-The Adafruit BME280 defaults to **0x77**, which the level strip already
-occupies (its low-8-pad bank). Two devices on 0x77 means garbage reads on
-*both*. Bridge the **SDO solder jumper** on the back of the BME280 breakout
-to move it to 0x76. If the bring-up scan shows no 0x76, or BME/level values
-look insane, this strap is the first suspect.
+`0x78` level strip. No conflicts — but the ⚠ **BME280 SDO strap to 0x76**
+must happen BEFORE first power-on
+([why](sensors/air-bme280.md#-address-strap-before-first-power-on)).
 
 ## Cable color conventions
 
@@ -47,158 +45,25 @@ look insane, this strap is the first suspect.
 - **Grove** (both Grove sensors, Grove→male-jumper cables):
   black = GND, red = VCC (**wire to 3V3**), yellow = pin 1 (SCL on I²C /
   signal on analog), white = pin 2 (SDA on I²C / NC on analog).
-  - Grove water level: yellow → SCL, white → SDA.
-  - Grove TDS: yellow → A0, white unused.
-
-## The pH chain
-
-```
-probe (in tank) ─BNC→ pH Pro transmitter board ─3-pin→ DFR0504 isolator ─3-pin→ GIGA
-                                                                            (A1 + 3V3 + GND)
-```
-
-The DFR0504 galvanically isolates supply *and* signal. It is **not
-optional**: the pH and TDS probes share the same 10 L of water, and without
-isolation the TDS probe's excitation couples into the pH reading (ground
-loop). Gravity analog cables: black = GND, red = VCC, blue = signal.
-
-## Physical placement
-
-- **In the tank:** pH probe, TDS probe, DS18B20 tip — spaced apart, pH and
-  TDS at opposite sides if possible. All electronics boards stay dry above
-  the waterline.
-- **Level probe (CQRSENYW003):** bolted inside the tank at pump-intake
-  height — see its calibration section below. This is the low-water alarm.
-- **Level strip:** stays OUTSIDE the tank (through-wall mount) for coarse
-  full-range display — the PCB is not waterproof and, with the probe
-  handling the alarm, never needs to go in. Covers the bottom 10 cm of a
-  ~16 cm-full reservoir.
-- **BME280 + BH1750:** near the tower but out of splash range; BH1750
-  facing up, roughly at canopy height, so it sees what the plants see.
-- pH probe is a consumable (6–12 months) — store with the KCl cap on
-  whenever the system is drained.
+- **Gravity analog** (pH chain): black = GND, red = VCC, blue = signal.
 
 ## First power-on checklist
 
 1. Wire everything **except** the pH transmitter's probe (leave the BNC
    capped); flash `firmware/bringup`, open serial at 115200 baud.
-2. Boot I²C scan must report exactly **0x23, 0x76, 0x77, 0x78**.
-   - Missing 0x76 → BME280 strap (see above) or QT chain power.
+2. Boot I²C scan must report exactly **0x23, 0x76, 0x77, 0x78** (fewer if
+   a sensor is deliberately absent).
+   - Missing 0x76 → BME280 strap, or QT chain power.
    - Missing 0x77/0x78 → Grove level cable (yellow=SCL/white=SDA swapped is
      the classic mistake).
-3. Sanity-check each reading:
-   - breathe on the BME280 → humidity jumps;
-   - cover the BH1750 → lux drops to ~0;
-   - warm the DS18B20 tip in your hand → water temp rises;
-   - TDS probe in the 1413 µS/cm fluid → EC ≈ 1.41 mS/cm after calibration;
-   - connect the pH probe, into pH 6.86 buffer → stable voltage.
+3. Sanity-check each reading — the quick checks live in each sensor's doc
+   under [sensors/](sensors/README.md) (breathe on the BME280, cover the
+   BH1750, warm the DS18B20, dip the level probe, buffer/fluid tests for
+   pH and EC).
 4. Only then move probes to the reservoir.
 
-## Calibration
+## Bring-up status
 
-Constants live at the top of `bringup.ino` (later: the real firmware's
-config) — record the measured values in this doc when done.
-
-- **EC, single-point:** probe in the 1413 µS/cm fluid, note water temp, set
-  `EC_CAL_K` so the compensated reading shows 1.413 mS/cm. Redo only if
-  readings become suspicious.
-- **pH, two-point:** probe in 6.86 buffer → record `PH_V_NEUTRAL`; rinse,
-  probe in 4.01 buffer → record `PH_V_ACID`. Slope/offset are derived in the
-  sketch. Recalibrate roughly monthly; cross-check any odd reading with the
-  PH-201H pen before believing it.
-- Temperature compensation for EC (and pH) uses the DS18B20 automatically —
-  calibrate with the probe and the DS18B20 in the same liquid.
-
-### Level probe (CQRSENYW003): mounting + verification
-
-The CQRobot contact photoelectric probe (on hand since 2026-08-25) is the
-**in-tank low-water ladder**: 4 optical detection points over ~3 cm of probe
-height, ±1 mm, designed for immersion — no waterproofing needed. It reports
-the highest wet point as a frequency on the green wire: ~20 Hz dry,
-~50/100/200/400 Hz for points 1–4. Driver:
-[`libraries/PhotoLevelProbe`](../firmware/libraries/PhotoLevelProbe/src/PhotoLevelProbe.h);
-test sketch: [`firmware/levelprobe/`](../firmware/levelprobe/levelprobe.ino).
-
-- **Wiring:** black → GND, red → 3V3, green → **D3**. Open collector; the
-  pin uses the GIGA's internal pull-up, no external resistor. Budget note:
-  up to ~80 mA at 3.3 V. The stock silicone cable is only **21 cm** — extend
-  all three wires (soldered + heat-shrunk, splice kept OUTSIDE the tank) to
-  reach the GIGA.
-- **Bench check:** flash `levelprobe`, dry ≈ 20 Hz / 0 pts, then dip it
-  step by step in a glass — each point should add cleanly (50→100→200→400 Hz).
-- **Mounting:** bolt it vertically to the tank wall through its 3 mm holes
-  (nylon M3 screws, or zip-tie to a bracket over the rim). Two sensible
-  heights: **pump-intake** (point 1 just above the intake ⇒ 0/4 = stop the
-  pump / refill NOW) or **top-up gauge** near the full line (0/4 = tank
-  below the band, time to refill). Record the fill volumes at each point
-  below.
-- **As built (2026-08-25): top-up gauge.** Point 1 wets at **8.2 L**, so
-  the 4-point band covers roughly 8.2 L → full and **0/4 means "below
-  8.2 L — top up"**. ⚠ There is NO dry-run protection below that line —
-  the probe can't tell 8 L from empty. Acceptable while the tank is kept
-  topped up; remount lower (needs the cable extension) if pump protection
-  is ever wanted.
-- The probe replaces the Grove strip as the alarm instrument. The strip
-  stays optional for coarse full-range display and lives OUTSIDE the tank
-  (through-wall) — if its mount test fails, drop it; nothing else needs it.
-
-| Date | Height of point 1 above tank floor | Points→litres (4/3/2/1) | Dry Hz | Notes |
-|---|---|---|---|---|
-| 2026-08-25 | ≈ the 8.2 L waterline (top-up mount) | 1 → **8.2 L** · 2 → ≈8.9 L (interpolated) · 3 → **9.7 L** · 4 → ≈10.4 L (extrapolated — above nominal 10 L full, may never wet) | 20.2 | Dip test: all 4 points step cleanly (≈50/100/200/400 Hz). Live in tank: 50.5 Hz = 1/4 at just-topped-up level. Spacing ≈ 0.75 L/point. |
-
-The interpolated/extrapolated values and the top-up-mount trade-off rest on
-explicit assumptions — see [assumptions.md](assumptions.md) (A1–A4) for the
-basis, impact and how each gets verified.
-
-**Reading the ladder** (what firmware, dashboard and alerts in #222 should
-show — note point 4 sits above nominal full, so 3/4 already means full):
-
-| Points wet | Tank | Action |
-|---|---|---|
-| 3–4 | full (≥ 9.7 L) | — |
-| 2 | ok (≈ 8.9 L) | — |
-| 1 | ≈ 8.2 L | top up soon |
-| 0 | below 8.2 L | **refill now** (probe is blind below this line) |
-
-### Level strip: mount test + threshold
-
-The strip is capacitive, so "calibration" means: pick the mount, verify the
-wet/dry raw values are cleanly separated, set the threshold, and map pads to
-actual water depth. Use [`firmware/leveltest/`](../firmware/leveltest/leveltest.ino),
-which dumps all 20 raw pad values (bottom pad first) once per second.
-
-1. **Dry baseline:** strip dry and mounted → note the highest raw value
-   (`dry_max`). Seeed's reference: dry < 100, direct-wet ≈ 250.
-2. **Mount test — try through-wall first:** tape the strip vertically on the
-   *outside* of the reservoir, pads toward the wall, bottom pad level with
-   the tank floor. Fill past a few pads → covered pads' raw values must
-   jump. Note the lowest covered-pad value (`wet_min`).
-   - `wet_min` clearly above `dry_max` (≥ 50 apart) → through-wall works;
-     no waterproofing needed. Set the threshold midway.
-   - Barely separated or not at all (wall too thick) → fall back to
-     **inside the tank in a waterproof sleeve** (heat-shrink or a sealed
-     bag, pads facing out against the wall) and redo both baselines.
-3. **Depth map:** pads are numbered bottom→top, 0.5 cm each (20 over
-   10 cm). With the ~25×25 cm reservoir that's roughly **0.3 L per pad**.
-   Verify against the mechanical indicator at 2–3 known fills and record
-   below.
-4. Copy the chosen threshold into `LEVEL_WET_THRESHOLD` in `bringup.ino`
-   (and later the real firmware); record everything in the table.
-5. **Alarm point:** note which pad sits at the pump intake's minimum safe
-   depth — that % is the low-water alert line for #222's dashboard.
-
-| Date | Mount (through-wall / sleeve) | dry_max | wet_min | Threshold | Pads↔depth check | Alarm % |
-|---|---|---|---|---|---|---|
-| _(pending)_ | | | | | | |
-
-### Recorded calibration values
-
-| Date | EC_CAL_K | PH_V_NEUTRAL (V @ 6.86) | PH_V_ACID (V @ 4.01) | Notes |
-|---|---|---|---|---|
-| _(pending first calibration)_ | | | | |
-
-## Out of scope here
-
-- **Pump watts:** Fibaro Wall Plug Type E → Home Assistant zwave_js; nothing
-  wires to the GIGA.
-- **MQTT + screen:** firmware v1 card (topics/schema decided in #222).
+See the status column in [sensors/README.md](sensors/README.md) — as of
+2026-08-25 the CQRSENYW003 level probe is wired + calibrated; the rest is
+pending wiring or purchases.

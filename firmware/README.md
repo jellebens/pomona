@@ -8,8 +8,8 @@ everything below is in [docs/wiring.md](../docs/wiring.md).
 | Sketch | Purpose |
 |---|---|
 | [`bringup/`](bringup/bringup.ino) | Bench verification: boot I²C scan + read every v1 sensor, print a status block over serial every 2 s. No WiFi/MQTT, no display. |
-| [`leveltest/`](leveltest/leveltest.ino) | Grove level strip calibration: dumps all 20 raw pad values 1×/s for mount testing + threshold tuning (procedure in [docs/wiring.md](../docs/wiring.md#level-strip-mount-test--threshold)). |
-| [`levelprobe/`](levelprobe/levelprobe.ino) | CQRSENYW003 photoelectric probe test: prints output frequency + decoded submerged points 1×/s. |
+| [`leveltest/`](leveltest/leveltest.ino) | Grove level strip calibration: dumps all 20 raw pad values 1×/s for mount testing + threshold tuning (procedure in [docs/sensors/level-strip.md](../docs/sensors/level-strip.md)). |
+| [`levelprobe/`](levelprobe/levelprobe.ino) | CQRSENYW003 photoelectric probe test: prints output frequency + decoded submerged points 1×/s ([docs/sensors/level-probe.md](../docs/sensors/level-probe.md)). |
 
 ## Shared libraries
 
@@ -55,5 +55,6 @@ On Windows the port is `COMx` (check `arduino-cli board list`).
 ## Calibration constants
 
 `EC_CAL_K`, `PH_V_NEUTRAL`, `PH_V_ACID` at the top of `bringup.ino` —
-procedure and the recorded values live in
-[docs/wiring.md](../docs/wiring.md#calibration).
+procedures and recorded values live in the per-sensor docs under
+[docs/sensors/](../docs/sensors/README.md) ([ec-tds.md](../docs/sensors/ec-tds.md),
+[ph.md](../docs/sensors/ph.md)).

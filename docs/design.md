@@ -42,7 +42,8 @@ sensors ─→ GIGA R1 WiFi ─→ MQTT (cluster broker) ─→ InfluxDB ─→ 
               └─→ LVGL touchscreen (current readings)
 ```
 
-- Unit-side wiring, pin map and calibration: [wiring.md](wiring.md);
+- Unit-side wiring rules + pin map: [wiring.md](wiring.md); per-sensor
+  docs (wiring, calibration, assumptions): [sensors/](sensors/README.md);
   bring-up firmware in [`firmware/`](../firmware/README.md).
 - Cluster side follows the **zeus pattern**: MQTT → InfluxDB → Grafana.
 - MQTT topic schema, Influx ingestion and the first Grafana dashboard are
