@@ -127,18 +127,24 @@ test sketch: [`firmware/levelprobe/`](../firmware/levelprobe/levelprobe.ino).
 - **Bench check:** flash `levelprobe`, dry ≈ 20 Hz / 0 pts, then dip it
   step by step in a glass — each point should add cleanly (50→100→200→400 Hz).
 - **Mounting:** bolt it vertically to the tank wall through its 3 mm holes
-  (nylon M3 screws, or zip-tie to a bracket over the rim), detection points
-  at **pump-intake height**: point 1 (lowest) just above the intake ⇒
-  "points = 0" means *stop the pump / refill NOW*; points 4→1 are the
-  graduated early warnings as the level falls through the last ~3 cm above
-  the intake. Record the fill volumes at each point below.
+  (nylon M3 screws, or zip-tie to a bracket over the rim). Two sensible
+  heights: **pump-intake** (point 1 just above the intake ⇒ 0/4 = stop the
+  pump / refill NOW) or **top-up gauge** near the full line (0/4 = tank
+  below the band, time to refill). Record the fill volumes at each point
+  below.
+- **As built (2026-08-25): top-up gauge.** Point 1 wets at **8.2 L**, so
+  the 4-point band covers roughly 8.2 L → full and **0/4 means "below
+  8.2 L — top up"**. ⚠ There is NO dry-run protection below that line —
+  the probe can't tell 8 L from empty. Acceptable while the tank is kept
+  topped up; remount lower (needs the cable extension) if pump protection
+  is ever wanted.
 - The probe replaces the Grove strip as the alarm instrument. The strip
   stays optional for coarse full-range display and lives OUTSIDE the tank
   (through-wall) — if its mount test fails, drop it; nothing else needs it.
 
 | Date | Height of point 1 above tank floor | Points→litres (4/3/2/1) | Dry Hz | Notes |
 |---|---|---|---|---|
-| _(pending)_ | | | | |
+| 2026-08-25 | ≈ the 8.2 L waterline (top-up mount) | 1 → **8.2 L** · 2/3/4 → record when observed (~+0.6 L/point est.) | 20.2 | Dip test: all 4 points step cleanly (≈50/100/200/400 Hz). Live in tank: 50.5 Hz = 1/4 at just-topped-up level. |
 
 ### Level strip: mount test + threshold
 
