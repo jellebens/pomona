@@ -13,11 +13,13 @@
 #include <OneWire.h>
 #include <DallasTemperature.h>
 #include <GroveWaterLevel.h> // libraries/GroveWaterLevel (sketchbook = firmware/)
+#include <PhotoLevelProbe.h> // libraries/PhotoLevelProbe — CQRSENYW003 low-water ladder
 
 // ---- pins ------------------------------------------------------------
 const int PIN_TDS = A0;      // Grove TDS, powered from 3V3
 const int PIN_PH = A1;       // SEN0169-V2 via DFR0504 isolator
 const int PIN_ONEWIRE = 2;   // DS18B20 data, 4.7k pull-up to 3V3
+const int PIN_PROBE = 3;     // CQRSENYW003 green wire (open collector)
 
 // ---- ADC -------------------------------------------------------------
 const float VREF = 3.3f;
@@ -43,6 +45,7 @@ BH1750 lux(0x23);
 OneWire oneWire(PIN_ONEWIRE);
 DallasTemperature ds18b20(&oneWire);
 GroveWaterLevel level(Wire, LEVEL_WET_THRESHOLD);
+PhotoLevelProbe probe(PIN_PROBE);
 
 bool bmeOk = false;
 bool luxOk = false;
@@ -113,6 +116,8 @@ void setup() {
   ds18b20.begin();
   if (ds18b20.getDeviceCount() == 0)
     Serial.println("DS18B20 NOT FOUND on D2 — check 4.7k pull-up");
+
+  probe.begin();
 }
 
 void loop() {
@@ -141,11 +146,18 @@ void loop() {
   Serial.print(phV, 3);
   Serial.print(" V)  level=");
   if (levelPct < 0) {
-    Serial.println("ERR");
+    Serial.print("ERR");
   } else {
     Serial.print(levelPct);
     Serial.print("% pads=0b");
-    Serial.println(padBitmap, BIN);
+    Serial.print(padBitmap, BIN);
+  }
+  int probePts = probe.points();
+  Serial.print("  probe=");
+  if (probePts < 0) Serial.println("no signal");
+  else {
+    Serial.print(probePts);
+    Serial.println("/4 pts");
   }
 
   Serial.print("air:   ");

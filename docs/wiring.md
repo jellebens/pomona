@@ -27,6 +27,7 @@ LVGL screen are the firmware v1 card; cluster-side ingestion is #222.
 | Grove TDS (EC) | analog | **A0** | — | **3V3, not 5 V** |
 | pH — SEN0169-V2 via DFR0504 isolator | analog | **A1** | — | 3V3 |
 | DS18B20 (water temp) | 1-Wire | **D2**, 4.7 kΩ pull-up D2→3V3 | — | 3V3 |
+| CQRSENYW003 photoelectric level probe | frequency (open collector) | **D3** (internal pull-up, no resistor) | — | 3V3 (⚠ draws up to ~80 mA) |
 
 I²C address map after strapping: `0x23` BH1750 · `0x76` BME280 · `0x77` +
 `0x78` level strip. No conflicts.
@@ -66,11 +67,12 @@ loop). Gravity analog cables: black = GND, red = VCC, blue = signal.
 - **In the tank:** pH probe, TDS probe, DS18B20 tip — spaced apart, pH and
   TDS at opposite sides if possible. All electronics boards stay dry above
   the waterline.
-- **Level strip:** the PCB is not waterproof — mount it in a waterproof
-  sleeve inside the tank, or against the outside of a thin non-metal wall.
-  It covers the bottom 10 cm; a full reservoir (~16 cm) tops out the range,
-  which is fine — the strip exists to catch *low* water (the pump-runs-dry
-  failure mode).
+- **Level probe (CQRSENYW003):** bolted inside the tank at pump-intake
+  height — see its calibration section below. This is the low-water alarm.
+- **Level strip:** stays OUTSIDE the tank (through-wall mount) for coarse
+  full-range display — the PCB is not waterproof and, with the probe
+  handling the alarm, never needs to go in. Covers the bottom 10 cm of a
+  ~16 cm-full reservoir.
 - **BME280 + BH1750:** near the tower but out of splash range; BH1750
   facing up, roughly at canopy height, so it sees what the plants see.
 - pH probe is a consumable (6–12 months) — store with the KCl cap on
@@ -106,6 +108,37 @@ config) — record the measured values in this doc when done.
   PH-201H pen before believing it.
 - Temperature compensation for EC (and pH) uses the DS18B20 automatically —
   calibrate with the probe and the DS18B20 in the same liquid.
+
+### Level probe (CQRSENYW003): mounting + verification
+
+The CQRobot contact photoelectric probe (on hand since 2026-08-25) is the
+**in-tank low-water ladder**: 4 optical detection points over ~3 cm of probe
+height, ±1 mm, designed for immersion — no waterproofing needed. It reports
+the highest wet point as a frequency on the green wire: ~20 Hz dry,
+~50/100/200/400 Hz for points 1–4. Driver:
+[`libraries/PhotoLevelProbe`](../firmware/libraries/PhotoLevelProbe/src/PhotoLevelProbe.h);
+test sketch: [`firmware/levelprobe/`](../firmware/levelprobe/levelprobe.ino).
+
+- **Wiring:** black → GND, red → 3V3, green → **D3**. Open collector; the
+  pin uses the GIGA's internal pull-up, no external resistor. Budget note:
+  up to ~80 mA at 3.3 V. The stock silicone cable is only **21 cm** — extend
+  all three wires (soldered + heat-shrunk, splice kept OUTSIDE the tank) to
+  reach the GIGA.
+- **Bench check:** flash `levelprobe`, dry ≈ 20 Hz / 0 pts, then dip it
+  step by step in a glass — each point should add cleanly (50→100→200→400 Hz).
+- **Mounting:** bolt it vertically to the tank wall through its 3 mm holes
+  (nylon M3 screws, or zip-tie to a bracket over the rim), detection points
+  at **pump-intake height**: point 1 (lowest) just above the intake ⇒
+  "points = 0" means *stop the pump / refill NOW*; points 4→1 are the
+  graduated early warnings as the level falls through the last ~3 cm above
+  the intake. Record the fill volumes at each point below.
+- The probe replaces the Grove strip as the alarm instrument. The strip
+  stays optional for coarse full-range display and lives OUTSIDE the tank
+  (through-wall) — if its mount test fails, drop it; nothing else needs it.
+
+| Date | Height of point 1 above tank floor | Points→litres (4/3/2/1) | Dry Hz | Notes |
+|---|---|---|---|---|
+| _(pending)_ | | | | |
 
 ### Level strip: mount test + threshold
 
