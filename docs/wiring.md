@@ -62,8 +62,27 @@ must happen BEFORE first power-on
    pH and EC).
 4. Only then move probes to the reservoir.
 
+## GIGA R1 WiFi board reference
+
+![Arduino GIGA R1 WiFi full pinout](images/giga-r1-wifi-pinout.png)
+
+Full official pinout (all 9 pages, incl. the high-density connectors):
+[images/giga-r1-wifi-full-pinout.pdf](images/giga-r1-wifi-full-pinout.pdf)
+(from [docs.arduino.cc](https://docs.arduino.cc/hardware/giga-r1-wifi/)).
+Product page: [store.arduino.cc/products/giga-r1-wifi](https://store.arduino.cc/products/giga-r1-wifi) ·
+[datasheet (PDF)](https://docs.arduino.cc/resources/datasheets/ABX00063-datasheet.pdf).
+
+Notes worth knowing from the pinout sheet:
+- **A8–A11 are analog-only** (no GPIO peripherals) — fine for us, our
+  analog sensors sit on A0/A1.
+- Current limits: **140 mA total** across all I/O and control pins,
+  **20 mA per pin** — the level probe's ~80 mA comes from the 3V3 *power*
+  rail, not an I/O pin, so it doesn't count against this.
+- **WiFi needs the external antenna on the Micro UFL connector** — without
+  it there is no WiFi. Matters for #229 (MQTT) and #243 (OTA).
+
 ## Bring-up status
 
 See the status column in [sensors/README.md](sensors/README.md) — as of
-2026-08-25 the CQRSENYW003 level probe is wired + calibrated; the rest is
-pending wiring or purchases.
+2026-08-25 the CQRSENYW003 level probe is wired + calibrated and the
+DS18B20 is verified; the rest is pending wiring or purchases.
