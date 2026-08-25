@@ -31,9 +31,13 @@ Monitoring-first; automated control is deferred.
   transplants), and the **grow light by end of August**, pulled forward from
   mid-September because seedlings that raced up in a hot room stretch just as
   fast in weak light. Both are #220 purchases still outstanding.
-- Sensors not yet wired — wiring plan + bring-up sketch ready as of
-  2026-08-07 ([wiring.md](wiring.md), [firmware/](../firmware/README.md));
-  no landing zone or Argo app yet.
+- **Sensor bring-up in progress (#242, since 2026-08-25):** the first
+  sensor is live — the CQRSENYW003 photoelectric level probe is wired
+  (D3), dip-tested and calibrated as a top-up gauge (point 1 = 8.2 L,
+  point 3 = 9.7 L; ladder + caveats in [wiring.md](wiring.md)). Remaining:
+  DS18B20, BME280 (⚠ SDO strap first), BH1750, TDS (awaits cal fluid),
+  pH (awaits buffers), optional Grove-strip through-wall test.
+- No landing zone or Argo app yet.
 
 Work is tracked on Trello (label **pomona**): #218 hardware inventory,
 #219 design/crops, #220 sensor plan/BOM, #221 gitops landing zone,
