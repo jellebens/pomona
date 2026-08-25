@@ -144,7 +144,7 @@ test sketch: [`firmware/levelprobe/`](../firmware/levelprobe/levelprobe.ino).
 
 | Date | Height of point 1 above tank floor | Points→litres (4/3/2/1) | Dry Hz | Notes |
 |---|---|---|---|---|
-| 2026-08-25 | ≈ the 8.2 L waterline (top-up mount) | 1 → **8.2 L** · 2/3/4 → record when observed (~+0.6 L/point est.) | 20.2 | Dip test: all 4 points step cleanly (≈50/100/200/400 Hz). Live in tank: 50.5 Hz = 1/4 at just-topped-up level. |
+| 2026-08-25 | ≈ the 8.2 L waterline (top-up mount) | 1 → **8.2 L** · 2 → ≈8.9 L (interpolated) · 3 → **9.7 L** · 4 → ≈10.4 L (extrapolated — above nominal 10 L full, may never wet) | 20.2 | Dip test: all 4 points step cleanly (≈50/100/200/400 Hz). Live in tank: 50.5 Hz = 1/4 at just-topped-up level. Spacing ≈ 0.75 L/point. |
 
 ### Level strip: mount test + threshold
 
