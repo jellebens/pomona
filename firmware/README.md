@@ -52,6 +52,26 @@ arduino-cli monitor -p /dev/ttyACM0 -c baudrate=115200
 
 On Windows the port is `COMx` (check `arduino-cli board list`).
 
+## Versioning + deploying
+
+The firmware version (semver, single source of truth) lives in
+[`libraries/PomonaVersion/src/PomonaVersion.h`](libraries/PomonaVersion/src/PomonaVersion.h);
+every sketch prints it in its boot banner. **Deploy through
+[`deploy.ps1`](deploy.ps1)** (Windows PowerShell — the board's USB lands
+there), which auto-bumps the version on every deploy and then
+builds + flashes:
+
+```powershell
+.\deploy.ps1                     # patch bump, bringup -> COM6
+.\deploy.ps1 -Sketch levelprobe  # other sketch
+.\deploy.ps1 -Bump minor         # features; -Bump major for breaking
+.\deploy.ps1 -Bump none          # reflash without bumping
+```
+
+Commit the bumped `PomonaVersion.h` together with the change it ships.
+Flashing via the IDE skips the bump — use the script. The OTA flow (#243)
+will reuse the same version to decide whether an update is due.
+
 ## Secrets
 
 WiFi/MQTT credentials never go in git: copy

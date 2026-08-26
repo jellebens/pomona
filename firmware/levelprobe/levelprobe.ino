@@ -12,6 +12,7 @@
 // pin uses the internal pull-up).
 
 #include <PhotoLevelProbe.h>
+#include <PomonaVersion.h>
 
 const pin_size_t PIN_PROBE = 3;
 
@@ -22,7 +23,7 @@ void setup() {
   unsigned long t0 = millis();
   while (!Serial && millis() - t0 < 5000) {}
   Serial.println();
-  Serial.println("=== CQRSENYW003 level probe test (D3) ===");
+  Serial.println("=== CQRSENYW003 level probe test v" POMONA_FW_VERSION " (D3) ===");
   probe.begin();
 }
 
