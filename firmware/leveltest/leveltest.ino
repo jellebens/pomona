@@ -17,6 +17,7 @@
 
 #include <Wire.h>
 #include <GroveWaterLevel.h>
+#include <PomonaVersion.h>
 
 GroveWaterLevel level(Wire); // default threshold 100; tune with this dump
 
@@ -30,7 +31,7 @@ void setup() {
   unsigned long t0 = millis();
   while (!Serial && millis() - t0 < 5000) {}
   Serial.println();
-  Serial.println("=== Grove level strip raw dump (pad 1 = bottom) ===");
+  Serial.println("=== Grove level strip raw dump v" POMONA_FW_VERSION " (pad 1 = bottom) ===");
   Wire.begin();
 }
 

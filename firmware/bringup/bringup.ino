@@ -14,6 +14,7 @@
 #include <DallasTemperature.h>
 #include <GroveWaterLevel.h> // libraries/GroveWaterLevel (sketchbook = firmware/)
 #include <PhotoLevelProbe.h> // libraries/PhotoLevelProbe — CQRSENYW003 low-water ladder
+#include <PomonaVersion.h>   // libraries/PomonaVersion — bumped by deploy.ps1
 
 // ---- pins ------------------------------------------------------------
 const int PIN_TDS = A0;      // Grove TDS, powered from 3V3
@@ -101,7 +102,7 @@ void setup() {
   unsigned long t0 = millis();
   while (!Serial && millis() - t0 < 5000) {}
   Serial.println();
-  Serial.println("=== Pomona bring-up (docs/wiring.md) ===");
+  Serial.println("=== Pomona bring-up v" POMONA_FW_VERSION " (docs/wiring.md) ===");
 
   analogReadResolution(ADC_BITS);
   Wire.begin();

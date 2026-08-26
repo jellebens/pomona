@@ -49,8 +49,11 @@ QSPI; do this before anything else stores data there).
 2. **Production pull (tower):** the
    [Arduino_Portenta_OTA](https://github.com/arduino-libraries/Arduino_Portenta_OTA)
    library (works on the GIGA despite the name): firmware periodically
-   checks a version endpoint, downloads the `.ota` image over HTTP(S) into
-   QSPI, verifies, and the bootloader applies it on reboot. The image is
+   checks a version endpoint — comparing its own `POMONA_FW_VERSION`
+   (semver, `firmware/libraries/PomonaVersion`, auto-bumped by
+   `firmware/deploy.ps1` on every deploy) against the served version —
+   downloads the `.ota` image over HTTP(S) into QSPI, verifies, and the
+   bootloader applies it on reboot. The image is
    served from the cluster (a tiny HTTP server in `landingzones/pomona`,
    #221/#222 territory) — which puts firmware rollout on the same
    GitOps rails as everything else: merge → CI builds `.ota` → cluster
