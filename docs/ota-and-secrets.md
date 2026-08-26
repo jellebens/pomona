@@ -24,8 +24,8 @@ Threat model: home LAN; physical access to the unit = the owner. The real
 risks are secrets leaking through the repo, CI, or OTA artifacts.
 
 1. **Layer 1 — now (with #229):** secrets live in a gitignored
-   `firmware/*/arduino_secrets.h`; a committed `arduino_secrets.h.example`
-   documents the shape. Protects the repo, not the device.
+   `firmware/*/secrets.h`; a committed `secrets.h.example` documents the
+   shape. Protects the repo, not the device.
 2. **Layer 2 — target (#244):** a one-time **provisioning sketch** writes
    WiFi SSID/PSK and MQTT credentials into ATECC608A data slots; the real
    firmware reads them at boot. The sketch binary then contains **no
@@ -65,7 +65,7 @@ path documented as the recovery of last resort.
 ## Order of work
 
 1. #229 firmware v1 brings up WiFi/MQTT with Layer-1 secrets
-   (`arduino_secrets.h`, gitignored — plumbing already in `firmware/`).
+   (`secrets.h`, gitignored — plumbing already in `firmware/`).
 2. #243: bootloader + QSPI prep, dev push OTA working on the bench, then
    pull OTA from the cluster; full cycle proven before mounting.
 3. #244: ATECC608A provisioning sketch, firmware reads secrets from the

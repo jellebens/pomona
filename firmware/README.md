@@ -55,9 +55,9 @@ On Windows the port is `COMx` (check `arduino-cli board list`).
 ## Secrets
 
 WiFi/MQTT credentials never go in git: copy
-[`arduino_secrets.h.example`](arduino_secrets.h.example) into the sketch
-folder as `arduino_secrets.h` (gitignored) and fill it in. Target design
-moves them into the ATECC608A secure element — see
+[`secrets.h.example`](secrets.h.example) into the sketch folder as
+`secrets.h` (gitignored) and fill it in. Target design moves them into
+the ATECC608A secure element — see
 [docs/ota-and-secrets.md](../docs/ota-and-secrets.md).
 
 ## Calibration constants
