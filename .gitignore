@@ -220,3 +220,6 @@ __marimo__/
 # Firmware secrets (Layer 1 of docs/ota-and-secrets.md) — only the
 # .example template is committed
 secrets.h
+
+# Owner's local scratch sketches (contain WiFi credentials) — never commit
+firmware/pomena/
