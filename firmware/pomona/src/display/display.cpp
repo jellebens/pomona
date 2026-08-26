@@ -109,7 +109,7 @@ static void buildScreen() {
   lv_label_set_text(wifiIcon, LV_SYMBOL_WIFI " WiFi");
   lv_obj_set_style_text_color(wifiIcon, COL_BAD, 0);
   mqttIcon = lv_label_create(strip);
-  lv_label_set_text(mqttIcon, LV_SYMBOL_UPLOAD " MQTT");
+  lv_label_set_text(mqttIcon, LV_SYMBOL_ENVELOPE " MQTT");
   lv_obj_set_style_text_color(mqttIcon, COL_BAD, 0);
 
   // two tile rows: water on top, air + level below
