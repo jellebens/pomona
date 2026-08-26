@@ -52,6 +52,14 @@ arduino-cli monitor -p /dev/ttyACM0 -c baudrate=115200
 
 On Windows the port is `COMx` (check `arduino-cli board list`).
 
+## Secrets
+
+WiFi/MQTT credentials never go in git: copy
+[`arduino_secrets.h.example`](arduino_secrets.h.example) into the sketch
+folder as `arduino_secrets.h` (gitignored) and fill it in. Target design
+moves them into the ATECC608A secure element — see
+[docs/ota-and-secrets.md](../docs/ota-and-secrets.md).
+
 ## Calibration constants
 
 `EC_CAL_K`, `PH_V_NEUTRAL`, `PH_V_ACID` at the top of `bringup.ino` —
