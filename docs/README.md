@@ -11,6 +11,7 @@ Monitoring-first; automated control is deferred.
 | [design.md](design.md) | System choice, sensor loadout v1, monitoring architecture, open items |
 | [wiring.md](wiring.md) | Shared wiring rules, combined GIGA pin map, first power-on checklist |
 | [sensors/](sensors/README.md) | **One doc per sensor**: wiring, verification, calibration + recorded values, assumptions |
+| [mqtt.md](mqtt.md) | MQTT broker + `pomona/<zone>/<metric>` topic schema (proposed with #229, finalized with #222) |
 | [ota-and-secrets.md](ota-and-secrets.md) | Firmware security design: layered secret storage (gitignored → ATECC608A secure element) + OTA updates (dev push / production pull) |
 | [planting-plan.md](planting-plan.md) | The 30-pod tier layout, nutrient/pH targets, commissioning sequence, shopping list |
 | [seeding/](seeding/README.md) | Sowing and germination — shared sponge method, sowing order, per-crop docs |
