@@ -23,7 +23,8 @@ struct Tile {
   lv_obj_t *value;
 };
 
-static lv_obj_t *statusLabel;
+static lv_obj_t *wifiIcon; // header status strip: red down / green up
+static lv_obj_t *mqttIcon;
 static lv_obj_t *blankShield; // full-screen touch catcher while blanked
 static bool blanked = false;
 static Tile tWaterTemp, tEc, tPh, tLevel, tProbe;
@@ -34,6 +35,8 @@ static Tile tAirTemp, tRh, tPressure, tLux;
 #define COL_TEXT lv_color_hex(0xe8eef2)
 #define COL_DIM lv_color_hex(0x8a9aa8)
 #define COL_ACCENT lv_color_hex(0x4cc87a)
+#define COL_OK lv_color_hex(0x4cc87a)  // connected
+#define COL_BAD lv_color_hex(0xe05252) // disconnected
 
 // ---- screen construction ---------------------------------------------
 
@@ -91,9 +94,23 @@ static void buildScreen() {
   lv_obj_t *title = lv_label_create(header);
   lv_label_set_text(title, "Pomona");
   lv_obj_set_style_text_color(title, COL_ACCENT, 0);
-  statusLabel = lv_label_create(header);
-  lv_label_set_text(statusLabel, "WiFi --   MQTT --");
-  lv_obj_set_style_text_color(statusLabel, COL_DIM, 0);
+
+  // status strip, top-right: WiFi + MQTT icons, red down / green up
+  // (updated live by displayLinkStatus; version label stays bottom-right)
+  lv_obj_t *strip = lv_obj_create(header);
+  lv_obj_set_size(strip, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+  lv_obj_set_style_bg_opa(strip, LV_OPA_TRANSP, 0);
+  lv_obj_set_style_border_width(strip, 0, 0);
+  lv_obj_set_style_pad_all(strip, 0, 0);
+  lv_obj_set_style_pad_column(strip, 16, 0);
+  lv_obj_clear_flag(strip, LV_OBJ_FLAG_SCROLLABLE);
+  lv_obj_set_flex_flow(strip, LV_FLEX_FLOW_ROW);
+  wifiIcon = lv_label_create(strip);
+  lv_label_set_text(wifiIcon, LV_SYMBOL_WIFI " WiFi");
+  lv_obj_set_style_text_color(wifiIcon, COL_BAD, 0);
+  mqttIcon = lv_label_create(strip);
+  lv_label_set_text(mqttIcon, LV_SYMBOL_UPLOAD " MQTT");
+  lv_obj_set_style_text_color(mqttIcon, COL_BAD, 0);
 
   // two tile rows: water on top, air + level below
   lv_obj_t *row1 = makeRow(scr, 190);
@@ -191,7 +208,20 @@ void displayService() {
   displayBlankingService();
 }
 
-void displayUpdate(const Readings &r, bool wifiUp, bool mqttUp) {
+// Cheap enough to call every loop: styles are only written on change.
+void displayLinkStatus(bool wifiUp, bool mqttUp) {
+  static int lastWifi = -1, lastMqtt = -1;
+  if ((int)wifiUp != lastWifi) {
+    lastWifi = wifiUp;
+    lv_obj_set_style_text_color(wifiIcon, wifiUp ? COL_OK : COL_BAD, 0);
+  }
+  if ((int)mqttUp != lastMqtt) {
+    lastMqtt = mqttUp;
+    lv_obj_set_style_text_color(mqttIcon, mqttUp ? COL_OK : COL_BAD, 0);
+  }
+}
+
+void displayUpdate(const Readings &r) {
   setFloat(tWaterTemp, r.waterTempOk, r.waterTempC, 1);
   setFloat(tEc, true, r.ecMsCm, 2);
   // pH: uncalibrated -> show raw probe voltage so bench work has a number
@@ -210,11 +240,4 @@ void displayUpdate(const Readings &r, bool wifiUp, bool mqttUp) {
   setFloat(tRh, r.bmeOk, r.humidityPct, 1);
   setFloat(tPressure, r.bmeOk, r.pressureHpa, 1);
   setFloat(tLux, r.luxOk, r.lux, 0);
-
-  char status[48];
-  snprintf(status, sizeof(status), "WiFi %s   MQTT %s", wifiUp ? "OK" : "--",
-           mqttUp ? "OK" : "--");
-  lv_label_set_text(statusLabel, status);
-  lv_obj_set_style_text_color(statusLabel,
-                              (wifiUp && mqttUp) ? COL_ACCENT : COL_DIM, 0);
 }

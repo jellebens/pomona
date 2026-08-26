@@ -16,6 +16,7 @@
 #include <WiFi.h>
 #include <ArduinoMqttClient.h>
 #include <PomonaVersion.h>
+#include <mbed.h> // Watchdog kicks around blocking WiFi attempts
 
 static WiFiClient wifiClient;
 static MqttClient mqtt(wifiClient);
@@ -39,19 +40,93 @@ static void onMqttMessage(int /*messageSize*/) {
 bool wifiConnected() { return WiFi.status() == WL_CONNECTED; }
 bool mqttConnected() { return mqtt.connected(); }
 
+// ---- WiFi diagnostics (field bug: silent connect failures) -----------
+
+static const char *wlStatusName(int s) {
+  switch (s) {
+    case WL_CONNECTED: return "CONNECTED";
+    case WL_NO_SHIELD: return "NO_SHIELD/NO_MODULE";
+    case WL_IDLE_STATUS: return "IDLE";
+    case WL_NO_SSID_AVAIL: return "NO_SSID_AVAIL";
+    case WL_SCAN_COMPLETED: return "SCAN_COMPLETED";
+    case WL_CONNECT_FAILED: return "CONNECT_FAILED";
+    case WL_CONNECTION_LOST: return "CONNECTION_LOST";
+    case WL_DISCONNECTED: return "DISCONNECTED";
+    default: return "?";
+  }
+}
+
+// One-time module/firmware report at boot. On the GIGA the CYW4343W WiFi
+// firmware lives in a QSPI partition; if that partition was never
+// provisioned the core reports version "v0.0.0" ("" = no module at all)
+// and every scan/connect fails — detect it and say exactly what to run.
+static void wifiDiagnostics() {
+  const char *fw = WiFi.firmwareVersion();
+  int s = WiFi.status();
+  Serial.print("WiFi: firmware ");
+  Serial.print((fw && fw[0]) ? fw : "(none — no module?)");
+  Serial.print(", status ");
+  Serial.print(s);
+  Serial.print(" (");
+  Serial.print(wlStatusName(s));
+  Serial.println(")");
+  if (!fw || !fw[0] || strcmp(fw, "v0.0.0") == 0) {
+    Serial.println("WiFi: !! WiFi firmware missing/unprovisioned — run the");
+    Serial.println("WiFi: !! one-time STM32H747_System -> WiFiFirmwareUpdater");
+    Serial.println("WiFi: !! sketch over USB, then reflash this firmware.");
+  }
+}
+
+// After every attempt failed, scan once: distinguishes "radio dead / no
+// firmware" (0 networks) from "our SSID not visible" from "visible but
+// join refused" (passphrase/band).
+static void wifiScanReport() {
+  mbed::Watchdog::get_instance().kick(); // scan blocks a few seconds
+  int8_t n = WiFi.scanNetworks();
+  if (n <= 0) {
+    Serial.println("WiFi: scan found NO networks — antenna on the UFL "
+                   "connector? WiFi firmware provisioned?");
+    return;
+  }
+  bool seen = false;
+  for (int8_t i = 0; i < n; i++)
+    if (strcmp(WiFi.SSID(i), SECRET_WIFI_SSID) == 0) seen = true;
+  Serial.print("WiFi: scan saw ");
+  Serial.print(n);
+  Serial.print(" network(s); SSID \"" SECRET_WIFI_SSID "\" ");
+  Serial.println(seen ? "IS visible — join refused (passphrase? band?)"
+                      : "NOT visible (2.4 GHz off? hidden? out of range?)");
+}
+
 // ---- connect steps ---------------------------------------------------
 
 static bool connectWifi() {
-  Serial.print("WiFi: connecting to ");
-  Serial.println(SECRET_WIFI_SSID);
-  // blocking, but bounded well under WATCHDOG_TIMEOUT_MS
-  if (WiFi.begin(SECRET_WIFI_SSID, SECRET_WIFI_PASS) != WL_CONNECTED) {
-    Serial.println("WiFi: connect FAILED");
-    return false;
+  for (int attempt = 1; attempt <= WIFI_BEGIN_ATTEMPTS; attempt++) {
+    // each begin() blocks up to ~12 s (scan + 7 s connect timeout) —
+    // kick the 30 s watchdog per attempt, never during one
+    mbed::Watchdog::get_instance().kick();
+    Serial.print("WiFi: connecting to \"" SECRET_WIFI_SSID "\" (attempt ");
+    Serial.print(attempt);
+    Serial.print("/");
+    Serial.print(WIFI_BEGIN_ATTEMPTS);
+    Serial.println(")");
+    int rc = WiFi.begin(SECRET_WIFI_SSID, SECRET_WIFI_PASS);
+    if (rc == WL_CONNECTED) {
+      Serial.print("WiFi: connected, IP ");
+      Serial.print(WiFi.localIP());
+      Serial.print(", RSSI ");
+      Serial.print(WiFi.RSSI());
+      Serial.println(" dBm");
+      return true;
+    }
+    Serial.print("WiFi: attempt failed, status ");
+    Serial.print(rc);
+    Serial.print(" (");
+    Serial.print(wlStatusName(rc));
+    Serial.println(")");
   }
-  Serial.print("WiFi: connected, IP ");
-  Serial.println(WiFi.localIP());
-  return true;
+  wifiScanReport();
+  return false;
 }
 
 static bool connectMqtt() {
@@ -116,8 +191,9 @@ static void handleOtaPending() {
 // ---- public API ------------------------------------------------------
 
 void networkInit() {
-  // Nothing up-front: networkService() connects lazily, so the screen
-  // comes up immediately even with WiFi down.
+  // Boot-time diagnostics only; networkService() connects lazily, so the
+  // screen comes up immediately even with WiFi down.
+  wifiDiagnostics();
 }
 
 void networkService() {

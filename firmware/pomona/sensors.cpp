@@ -72,13 +72,28 @@ static float readPH(float &rawVolts) {
   return 6.86f + (rawVolts - PH_V_NEUTRAL) * slope;
 }
 
+// Absent-sensor re-probes are rate-limited to SENSOR_REINIT_MS: retrying
+// begin() every 5 s sweep spammed the log (the BH1750 driver prints a
+// NACK error per failed begin). Hot-plug is still picked up, just within
+// a minute instead of 5 s.
+static bool reprobeDue(uint32_t &lastAttemptMs) {
+  uint32_t now = millis();
+  if (lastAttemptMs != 0 && now - lastAttemptMs < SENSOR_REINIT_MS)
+    return false;
+  lastAttemptMs = now;
+  return true;
+}
+
 static bool tryBme() {
-  if (!bmeUp) bmeUp = bme.begin(ADDR_BME280, &Wire);
+  static uint32_t lastAttemptMs = 0;
+  if (!bmeUp && reprobeDue(lastAttemptMs))
+    bmeUp = bme.begin(ADDR_BME280, &Wire);
   return bmeUp;
 }
 
 static bool tryLux() {
-  if (!luxUp)
+  static uint32_t lastAttemptMs = 0;
+  if (!luxUp && reprobeDue(lastAttemptMs))
     luxUp = lux.begin(BH1750::CONTINUOUS_HIGH_RES_MODE, ADDR_BH1750, &Wire);
   return luxUp;
 }

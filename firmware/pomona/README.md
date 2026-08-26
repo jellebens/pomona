@@ -34,9 +34,20 @@ bumped by the deploy scripts — printed in the boot banner together with
 
 **Absent sensors are handled gracefully:** every sensor is optional at
 runtime — a missing sensor's metrics are skipped on MQTT, shown as `--` on
-screen, and its init is retried each sweep (hot-plug recovers without a
-reboot). The unit never hangs on missing hardware; a hardware watchdog
-(30 s) reboots it if anything does wedge.
+screen, and its init is re-probed every `SENSOR_REINIT_MS` (60 s — rate
+limited so an absent BH1750 doesn't spam NACK errors; hot-plug recovers
+without a reboot). The unit never hangs on missing hardware; a hardware
+watchdog (30 s) reboots it if anything does wedge.
+
+**Connectivity at a glance:** WiFi + MQTT status icons sit top-right on
+the screen — red = down, green = connected — updated live every loop
+(the version label stays bottom-right). Serial prints the WiFi firmware
+version + status at boot; a connect cycle tries `WiFi.begin` up to
+`WIFI_BEGIN_ATTEMPTS` (3) times with per-attempt status codes, then runs
+one scan to report whether the SSID is even visible. If the CYW4343W
+WiFi firmware partition was never provisioned (version reads `v0.0.0`)
+it prints the fix: run the one-time `STM32H747_System →
+WiFiFirmwareUpdater` sketch over USB.
 
 ## MQTT
 

@@ -41,7 +41,7 @@ void setup() {
   otaInit(); // capability probe; updates arrive via MQTT (network.cpp)
 
   sensorsRead(readings); // first sweep right away
-  displayUpdate(readings, wifiConnected(), mqttConnected());
+  displayUpdate(readings);
   lastReadMs = millis();
 }
 
@@ -50,11 +50,13 @@ void loop() {
 
   networkService(); // reconnect state machine + MQTT keepalive + OTA trigger
 
+  displayLinkStatus(wifiConnected(), mqttConnected()); // live status icons
+
   uint32_t now = millis();
   if (now - lastReadMs >= SENSOR_READ_MS) {
     lastReadMs = now;
     sensorsRead(readings); // blocking, worst case ~1.5 s (see sensors.h)
-    displayUpdate(readings, wifiConnected(), mqttConnected());
+    displayUpdate(readings);
   }
 
   if (mqttConnected() && now - lastPublishMs >= MQTT_PUBLISH_MS) {

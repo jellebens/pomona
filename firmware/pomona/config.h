@@ -29,6 +29,8 @@ const uint32_t SENSOR_READ_MS = 5000;       // sensor sweep + screen refresh
 const uint32_t MQTT_PUBLISH_MS = 30000;     // publish cadence (docs/mqtt.md)
 const uint32_t NET_RETRY_MIN_MS = 5000;     // reconnect backoff, doubles...
 const uint32_t NET_RETRY_MAX_MS = 60000;    // ...up to this cap
+const int WIFI_BEGIN_ATTEMPTS = 3;          // WiFi.begin tries per connect
+const uint32_t SENSOR_REINIT_MS = 60000;    // absent-sensor re-probe cadence
 const uint32_t WATCHDOG_TIMEOUT_MS = 30000; // hardware IWDG (max ~32 s)
 const uint32_t DISPLAY_BLANK_TIMEOUT_MS = 60000; // idle -> backlight off (#248)
 
