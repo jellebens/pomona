@@ -15,10 +15,10 @@
 #include <PomonaVersion.h> // libraries/PomonaVersion — bumped by deploy.ps1
 
 #include "config.h"
-#include "display.h"
-#include "network.h"
-#include "ota.h"
-#include "sensors.h"
+#include "src/display/display.h"
+#include "src/network/network.h"
+#include "src/ota/ota.h"
+#include "src/sensors/sensors.h"
 
 static Readings readings;
 static uint32_t lastReadMs = 0;

@@ -25,7 +25,10 @@ risks are secrets leaking through the repo, CI, or OTA artifacts.
 
 1. **Layer 1 — now (with #229):** secrets live in a gitignored
    `firmware/*/secrets.h`; a committed `secrets.h.example` documents the
-   shape. Protects the repo, not the device.
+   shape. Protects the repo, not the device. Since #251 `secrets.h`
+   holds ONLY the two passwords (`WIFI_PASS`, `MQTT_PASS`) — SSID and
+   MQTT host/port/user are non-secret and committed in the sketch's
+   `config.h`.
 2. **Layer 2 — target (#244):** a one-time **provisioning sketch** writes
    WiFi SSID/PSK and MQTT credentials into ATECC608A data slots; the real
    firmware reads them at boot. The sketch binary then contains **no

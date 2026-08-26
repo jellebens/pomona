@@ -5,13 +5,13 @@
 // docs/ota-and-secrets.md); #244 moves them into the ATECC608A.
 
 #include "network.h"
-#include "config.h"
-#include "ota.h"
+#include "../../config.h"
+#include "../ota/ota.h"
 
-#if !__has_include("secrets.h")
-#error "Copy firmware/secrets.h.example to firmware/pomona/secrets.h and fill in credentials (docs/ota-and-secrets.md, Layer 1)"
+#if !__has_include("../../secrets.h")
+#error "Copy firmware/secrets.h.example to firmware/pomona/secrets.h and fill in the two passwords (docs/ota-and-secrets.md, Layer 1)"
 #endif
-#include "secrets.h"
+#include "../../secrets.h"
 
 #include <WiFi.h>
 #include <ArduinoMqttClient.h>
@@ -90,10 +90,10 @@ static void wifiScanReport() {
   }
   bool seen = false;
   for (int8_t i = 0; i < n; i++)
-    if (strcmp(WiFi.SSID(i), SECRET_WIFI_SSID) == 0) seen = true;
+    if (strcmp(WiFi.SSID(i), WIFI_SSID) == 0) seen = true;
   Serial.print("WiFi: scan saw ");
   Serial.print(n);
-  Serial.print(" network(s); SSID \"" SECRET_WIFI_SSID "\" ");
+  Serial.print(" network(s); SSID \"" WIFI_SSID "\" ");
   Serial.println(seen ? "IS visible — join refused (passphrase? band?)"
                       : "NOT visible (2.4 GHz off? hidden? out of range?)");
 }
@@ -105,12 +105,12 @@ static bool connectWifi() {
     // each begin() blocks up to ~12 s (scan + 7 s connect timeout) —
     // kick the 30 s watchdog per attempt, never during one
     mbed::Watchdog::get_instance().kick();
-    Serial.print("WiFi: connecting to \"" SECRET_WIFI_SSID "\" (attempt ");
+    Serial.print("WiFi: connecting to \"" WIFI_SSID "\" (attempt ");
     Serial.print(attempt);
     Serial.print("/");
     Serial.print(WIFI_BEGIN_ATTEMPTS);
     Serial.println(")");
-    int rc = WiFi.begin(SECRET_WIFI_SSID, SECRET_WIFI_PASS);
+    int rc = WiFi.begin(WIFI_SSID, WIFI_PASS);
     if (rc == WL_CONNECTED) {
       Serial.print("WiFi: connected, IP ");
       Serial.print(WiFi.localIP());
@@ -131,7 +131,7 @@ static bool connectWifi() {
 
 static bool connectMqtt() {
   mqtt.setId(MQTT_CLIENT_ID);
-  mqtt.setUsernamePassword(SECRET_MQTT_USER, SECRET_MQTT_PASS);
+  mqtt.setUsernamePassword(MQTT_USER, MQTT_PASS);
 
   // last will: broker flips the retained status to offline if we vanish
   mqtt.beginWill(TOPIC_UNIT_STATUS, true, 1);
@@ -139,10 +139,10 @@ static bool connectMqtt() {
   mqtt.endWill();
 
   Serial.print("MQTT: connecting to ");
-  Serial.print(SECRET_MQTT_HOST);
+  Serial.print(MQTT_HOST);
   Serial.print(":");
-  Serial.println(SECRET_MQTT_PORT);
-  if (!mqtt.connect(SECRET_MQTT_HOST, SECRET_MQTT_PORT)) {
+  Serial.println(MQTT_PORT);
+  if (!mqtt.connect(MQTT_HOST, MQTT_PORT)) {
     Serial.print("MQTT: connect FAILED, error ");
     Serial.println(mqtt.connectError());
     return false;

@@ -95,10 +95,12 @@ MQTT-triggered OTA slice ships with [`pomona`](pomona/README.md).
 
 ## Secrets
 
-WiFi/MQTT credentials never go in git: copy
+Passwords never go in git: copy
 [`secrets.h.example`](secrets.h.example) into the sketch folder as
-`secrets.h` (gitignored) and fill it in. Target design moves them into
-the ATECC608A secure element — see
+`secrets.h` (gitignored) and fill in `WIFI_PASS` + `MQTT_PASS` — that is
+all it holds since #251; the non-secret connection settings (SSID, MQTT
+host/port/user) are committed in the sketch's `config.h`. Target design
+moves the passwords into the ATECC608A secure element — see
 [docs/ota-and-secrets.md](../docs/ota-and-secrets.md).
 
 ## Calibration constants

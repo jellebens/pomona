@@ -13,15 +13,18 @@ Micro UFL connector — without it there is no WiFi
 
 ## Architecture / file layout
 
+One module per folder under `src/` (Arduino compiles the sketch root +
+`src/**`; entry point + config + secrets stay at the root):
+
 | File | Role |
 |---|---|
 | [`pomona.ino`](pomona.ino) | Orchestration: watchdog, sensor sweep every 5 s, publish every 30 s, LVGL service |
-| [`config.h`](config.h) | Pins, ADC, I²C addresses, intervals, blank timeout, MQTT client id + topics |
-| [`sensors.h/.cpp`](sensors.h) | All v1 sensors → `Readings` struct with per-sensor validity flags |
-| [`network.h/.cpp`](network.h) | WiFi + MQTT connect, exponential-backoff reconnect, publishing, OTA trigger |
-| [`display.h/.cpp`](display.h) | LVGL current-readings screen, version bottom-right, idle blanking |
-| [`ota.h/.cpp`](ota.h) | Arduino_Portenta_OTA download-and-apply (basic #243 slice) |
-| `secrets.h` | WiFi/MQTT credentials — **gitignored**, see below |
+| [`config.h`](config.h) | Pins, ADC, I²C addresses, intervals, blank timeout, WiFi SSID + MQTT host/port/user, topics |
+| [`src/sensors/`](src/sensors/sensors.h) | All v1 sensors → `Readings` struct with per-sensor validity flags |
+| [`src/network/`](src/network/network.h) | WiFi + MQTT connect, exponential-backoff reconnect, publishing, OTA trigger |
+| [`src/display/`](src/display/display.h) | LVGL current-readings screen, version bottom-right, idle blanking |
+| [`src/ota/`](src/ota/ota.h) | Arduino_Portenta_OTA download-and-apply (basic #243 slice) |
+| `secrets.h` | ONLY the two passwords (`WIFI_PASS`, `MQTT_PASS`) — **gitignored**, see below |
 
 Shared libraries (via `--libraries ../libraries` / sketchbook = `firmware/`):
 [`PomonaVersion`](../libraries/PomonaVersion/src/PomonaVersion.h) (semver,
@@ -92,10 +95,12 @@ running — only the display sleeps. Uses LVGL's inactivity clock
 ## Secrets
 
 Copy [`../secrets.h.example`](../secrets.h.example) into this folder as
-`secrets.h` and fill in WiFi + MQTT credentials. `secrets.h` is gitignored
-repo-wide — never commit it. This is Layer 1 of
+`secrets.h` and fill in the **two passwords** (`WIFI_PASS`, `MQTT_PASS`)
+— everything non-secret (SSID, MQTT host/port/user) lives in
+[`config.h`](config.h) since #251. `secrets.h` is gitignored repo-wide —
+never commit it. This is Layer 1 of
 [docs/ota-and-secrets.md](../../docs/ota-and-secrets.md); #244 moves the
-values into the ATECC608A secure element.
+passwords into the ATECC608A secure element.
 
 ## Build & deploy
 

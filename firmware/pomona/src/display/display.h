@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include "sensors.h"
+#include "../sensors/sensors.h"
 
 void displayInit(); // bring up panel + touch + backlight + build the screen
 void displayService(); // call every loop: lv_timer_handler + idle blanking
