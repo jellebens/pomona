@@ -33,13 +33,10 @@ const uint8_t ADDR_BME280 = 0x76; // strapped! 0x77 belongs to the level strip
 // threshold below once calibrated per docs/wiring.md.
 const uint8_t LEVEL_WET_THRESHOLD = GroveWaterLevel::DEFAULT_WET_THRESHOLD;
 
-// ---- calibration (see docs/sensors/) ---------------------------------
-// EC: single-point against 1413 uS/cm fluid. 1.0 = uncalibrated.
-const float EC_CAL_K = 1.0f;
-// pH: two-point. Record the measured voltages in the buffers; NAN = not yet
-// calibrated, sketch prints raw voltage only.
-const float PH_V_NEUTRAL = NAN; // volts in pH 6.86 buffer
-const float PH_V_ACID = NAN;    // volts in pH 4.01 buffer
+// ---- calibration -----------------------------------------------------
+// EC_CAL_K, PH_V_NEUTRAL, PH_V_ACID moved to the shared header with #229;
+// record calibration values THERE (procedures: docs/sensors/).
+#include <PomonaCalibration.h> // libraries/PomonaCalibration
 
 Adafruit_BME280 bme;
 BH1750 lux(0x23);
