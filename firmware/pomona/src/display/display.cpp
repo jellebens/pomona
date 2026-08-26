@@ -6,7 +6,7 @@
 // scaled up via transform_scale instead of larger font binaries.
 
 #include "display.h"
-#include "config.h"
+#include "../../config.h"
 
 #include <Arduino_GigaDisplay.h> // GigaDisplayBacklight (blanking, #248)
 #include <Arduino_H7_Video.h>

@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include "sensors.h"
+#include "../sensors/sensors.h"
 
 void networkInit();
 void networkService(); // call every loop: reconnect state machine + poll

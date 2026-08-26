@@ -1,8 +1,9 @@
-// Pomona firmware v1 — application configuration (Trello #229).
+// Pomona firmware v1 — application configuration (Trello #229/#251).
 //
-// Pins, ADC, I2C addresses, timing and MQTT settings for the pomona sketch.
-// Calibration constants live in <PomonaCalibration.h> (shared with bringup);
-// WiFi/MQTT credentials in secrets.h (gitignored — copy
+// Pins, ADC, I2C addresses, timing, WiFi/MQTT connection settings and
+// topics for the pomona sketch. Calibration constants live in
+// <PomonaCalibration.h> (shared with bringup); ONLY the two passwords
+// (WIFI_PASS, MQTT_PASS) live in secrets.h (gitignored — copy
 // firmware/secrets.h.example here and fill it in).
 
 #pragma once
@@ -33,6 +34,12 @@ const int WIFI_BEGIN_ATTEMPTS = 3;          // WiFi.begin tries per connect
 const uint32_t SENSOR_REINIT_MS = 60000;    // absent-sensor re-probe cadence
 const uint32_t WATCHDOG_TIMEOUT_MS = 30000; // hardware IWDG (max ~32 s)
 const uint32_t DISPLAY_BLANK_TIMEOUT_MS = 60000; // idle -> backlight off (#248)
+
+// ---- WiFi / MQTT connection (non-secret — passwords in secrets.h) ----
+#define WIFI_SSID "B3ns-2-4"
+#define MQTT_HOST "mqtt.lab.local" // in-cluster EMQX (docs/mqtt.md)
+#define MQTT_PORT 1883
+#define MQTT_USER "pomona"
 
 // ---- MQTT topics — pomona/<zone>/<metric> (docs/mqtt.md, final w/ #222)
 const char MQTT_CLIENT_ID[] = "pomona-giga";

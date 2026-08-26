@@ -6,7 +6,7 @@
 // plugging a sensor in later recovers without a reboot.
 
 #include "sensors.h"
-#include "config.h"
+#include "../../config.h"
 
 #include <Wire.h>
 #include <Adafruit_BME280.h>
