@@ -1,0 +1,243 @@
+// Pomona firmware v1 — display module implementation (Trello #229).
+//
+// LVGL 9 on Arduino_H7_Video (core-bundled; it also supplies lv_conf.h) +
+// Arduino_GigaDisplayTouch (auto-registers the LVGL pointer indev). Only
+// Montserrat 14 is enabled in the core's lv_conf, so value labels are
+// scaled up via transform_scale instead of larger font binaries.
+
+#include "display.h"
+#include "../../config.h"
+
+#include <Arduino_GigaDisplay.h> // GigaDisplayBacklight (blanking, #248)
+#include <Arduino_H7_Video.h>
+#include <Arduino_GigaDisplayTouch.h>
+#include <lvgl.h>
+#include <PomonaVersion.h>
+
+static Arduino_H7_Video panel(800, 480, GigaDisplayShield);
+static Arduino_GigaDisplayTouch touchDetector;
+static GigaDisplayBacklight backlight;
+
+// one tile per metric
+struct Tile {
+  lv_obj_t *value;
+};
+
+static lv_obj_t *wifiIcon; // header status strip: red down / green up
+static lv_obj_t *mqttIcon;
+static lv_obj_t *blankShield; // full-screen touch catcher while blanked
+static bool blanked = false;
+static Tile tWaterTemp, tEc, tPh, tLevel, tProbe;
+static Tile tAirTemp, tRh, tPressure, tLux;
+
+#define COL_BG lv_color_hex(0x101418)
+#define COL_TILE lv_color_hex(0x1c242c)
+#define COL_TEXT lv_color_hex(0xe8eef2)
+#define COL_DIM lv_color_hex(0x8a9aa8)
+#define COL_ACCENT lv_color_hex(0x4cc87a)
+#define COL_OK lv_color_hex(0x4cc87a)  // connected
+#define COL_BAD lv_color_hex(0xe05252) // disconnected
+
+// ---- screen construction ---------------------------------------------
+
+static Tile makeTile(lv_obj_t *parent, const char *caption) {
+  lv_obj_t *card = lv_obj_create(parent);
+  lv_obj_set_style_bg_color(card, COL_TILE, 0);
+  lv_obj_set_style_border_width(card, 0, 0);
+  lv_obj_set_style_radius(card, 10, 0);
+  lv_obj_set_style_pad_all(card, 8, 0);
+  lv_obj_clear_flag(card, LV_OBJ_FLAG_SCROLLABLE);
+  lv_obj_set_flex_grow(card, 1);
+  lv_obj_set_height(card, lv_pct(100));
+
+  lv_obj_t *cap = lv_label_create(card);
+  lv_label_set_text(cap, caption);
+  lv_obj_set_style_text_color(cap, COL_DIM, 0);
+  lv_obj_align(cap, LV_ALIGN_TOP_LEFT, 0, 0);
+
+  Tile t;
+  t.value = lv_label_create(card);
+  lv_label_set_text(t.value, "--");
+  lv_obj_set_style_text_color(t.value, COL_TEXT, 0);
+  // 2x scale: only Montserrat 14 is compiled in (see file header)
+  lv_obj_set_style_transform_scale(t.value, 512, 0);
+  lv_obj_set_style_transform_pivot_x(t.value, lv_pct(50), 0);
+  lv_obj_set_style_transform_pivot_y(t.value, lv_pct(50), 0);
+  lv_obj_align(t.value, LV_ALIGN_CENTER, 0, 10);
+  return t;
+}
+
+static lv_obj_t *makeRow(lv_obj_t *parent, int heightPx) {
+  lv_obj_t *row = lv_obj_create(parent);
+  lv_obj_set_size(row, lv_pct(100), heightPx);
+  lv_obj_set_style_bg_opa(row, LV_OPA_TRANSP, 0);
+  lv_obj_set_style_border_width(row, 0, 0);
+  lv_obj_set_style_pad_all(row, 0, 0);
+  lv_obj_set_style_pad_column(row, 10, 0);
+  lv_obj_clear_flag(row, LV_OBJ_FLAG_SCROLLABLE);
+  lv_obj_set_flex_flow(row, LV_FLEX_FLOW_ROW);
+  return row;
+}
+
+static void buildScreen() {
+  lv_obj_t *scr = lv_screen_active();
+  lv_obj_set_style_bg_color(scr, COL_BG, 0);
+  lv_obj_set_style_pad_all(scr, 10, 0);
+  lv_obj_set_style_pad_row(scr, 10, 0);
+  lv_obj_clear_flag(scr, LV_OBJ_FLAG_SCROLLABLE);
+  lv_obj_set_flex_flow(scr, LV_FLEX_FLOW_COLUMN);
+
+  // header: title left, WiFi/MQTT status right
+  lv_obj_t *header = makeRow(scr, 36);
+  lv_obj_set_flex_align(header, LV_FLEX_ALIGN_SPACE_BETWEEN,
+                        LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
+  lv_obj_t *title = lv_label_create(header);
+  lv_label_set_text(title, "Pomona");
+  lv_obj_set_style_text_color(title, COL_ACCENT, 0);
+
+  // status strip, top-right: WiFi + MQTT icons, red down / green up
+  // (updated live by displayLinkStatus; version label stays bottom-right)
+  lv_obj_t *strip = lv_obj_create(header);
+  lv_obj_set_size(strip, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+  lv_obj_set_style_bg_opa(strip, LV_OPA_TRANSP, 0);
+  lv_obj_set_style_border_width(strip, 0, 0);
+  lv_obj_set_style_pad_all(strip, 0, 0);
+  lv_obj_set_style_pad_column(strip, 16, 0);
+  lv_obj_clear_flag(strip, LV_OBJ_FLAG_SCROLLABLE);
+  lv_obj_set_flex_flow(strip, LV_FLEX_FLOW_ROW);
+  wifiIcon = lv_label_create(strip);
+  lv_label_set_text(wifiIcon, LV_SYMBOL_WIFI " WiFi");
+  lv_obj_set_style_text_color(wifiIcon, COL_BAD, 0);
+  mqttIcon = lv_label_create(strip);
+  lv_label_set_text(mqttIcon, LV_SYMBOL_UPLOAD " MQTT");
+  lv_obj_set_style_text_color(mqttIcon, COL_BAD, 0);
+
+  // two tile rows: water on top, air + level below
+  lv_obj_t *row1 = makeRow(scr, 190);
+  tWaterTemp = makeTile(row1, "water temp  degC");
+  tEc = makeTile(row1, "EC  mS/cm");
+  tPh = makeTile(row1, "pH");
+  tProbe = makeTile(row1, "probe  pts/4");
+
+  lv_obj_t *row2 = makeRow(scr, 190);
+  tAirTemp = makeTile(row2, "air temp  degC");
+  tRh = makeTile(row2, "humidity  %");
+  tPressure = makeTile(row2, "pressure  hPa");
+  tLux = makeTile(row2, "light  lux");
+  tLevel = makeTile(row2, "level  %");
+
+  // firmware version, bottom-right (dynamic from PomonaVersion.h)
+  lv_obj_t *ver = lv_label_create(scr);
+  lv_obj_add_flag(ver, LV_OBJ_FLAG_IGNORE_LAYOUT); // scr is a flex column
+  lv_label_set_text(ver, "v" POMONA_FW_VERSION);
+  lv_obj_set_style_text_color(ver, COL_DIM, 0);
+  lv_obj_align(ver, LV_ALIGN_BOTTOM_RIGHT, 0, 0);
+}
+
+// ---- screen blanking (#248) ------------------------------------------
+// After DISPLAY_BLANK_TIMEOUT_MS without touch input the backlight goes
+// off and an opaque full-screen shield on the top layer catches input.
+// The touch that wakes the screen lands on the shield, never on the UI
+// underneath. Everything else (sensors, MQTT, OTA) keeps running.
+
+static void blankShieldEvent(lv_event_t *e) {
+  lv_event_code_t code = lv_event_get_code(e);
+  if (code == LV_EVENT_PRESSED) {
+    backlight.set(100); // wake on touch-down
+  } else if (code == LV_EVENT_RELEASED) {
+    lv_obj_add_flag(blankShield, LV_OBJ_FLAG_HIDDEN); // gesture fully eaten
+    blanked = false;
+  }
+}
+
+static void makeBlankShield() {
+  blankShield = lv_obj_create(lv_layer_top());
+  lv_obj_set_size(blankShield, lv_pct(100), lv_pct(100));
+  lv_obj_set_style_bg_color(blankShield, lv_color_black(), 0);
+  lv_obj_set_style_bg_opa(blankShield, LV_OPA_COVER, 0);
+  lv_obj_set_style_border_width(blankShield, 0, 0);
+  lv_obj_set_style_radius(blankShield, 0, 0);
+  lv_obj_clear_flag(blankShield, LV_OBJ_FLAG_SCROLLABLE);
+  lv_obj_add_flag(blankShield, LV_OBJ_FLAG_HIDDEN);
+  lv_obj_add_event_cb(blankShield, blankShieldEvent, LV_EVENT_ALL, NULL);
+}
+
+static void displayBlankingService() {
+  if (!blanked &&
+      lv_display_get_inactive_time(NULL) > DISPLAY_BLANK_TIMEOUT_MS) {
+    blanked = true;
+    lv_obj_remove_flag(blankShield, LV_OBJ_FLAG_HIDDEN);
+    backlight.set(0);
+  }
+}
+
+// ---- value formatting ------------------------------------------------
+
+static void setFloat(Tile &t, bool ok, float v, uint8_t decimals) {
+  if (!ok || isnan(v)) {
+    lv_label_set_text(t.value, "--");
+    return;
+  }
+  char buf[16];
+  snprintf(buf, sizeof(buf), "%.*f", decimals, (double)v);
+  lv_label_set_text(t.value, buf);
+}
+
+static void setInt(Tile &t, bool ok, int v) {
+  if (!ok) {
+    lv_label_set_text(t.value, "--");
+    return;
+  }
+  char buf[12];
+  snprintf(buf, sizeof(buf), "%d", v);
+  lv_label_set_text(t.value, buf);
+}
+
+// ---- public API ------------------------------------------------------
+
+void displayInit() {
+  panel.begin(); // registers the LVGL display + tick
+  touchDetector.begin(); // registers the LVGL pointer indev
+  backlight.begin(100);
+  buildScreen();
+  makeBlankShield();
+}
+
+void displayService() {
+  lv_timer_handler();
+  displayBlankingService();
+}
+
+// Cheap enough to call every loop: styles are only written on change.
+void displayLinkStatus(bool wifiUp, bool mqttUp) {
+  static int lastWifi = -1, lastMqtt = -1;
+  if ((int)wifiUp != lastWifi) {
+    lastWifi = wifiUp;
+    lv_obj_set_style_text_color(wifiIcon, wifiUp ? COL_OK : COL_BAD, 0);
+  }
+  if ((int)mqttUp != lastMqtt) {
+    lastMqtt = mqttUp;
+    lv_obj_set_style_text_color(mqttIcon, mqttUp ? COL_OK : COL_BAD, 0);
+  }
+}
+
+void displayUpdate(const Readings &r) {
+  setFloat(tWaterTemp, r.waterTempOk, r.waterTempC, 1);
+  setFloat(tEc, true, r.ecMsCm, 2);
+  // pH: uncalibrated -> show raw probe voltage so bench work has a number
+  if (r.phOk) {
+    setFloat(tPh, true, r.ph, 2);
+  } else if (!isnan(r.phRawV)) {
+    char buf[16];
+    snprintf(buf, sizeof(buf), "%.3fV", (double)r.phRawV);
+    lv_label_set_text(tPh.value, buf);
+  } else {
+    lv_label_set_text(tPh.value, "--");
+  }
+  setInt(tProbe, r.probePoints >= 0, r.probePoints);
+  setInt(tLevel, r.levelOk && r.levelPct >= 0, r.levelPct);
+  setFloat(tAirTemp, r.bmeOk, r.airTempC, 1);
+  setFloat(tRh, r.bmeOk, r.humidityPct, 1);
+  setFloat(tPressure, r.bmeOk, r.pressureHpa, 1);
+  setFloat(tLux, r.luxOk, r.lux, 0);
+}

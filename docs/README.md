@@ -9,23 +9,39 @@ Monitoring-first; automated control is deferred.
 | Doc | What's in it |
 |---|---|
 | [design.md](design.md) | System choice, sensor loadout v1, monitoring architecture, open items |
+| [wiring.md](wiring.md) | Shared wiring rules, combined GIGA pin map, first power-on checklist |
+| [sensors/](sensors/README.md) | **One doc per sensor**: wiring, verification, calibration + recorded values, assumptions |
+| [mqtt.md](mqtt.md) | MQTT broker + `pomona/<zone>/<metric>` topic schema (proposed with #229, finalized with #222) |
+| [ota-and-secrets.md](ota-and-secrets.md) | Firmware security design: layered secret storage (gitignored → ATECC608A secure element) + OTA updates (dev push / production pull) |
 | [planting-plan.md](planting-plan.md) | The 30-pod tier layout, nutrient/pH targets, commissioning sequence, shopping list |
 | [seeding/](seeding/README.md) | Sowing and germination — shared sponge method, sowing order, per-crop docs |
-| [seeding/poc.md](seeding/poc.md) | **Start here** — the 5-sponge proof of concept and the exit criteria gating full sowing |
+| [seeding/lettuce.md](seeding/lettuce.md) | Iceberg lettuce — germinated, seedling care, and why it reaches the tower first |
 | [seeding/strawberry.md](seeding/strawberry.md) | Alpine strawberry 'Rote Baron Solemacher' from seed — light-germinator sowing, transplant, light deadline |
+| [seeding/poc.md](seeding/poc.md) | The 5-sponge proof of concept — superseded for strawberry, exit criteria still live |
 
-## Current state (2026-07-29)
+## Current state (2026-08-03)
 
 - Tower assembled; reservoir holds **7.5 L plain demineralised water** — no
   nutrients yet, so EC ~0 and pH is unbuffered and meaningless to measure.
-- **Strawberry sown 2026-07-29** — 12 sponges, ~5 seeds each, superseding the
-  3-sponge PoC allocation. Germination expected 12–28 Aug, transplant window
-  ≈9–23 Sept. See [seeding/strawberry.md](seeding/strawberry.md).
-- **Two hard dates follow from that:** pH-Down + EC calibration fluid in hand
-  by **~1 Sept** (a dosed reservoir is a precondition for transplanting), and
-  the grow light running by **mid-Sept**. Both are #220 purchases still
-  outstanding.
-- Sensors not yet wired; no landing zone or Argo app yet.
+- **✅ Both crops germinated 2026-08-07**, from an early-August sowing —
+  lettuce, and strawberry on **day 4** against a 14–30 day book figure (the
+  28 °C ambient accelerated it). Strawberry is 12 sponges × ~5 seeds,
+  superseding the 3-sponge PoC allocation.
+- **Transplant windows: lettuce ≈21–28 Aug, strawberry ≈31 Aug – 14 Sept** —
+  both about two weeks earlier than planned.
+- **⚠ The critical path is now purchases, not plants.** pH-Down + EC
+  calibration fluid in hand by **~14 Aug** (an undosed reservoir means nothing
+  transplants), and the **grow light by end of August**, pulled forward from
+  mid-September because seedlings that raced up in a hot room stretch just as
+  fast in weak light. Both are #220 purchases still outstanding.
+- **Sensor bring-up in progress (#242, since 2026-08-25):** the first
+  sensor is live — the CQRSENYW003 photoelectric level probe is wired
+  (D3), dip-tested and calibrated as a top-up gauge (point 1 = 8.2 L,
+  point 3 = 9.7 L; ladder + caveats in
+  [sensors/level-probe.md](sensors/level-probe.md)). Remaining:
+  DS18B20, BME280 (⚠ SDO strap first), BH1750, TDS (awaits cal fluid),
+  pH (awaits buffers), optional Grove-strip through-wall test.
+- No landing zone or Argo app yet.
 
 Work is tracked on Trello (label **pomona**): #218 hardware inventory,
 #219 design/crops, #220 sensor plan/BOM, #221 gitops landing zone,
