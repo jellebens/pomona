@@ -74,13 +74,24 @@ screen). Building the `.ota` image and the version-endpoint pull
 automation (periodic check against `POMONA_FW_VERSION`, cluster-served
 images) stay on card #243.
 
-⚠ **One-time USB prereqs before OTA works on hardware** (owner-run, still
-pending on #243): update the bootloader (IDE: `STM32H747_System →
-STM32H747_manageBootloader`) and partition the QSPI flash
-(`STM32H747_System → QSPIFormat` — erases the QSPI). Until then the
-firmware logs `ota: NOT capable` at boot and refuses OTA requests —
+⚠ **One-time USB prereq before OTA works on hardware**: partition the QSPI
+flash (`STM32H747_System → QSPIFormat`; done on the bench unit 2026-08-27 —
+when re-running it answer **n** to reformatting partition 1 or you erase the
+WiFi firmware; the same sketch restores it, answer Y/Y). Until then the
+firmware logs `ota: NOT capable` at boot (bad/old bootloader) or
+`begin failed (-3)` (unformatted partition) and refuses OTA requests —
 everything else works normally. See
 [docs/ota-and-secrets.md](../../docs/ota-and-secrets.md).
+
+**Download size verification (bench lesson, 2026-08-27):** the mbed core's
+`download()` returns the HTTP *Content-Length*, not the bytes actually
+written — its `fwrite`s are unchecked, so a sick FAT (e.g. after a reset
+mid-write) yields a silently truncated file and `decompress failed (-5)`.
+The OTA module therefore stats `/fs/UPDATE.BIN.LZSS` after each download,
+compares it to the reported size (`ota: reported N bytes, on flash M`), and
+deletes + retries up to **`OTA_DOWNLOAD_ATTEMPTS`** (config.h) times. If
+every attempt is short (a deterministic `on flash 4096` means a corrupted
+OTA-partition FAT), reformat partition 2 with QSPIFormat and try again.
 
 ## Screen blanking (#248)
 

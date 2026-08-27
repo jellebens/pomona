@@ -34,6 +34,7 @@ const int WIFI_BEGIN_ATTEMPTS = 3;          // WiFi.begin tries per connect
 const uint32_t SENSOR_REINIT_MS = 60000;    // absent-sensor re-probe cadence
 const uint32_t WATCHDOG_TIMEOUT_MS = 30000; // hardware IWDG (max ~32 s)
 const uint32_t DISPLAY_BLANK_TIMEOUT_MS = 60000; // idle -> backlight off (#248)
+const int OTA_DOWNLOAD_ATTEMPTS = 3; // download+size-verify tries (see ota.cpp)
 
 // ---- WiFi / MQTT connection (non-secret — passwords in secrets.h) ----
 #define WIFI_SSID "B3ns-2-4"
