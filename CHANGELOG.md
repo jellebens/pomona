@@ -6,6 +6,44 @@ firmware semver from `firmware/libraries/PomonaVersion` (single source of
 truth, bumped by the deploy scripts). Tags `v<version>` mark each release
 merged to `master`.
 
+## [0.1.12] - 2026-08-27
+
+OTA release — over-the-air updates work end-to-end and untethered:
+v0.1.11 (wired serial watch) and v0.1.12 (no cable at all, owner-confirmed
+on screen) were both delivered via MQTT trigger → HTTP download →
+bootloader apply. The unit no longer needs USB for firmware updates.
+
+### Fixed
+- **OTA download size verification + retry** (#243, PR #35) — the mbed
+  core's `download()` returns the HTTP Content-Length while its file writes
+  go unchecked, so a truncated file surfaced later as
+  `decompress failed (-5)`. The OTA module now stats the stored file,
+  compares it to the reported size and deletes + retries
+  (`OTA_DOWNLOAD_ATTEMPTS`, config.h). A deterministic 4096-byte result
+  indicates a corrupted OTA-partition FAT — reformat via QSPIFormat
+  (runbook in the sketch README, including restoring the WiFi firmware if
+  partition 1 is accidentally erased).
+- **OTA watchdog starvation — the root cause** (#243, PR #36) —
+  Arduino_Portenta_OTA only feeds the watchdog if `setFeedWatchdogFunc`
+  callbacks are registered; without them the 1–2 minute decompress starved
+  the 30 s IWDG, silently resetting the device mid-apply (and those
+  mid-write resets were what corrupted the FAT). Callbacks are now
+  registered for both the OTA stages and the WiFi download path.
+
+### Changed
+- MQTT status icon on the screen now uses the envelope symbol (PR #34).
+
+### Infrastructure
+- `pomona` EMQX user granted least-privilege ACLs (`allow pomona/#`,
+  runtime; git DR mirror tracked separately) — without them the broker
+  silently dropped all unit publishes and rejected the OTA subscription.
+- QSPI flash partitioned on the bench unit (partition 2 = OTA). The
+  bootloader shipped on the board applies OTA images fine — no bootloader
+  update was needed.
+- Known wart: retained `pomona/unit/ota_result` still reads
+  `applying <url>` after a successful update — cross-check
+  `pomona/unit/fw_version`; success reporting is a future #243 slice.
+
 ## [0.1.4] - 2026-08-26
 
 First full monitoring release — the unit runs end-to-end: WiFi → MQTT →
