@@ -36,6 +36,13 @@ bool otaApplyFromUrl(const char *url, char *err, size_t errLen) {
   }
 
   Arduino_Portenta_OTA_QSPI ota(QSPI_FLASH_FATFS_MBR, 2);
+  // Without these callbacks the library's internal feedWatchdog() is a no-op
+  // and the ~1-2 min decompress starves the 30 s IWDG — the device resets
+  // mid-decompress with nothing staged (bench: "applying" then reboot into
+  // the OLD version). Register our kick for both the OTA stages and the
+  // socket download path.
+  ota.setFeedWatchdogFunc(kick);
+  WiFi.setFeedWatchdogFunc(kick);
   Arduino_Portenta_OTA::Error e = ota.begin();
   if (e != Arduino_Portenta_OTA::Error::None) {
     snprintf(err, errLen, "begin failed (%d)", (int)e);
