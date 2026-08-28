@@ -25,8 +25,9 @@ compensation from the [DS18B20](water-temp.md) (0.02/°C to 25 °C), scaled
 by `EC_CAL_K` in `PomonaCalibration` (shared by bringup + pomona).
 
 **Single-point calibration:** TDS probe AND DS18B20 tip together in a cup
-of the 1413 µS/cm fluid (~50 ml in a narrow glass; never dip in the
-bottle — contaminates the standard). Let the probe settle until the
+of the 1413 µS/cm fluid (**20 ml in a narrow vessel proved enough**,
+2026-08-28 — electrodes fully covered is the only requirement; never dip
+in the bottle — contaminates the standard). Let the probe settle until the
 reading is flat (~8 min; a gentle swirl dislodges electrode bubbles),
 then set `EC_CAL_K = 1.413 / reading`. Redo only if readings become
 suspicious.
