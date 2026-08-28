@@ -17,3 +17,9 @@ void displayShowMain(); // leave the boot screen, build + show the tiles UI
 void displayService(); // call every loop: lv_timer_handler + idle blanking
 void displayUpdate(const Readings &r); // refresh the metric tiles
 void displayLinkStatus(bool wifiUp, bool mqttUp); // call every loop
+
+// OTA progress view: full-screen "Updating firmware" with stage + countdown
+// (the OTA blocks the loop, so these render synchronously when called).
+void displayOtaScreen(const char *stage); // create the view / update the stage line
+void displayOtaTick(uint32_t elapsedS, int remainingEstS); // countdown line
+void displayRestoreMain(); // back to the tiles with the cached readings

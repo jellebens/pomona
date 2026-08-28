@@ -7,6 +7,7 @@
 #include "network.h"
 #include "../../config.h"
 #include "../ota/ota.h"
+#include "../display/display.h" // OTA progress screen restore on failure
 
 #if !__has_include("../../secrets.h")
 #error "Copy firmware/secrets.h.example to firmware/pomona/secrets.h and fill in the two passwords (docs/ota-and-secrets.md, Layer 1)"
@@ -203,6 +204,11 @@ static void handleOtaPending() {
       mqtt.print(err);
       mqtt.endMessage();
     }
+    char stage[128];
+    snprintf(stage, sizeof(stage), "update failed: %s", err);
+    displayOtaScreen(stage); // leave the reason visible a moment...
+    delay(4000);
+    displayRestoreMain(); // ...then back to the readings
   }
 }
 

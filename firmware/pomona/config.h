@@ -37,6 +37,7 @@ const uint32_t WATCHDOG_TIMEOUT_MS = 30000; // hardware IWDG (max ~32 s)
 const uint32_t DISPLAY_BLANK_TIMEOUT_MS = 60000; // idle -> backlight off (#248)
 const int OTA_DOWNLOAD_ATTEMPTS = 3; // download+size-verify tries (see ota.cpp)
 const uint32_t BOOT_SCREEN_HOLD_MS = 4000; // min time the boot screen stays readable
+const int OTA_EST_TOTAL_S = 240; // whole-OTA estimate driving the on-screen countdown
 
 // ---- WiFi / MQTT connection (non-secret — passwords in secrets.h) ----
 #define WIFI_SSID "B3ns-2-4"

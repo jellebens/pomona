@@ -31,6 +31,8 @@ static Tile tWaterTemp, tEc, tPh, tLevel, tProbe;
 static Tile tAirTemp, tRh, tPressure, tLux;
 static Readings lastReadings; // reapplied after screen rebuilds
 static int lastWifi = -1, lastMqtt = -1; // link icon change detection
+static lv_obj_t *otaStageLabel = nullptr; // OTA progress view (see below)
+static lv_obj_t *otaTimeLabel = nullptr;
 
 static void titleClicked(lv_event_t *e); // tap "Pomona" -> boot/info screen
 
@@ -220,6 +222,7 @@ void displayBootStatus(const char *line) {
 
 void displayShowMain() {
   bootStatusLabel = nullptr;
+  otaStageLabel = otaTimeLabel = nullptr;
   lv_obj_clean(lv_screen_active());
   buildScreen();
   if (!blankShield) makeBlankShield(); // created once, lives on the top layer
@@ -228,11 +231,67 @@ void displayShowMain() {
   lv_refr_now(NULL);
 }
 
+void displayRestoreMain() {
+  displayShowMain();
+  displayUpdate(lastReadings); // tiles show the latest sweep right away
+}
+
+// ---- OTA progress view ------------------------------------------------
+// The OTA apply blocks the main loop, so nothing pumps displayService while
+// it runs: every update here renders synchronously via lv_refr_now.
+
+void displayOtaScreen(const char *stage) {
+  if (!otaStageLabel) {
+    bootStatusLabel = nullptr;
+    lv_obj_t *scr = lv_screen_active();
+    lv_obj_clean(scr);
+    lv_obj_set_style_bg_color(scr, COL_BG, 0);
+
+    lv_obj_t *title = lv_label_create(scr);
+    lv_label_set_text(title, "Updating firmware");
+    lv_obj_set_style_text_color(title, COL_ACCENT, 0);
+    lv_obj_set_style_transform_scale(title, 512, 0); // 2x (Montserrat 14)
+    lv_obj_set_style_transform_pivot_x(title, lv_pct(50), 0);
+    lv_obj_set_style_transform_pivot_y(title, lv_pct(50), 0);
+    lv_obj_align(title, LV_ALIGN_CENTER, 0, -90);
+
+    otaStageLabel = lv_label_create(scr);
+    lv_obj_set_style_text_color(otaStageLabel, COL_TEXT, 0);
+    lv_obj_align(otaStageLabel, LV_ALIGN_CENTER, 0, -10);
+
+    otaTimeLabel = lv_label_create(scr);
+    lv_label_set_text(otaTimeLabel, "");
+    lv_obj_set_style_text_color(otaTimeLabel, COL_DIM, 0);
+    lv_obj_align(otaTimeLabel, LV_ALIGN_CENTER, 0, 30);
+
+    lv_obj_t *warn = lv_label_create(scr);
+    lv_label_set_text(warn, "do not power off");
+    lv_obj_set_style_text_color(warn, COL_BAD, 0);
+    lv_obj_align(warn, LV_ALIGN_CENTER, 0, 90);
+
+    backlight.set(100); // make sure a blanked screen wakes for this
+  }
+  lv_label_set_text(otaStageLabel, stage);
+  lv_refr_now(NULL);
+}
+
+void displayOtaTick(uint32_t elapsedS, int remainingEstS) {
+  if (!otaTimeLabel) return;
+  char buf[64];
+  if (remainingEstS > 0)
+    snprintf(buf, sizeof(buf), "%lus elapsed  ~%ds left",
+             (unsigned long)elapsedS, remainingEstS);
+  else
+    snprintf(buf, sizeof(buf), "%lus elapsed  almost done...",
+             (unsigned long)elapsedS);
+  lv_label_set_text(otaTimeLabel, buf);
+  lv_refr_now(NULL);
+}
+
 // ---- boot/info screen on demand (tap the "Pomona" header) -------------
 
 static void infoDismissed(lv_event_t * /*e*/) {
-  displayShowMain();
-  displayUpdate(lastReadings); // tiles show the latest sweep right away
+  displayRestoreMain();
 }
 
 static void titleClicked(lv_event_t * /*e*/) {
