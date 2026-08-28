@@ -32,3 +32,8 @@ struct Readings {
 
 void sensorsInit(); // I2C scan + first init attempts (absent sensors OK)
 void sensorsRead(Readings &r); // blocking sweep, worst case ~1.5 s
+
+// Rescan the I2C bus and write the found addresses into out as a comma
+// list ("0x23,0x76"; empty string = nothing found). Returns the count.
+// Cheap (~ms) — used for the remote diagnostics topic (docs/mqtt.md).
+int sensorsI2CScan(char *out, size_t outLen);

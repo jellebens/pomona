@@ -22,7 +22,8 @@ const int ADC_BITS = 12;
 const float ADC_MAX = 4095.0f;
 
 // ---- I2C addresses ---------------------------------------------------
-const uint8_t ADDR_BME280 = 0x76; // strapped! 0x77 belongs to the level strip
+const uint8_t ADDR_BME280 = 0x76; // strapped boards; unstrapped default is 0x77
+const uint8_t ADDR_BME280_ALT = 0x77; // OK since the Grove level strip (0x77/0x78) is not used
 const uint8_t ADDR_BH1750 = 0x23;
 
 // ---- timing ----------------------------------------------------------
@@ -35,6 +36,9 @@ const uint32_t SENSOR_REINIT_MS = 60000;    // absent-sensor re-probe cadence
 const uint32_t WATCHDOG_TIMEOUT_MS = 30000; // hardware IWDG (max ~32 s)
 const uint32_t DISPLAY_BLANK_TIMEOUT_MS = 60000; // idle -> backlight off (#248)
 const int OTA_DOWNLOAD_ATTEMPTS = 3; // download+size-verify tries (see ota.cpp)
+const uint32_t BOOT_SCREEN_HOLD_MS = 2500; // final boot state stays readable this long
+const uint32_t BOOT_NET_WAIT_MS = 30000; // max boot-screen wait for WiFi+MQTT
+const int OTA_EST_TOTAL_S = 240; // whole-OTA estimate driving the on-screen countdown
 
 // ---- WiFi / MQTT connection (non-secret — passwords in secrets.h) ----
 #define WIFI_SSID "B3ns-2-4"
@@ -48,11 +52,14 @@ const char MQTT_CLIENT_ID[] = "pomona-giga";
 const char TOPIC_UNIT_STATUS[] = MQTT_BASE "/unit/status"; // retained + LWT
 const char TOPIC_UNIT_FWVER[] = MQTT_BASE "/unit/fw_version"; // retained
 const char TOPIC_UNIT_SENSORS[] = MQTT_BASE "/unit/sensors"; // retained JSON
+const char TOPIC_UNIT_I2C_SCAN[] = MQTT_BASE "/unit/i2c_scan"; // retained JSON (diagnostics)
+const char TOPIC_UNIT_I2C_REQUEST[] = MQTT_BASE "/unit/i2c_scan/get"; // any msg -> scan now (subscribed)
 const char TOPIC_UNIT_RSSI[] = MQTT_BASE "/unit/rssi_dbm";
 const char TOPIC_UNIT_UPTIME[] = MQTT_BASE "/unit/uptime_s";
 const char TOPIC_WATER_TEMP[] = MQTT_BASE "/water/temp_c";
 const char TOPIC_WATER_EC[] = MQTT_BASE "/water/ec_ms_cm";
 const char TOPIC_WATER_PH[] = MQTT_BASE "/water/ph";
+const char TOPIC_WATER_PH_RAW[] = MQTT_BASE "/water/ph_raw_v"; // always published (calibration/drift)
 const char TOPIC_WATER_LEVEL_PCT[] = MQTT_BASE "/water/level_pct";
 const char TOPIC_WATER_LEVEL_POINTS[] = MQTT_BASE "/water/level_points";
 const char TOPIC_AIR_TEMP[] = MQTT_BASE "/air/temp_c";
