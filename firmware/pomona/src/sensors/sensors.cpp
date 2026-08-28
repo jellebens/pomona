@@ -26,13 +26,42 @@ static PhotoLevelProbe probe(PIN_PROBE);
 
 static bool bmeUp = false;
 static bool luxUp = false;
+static bool busStuck = false; // SDA/SCL held low by bad wiring — skip I2C
 
 // ---- helpers ---------------------------------------------------------
 
+#include <mbed.h>
+static void kickWd() { mbed::Watchdog::get_instance().kick(); }
+
+#ifndef PIN_WIRE_SDA
+#define PIN_WIRE_SDA 20
+#endif
+#ifndef PIN_WIRE_SCL
+#define PIN_WIRE_SCL 21
+#endif
+
+// A miswired run (data line on GND, short, pinched cable) holds SDA or SCL
+// low; every I2C transaction then waits out its timeout and the 127-address
+// scan outlives the 30 s watchdog — the bench boot-loop of 2026-08-28.
+// Check the raw pins BEFORE first I2C use and skip the bus entirely if
+// wedged; fixing the wiring needs a power cycle to re-enable I2C.
+static bool checkBusStuck() {
+  pinMode(PIN_WIRE_SDA, INPUT_PULLUP);
+  pinMode(PIN_WIRE_SCL, INPUT_PULLUP);
+  delay(2);
+  bool stuck = digitalRead(PIN_WIRE_SDA) == LOW ||
+               digitalRead(PIN_WIRE_SCL) == LOW;
+  if (stuck)
+    Serial.println("I2C: SDA/SCL held LOW — check wiring; skipping I2C "
+                   "until the next power cycle");
+  return stuck;
+}
+
 static void scanI2C() {
-  Serial.println("I2C scan (Wire): expecting 0x23 BH1750, 0x76 BME280, 0x77+0x78 level strip");
+  Serial.println("I2C scan (Wire): expecting 0x23 BH1750, 0x76/0x77 BME280");
   int found = 0;
   for (uint8_t addr = 1; addr < 127; addr++) {
+    kickWd(); // a sick bus can make every address wait out a timeout
     Wire.beginTransmission(addr);
     if (Wire.endTransmission() == 0) {
       Serial.print("  found 0x");
@@ -41,6 +70,27 @@ static void scanI2C() {
     }
   }
   if (found == 0) Serial.println("  NOTHING found — check 3V3/GND and SDA/SCL");
+}
+
+int sensorsI2CScan(char *out, size_t outLen) {
+  if (busStuck) {
+    snprintf(out, outLen, "SDA/SCL stuck LOW - check wiring");
+    return 0;
+  }
+  int found = 0;
+  size_t used = 0;
+  if (outLen > 0) out[0] = '\0';
+  for (uint8_t addr = 1; addr < 127; addr++) {
+    kickWd();
+    Wire.beginTransmission(addr);
+    if (Wire.endTransmission() == 0) {
+      int n = snprintf(out + used, outLen > used ? outLen - used : 0,
+                       "%s0x%02X", found ? "," : "", addr);
+      if (n > 0) used += (size_t)n;
+      found++;
+    }
+  }
+  return found;
 }
 
 static float readVoltageAvg(int pin, int samples = 32) {
@@ -68,8 +118,8 @@ static float readEC(float waterTempC, float &rawVolts) {
 static float readPH(float &rawVolts) {
   rawVolts = readVoltageAvg(PIN_PH);
   if (isnan(PH_V_NEUTRAL) || isnan(PH_V_ACID)) return NAN;
-  float slope = (4.01f - 6.86f) / (PH_V_ACID - PH_V_NEUTRAL);
-  return 6.86f + (rawVolts - PH_V_NEUTRAL) * slope;
+  float slope = (PH_BUF_ACID - PH_BUF_NEUTRAL) / (PH_V_ACID - PH_V_NEUTRAL);
+  return PH_BUF_NEUTRAL + (rawVolts - PH_V_NEUTRAL) * slope;
 }
 
 // Absent-sensor re-probes are rate-limited to SENSOR_REINIT_MS: retrying
@@ -85,13 +135,17 @@ static bool reprobeDue(uint32_t &lastAttemptMs) {
 }
 
 static bool tryBme() {
+  if (busStuck) return false;
   static uint32_t lastAttemptMs = 0;
   if (!bmeUp && reprobeDue(lastAttemptMs))
-    bmeUp = bme.begin(ADDR_BME280, &Wire);
+    // strapped boards sit at 0x76; an unstrapped BME280 defaults to 0x77
+    // (free on this unit — the Grove level strip is not used)
+    bmeUp = bme.begin(ADDR_BME280, &Wire) || bme.begin(ADDR_BME280_ALT, &Wire);
   return bmeUp;
 }
 
 static bool tryLux() {
+  if (busStuck) return false;
   static uint32_t lastAttemptMs = 0;
   if (!luxUp && reprobeDue(lastAttemptMs))
     luxUp = lux.begin(BH1750::CONTINUOUS_HIGH_RES_MODE, ADDR_BH1750, &Wire);
@@ -102,14 +156,18 @@ static bool tryLux() {
 
 void sensorsInit() {
   analogReadResolution(ADC_BITS);
-  Wire.begin();
-  scanI2C();
 
-  if (!tryBme())
-    Serial.println("BME280 NOT FOUND at 0x76 — SDO strap missing? (0x77 = level strip!)");
-  if (!tryLux())
-    Serial.println("BH1750 NOT FOUND at 0x23");
+  busStuck = checkBusStuck();
+  if (!busStuck) {
+    Wire.begin();
+    scanI2C();
+    if (!tryBme())
+      Serial.println("BME280 NOT FOUND at 0x76 or 0x77 — check wiring");
+    if (!tryLux())
+      Serial.println("BH1750 NOT FOUND at 0x23");
+  }
 
+  kickWd();
   ds18b20.begin();
   if (ds18b20.getDeviceCount() == 0)
     Serial.println("DS18B20 NOT FOUND on D2 — check 4.7k pull-up");
@@ -129,7 +187,7 @@ void sensorsRead(Readings &r) {
   r.ph = readPH(r.phRawV);
   r.phOk = !isnan(r.ph);
 
-  r.levelOk = level.read();
+  r.levelOk = busStuck ? false : level.read(); // Grove strip is I2C too
   r.levelPct = r.levelOk ? level.percent() : -1;
 
   r.probePoints = probe.points(); // blocks ~250 ms max when no signal
@@ -139,6 +197,16 @@ void sensorsRead(Readings &r) {
     r.airTempC = bme.readTemperature();
     r.humidityPct = bme.readHumidity();
     r.pressureHpa = bme.readPressure() / 100.0f;
+    // A flaky cable can drop the sensor after a good init: failed reads
+    // come back NaN or wildly implausible. Drop the flag so the 60 s
+    // re-probe owns recovery and pomona/unit/sensors stays honest.
+    if (isnan(r.airTempC) || isnan(r.humidityPct) ||
+        r.airTempC < -40.0f || r.airTempC > 85.0f ||
+        r.pressureHpa < 300.0f || r.pressureHpa > 1200.0f) {
+      bmeUp = false;
+      r.bmeOk = false;
+      r.airTempC = r.humidityPct = r.pressureHpa = NAN;
+    }
   } else {
     r.airTempC = r.humidityPct = r.pressureHpa = NAN;
   }
@@ -149,6 +217,7 @@ void sensorsRead(Readings &r) {
     if (lx < 0) { // driver reports errors as negative
       r.luxOk = false;
       r.lux = NAN;
+      luxUp = false; // same flaky-cable honesty as the BME280
     } else {
       r.lux = lx;
     }

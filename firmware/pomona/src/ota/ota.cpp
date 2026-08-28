@@ -7,11 +7,27 @@
 #include <sys/stat.h>
 #include <cstdio>
 
-#include "../../config.h" // OTA_DOWNLOAD_ATTEMPTS
+#include "../../config.h" // OTA_DOWNLOAD_ATTEMPTS, OTA_EST_TOTAL_S
+#include "../display/display.h" // progress screen (stage + countdown)
 
 static bool capable = false;
+static uint32_t applyStartMs = 0; // nonzero while an apply runs (drives ticks)
 
-static void kick() { mbed::Watchdog::get_instance().kick(); }
+// Watchdog feed, called by the library throughout download and decompress —
+// also our only hook to keep the on-screen countdown moving while the apply
+// blocks the main loop.
+static void kick() {
+  mbed::Watchdog::get_instance().kick();
+  if (applyStartMs) {
+    static uint32_t lastTickMs = 0;
+    uint32_t now = millis();
+    if (now - lastTickMs >= 1000) {
+      lastTickMs = now;
+      uint32_t elapsedS = (now - applyStartMs) / 1000;
+      displayOtaTick(elapsedS, (int)(OTA_EST_TOTAL_S - elapsedS));
+    }
+  }
+}
 
 void otaInit() {
   Arduino_Portenta_OTA_QSPI ota(QSPI_FLASH_FATFS_MBR, 2);
@@ -49,6 +65,9 @@ bool otaApplyFromUrl(const char *url, char *err, size_t errLen) {
     return false;
   }
 
+  applyStartMs = millis(); // progress screen + countdown from here on
+  displayOtaScreen("preparing...");
+
   // The core's download() returns the HTTP Content-Length, NOT the bytes
   // actually written — fwrite errors in its body callback are silently
   // dropped, so the QSPI file can be short (seen on the bench: repeated
@@ -57,6 +76,10 @@ bool otaApplyFromUrl(const char *url, char *err, size_t errLen) {
   bool sizeOk = false;
   for (int attempt = 1; attempt <= OTA_DOWNLOAD_ATTEMPTS; attempt++) {
     kick();
+    char stage[48];
+    snprintf(stage, sizeof(stage), "downloading new version (try %d/%d)...",
+             attempt, OTA_DOWNLOAD_ATTEMPTS);
+    displayOtaScreen(stage);
     Serial.print("ota: downloading (attempt ");
     Serial.print(attempt);
     Serial.print(") ");
@@ -87,13 +110,16 @@ bool otaApplyFromUrl(const char *url, char *err, size_t errLen) {
   if (!sizeOk) {
     snprintf(err, errLen, "download failed/truncated after %d attempts (last %d)",
              OTA_DOWNLOAD_ATTEMPTS, downloaded);
+    applyStartMs = 0;
     return false;
   }
 
   kick();
+  displayOtaScreen("decompressing (the slow part, ~2 min)...");
   int const decompressed = ota.decompress();
   if (decompressed < 0) {
     snprintf(err, errLen, "decompress failed (%d)", decompressed);
+    applyStartMs = 0;
     return false;
   }
   Serial.print("ota: decompressed ");
@@ -101,13 +127,16 @@ bool otaApplyFromUrl(const char *url, char *err, size_t errLen) {
   Serial.println(" bytes");
 
   kick();
+  displayOtaScreen("installing...");
   e = ota.update(); // stages bootloader parameters, applied on reset
   if (e != Arduino_Portenta_OTA::Error::None) {
     snprintf(err, errLen, "update failed (%d)", (int)e);
+    applyStartMs = 0;
     return false;
   }
 
   Serial.println("ota: staged — resetting, bootloader applies the image");
+  displayOtaScreen("rebooting into the new version...");
   delay(500); // let serial/MQTT drain
   ota.reset();
   return true; // not reached
