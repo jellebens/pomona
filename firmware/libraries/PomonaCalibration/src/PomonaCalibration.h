@@ -20,5 +20,5 @@ const float EC_CAL_K = 0.9745f;
 // not the 6.86/4.01 family).
 const float PH_BUF_NEUTRAL = 7.00f; // pH of the neutral buffer
 const float PH_BUF_ACID = 4.00f;    // pH of the acid buffer
-const float PH_V_NEUTRAL = NAN; // volts in the neutral buffer
-const float PH_V_ACID = NAN;    // volts in the acid buffer
+const float PH_V_NEUTRAL = 1.39f; // 2026-08-28, pH 7.00 buffer @ ~28.0 C
+const float PH_V_ACID = 2.09f;    // 2026-08-28, pH 4.00 buffer @ ~25.7 C
