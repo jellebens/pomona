@@ -191,6 +191,11 @@ static lv_obj_t *bootStatusLabel = nullptr;
 
 static void buildBootScreen() {
   lv_obj_t *scr = lv_screen_active();
+  // the tiles screen leaves flex+padding styles on scr — neutralize them,
+  // or the info-screen rebuild flex-stacks these labels (bench bug 0.1.20)
+  lv_obj_set_layout(scr, LV_LAYOUT_NONE);
+  lv_obj_set_style_pad_all(scr, 0, 0);
+  lv_obj_set_style_pad_row(scr, 0, 0);
   lv_obj_set_style_bg_color(scr, COL_BG, 0);
   lv_obj_clear_flag(scr, LV_OBJ_FLAG_SCROLLABLE);
 
@@ -308,9 +313,12 @@ static void titleClicked(lv_event_t * /*e*/) {
 
   // full-screen transparent catcher: any tap returns to the tiles
   lv_obj_t *catcher = lv_obj_create(lv_screen_active());
+  lv_obj_add_flag(catcher, LV_OBJ_FLAG_IGNORE_LAYOUT); // pin at 0,0 full-size
+  lv_obj_set_pos(catcher, 0, 0);
   lv_obj_set_size(catcher, lv_pct(100), lv_pct(100));
   lv_obj_set_style_bg_opa(catcher, LV_OPA_TRANSP, 0);
   lv_obj_set_style_border_width(catcher, 0, 0);
+  lv_obj_set_style_radius(catcher, 0, 0);
   lv_obj_clear_flag(catcher, LV_OBJ_FLAG_SCROLLABLE);
   lv_obj_add_flag(catcher, LV_OBJ_FLAG_CLICKABLE);
   lv_obj_add_event_cb(catcher, infoDismissed, LV_EVENT_CLICKED, NULL);
