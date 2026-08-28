@@ -36,9 +36,17 @@ recalibration is doable remotely. Recalibrate roughly monthly;
 cross-check any odd reading with the PH-201H pen before believing it.
 Calibrate with the [DS18B20](water-temp.md) in the same liquid.
 
+⚠ **Wet-up lesson (2026-08-28):** the probe's FIRST readings after
+storage drift badly — the initial 7.00 pass read 1.39 V, a redo minutes
+later ~1.0 V (alkaline residue from a 10.01 dip), and only the second
+full pass with 4-minute settles per buffer produced consistent values.
+Always run the full buffer sequence twice if the probe has been dry or
+capped, and validate with the third (10.01) buffer against the line's
+prediction.
+
 | Date | PH_V_NEUTRAL | PH_V_ACID | Notes |
 |---|---|---|---|
-| 2026-08-28 | **1.39 V** @ 7.00, ~28.0 °C | **2.09 V** @ 4.00, ~25.7 °C | first calibration, assembled unit; slope −4.29 pH/V |
+| 2026-08-28 | **1.56 V** @ 7.00, 25.5 °C | **2.10 V** @ 4.00, 25.4 °C | first calibration, assembled unit; slope −5.56 pH/V (180 mV/pH); validated: 10.01 buffer read 1.00 V vs 1.02 V predicted |
 
 ## Care
 
