@@ -197,6 +197,16 @@ void sensorsRead(Readings &r) {
     r.airTempC = bme.readTemperature();
     r.humidityPct = bme.readHumidity();
     r.pressureHpa = bme.readPressure() / 100.0f;
+    // A flaky cable can drop the sensor after a good init: failed reads
+    // come back NaN or wildly implausible. Drop the flag so the 60 s
+    // re-probe owns recovery and pomona/unit/sensors stays honest.
+    if (isnan(r.airTempC) || isnan(r.humidityPct) ||
+        r.airTempC < -40.0f || r.airTempC > 85.0f ||
+        r.pressureHpa < 300.0f || r.pressureHpa > 1200.0f) {
+      bmeUp = false;
+      r.bmeOk = false;
+      r.airTempC = r.humidityPct = r.pressureHpa = NAN;
+    }
   } else {
     r.airTempC = r.humidityPct = r.pressureHpa = NAN;
   }
@@ -207,6 +217,7 @@ void sensorsRead(Readings &r) {
     if (lx < 0) { // driver reports errors as negative
       r.luxOk = false;
       r.lux = NAN;
+      luxUp = false; // same flaky-cable honesty as the BME280
     } else {
       r.lux = lx;
     }
