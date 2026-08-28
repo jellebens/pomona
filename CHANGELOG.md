@@ -6,6 +6,51 @@ firmware semver from `firmware/libraries/PomonaVersion` (single source of
 truth, bumped by the deploy scripts). Tags `v<version>` mark each release
 merged to `master`.
 
+## [1.0.0] - 2026-08-28
+
+Assembly week's finale: the tower unit is built (#254) and **every v1
+sensor is connected, reading, and calibrated** — water temp, EC, pH,
+level probe, air (BME280), and light (BH1750) — with v1.0.0 itself
+delivered over the air. Versions 0.1.13 → 1.0.0 were built and deployed
+one at a time during the bench sessions (one commit per deployed version).
+
+### Added
+- **Remote I²C diagnostics** — retained `pomona/unit/i2c_scan` each
+  publish cycle plus an on-demand trigger (`pomona/unit/i2c_scan/get`),
+  so a headless unit's wiring is checkable over MQTT.
+- **Boot screen** — name, version, build date, live I²C scan result, and
+  a step-by-step boot progression (sensors → I²C → WiFi → MQTT). Tap the
+  Pomona header any time for the same info screen with a fresh scan.
+- **OTA progress screen** — stages (downloading/decompressing/installing/
+  rebooting), a live countdown, and a *do not power off* warning; failed
+  updates show their reason, then restore the readings.
+- **Water level tile as OK / WRN / CRIT** (≥3 / 1–2 / 0 probe points, in
+  green/amber/red).
+- Raw pH voltage published (`pomona/water/ph_raw_v`) — recalibration is
+  doable remotely from now on.
+
+### Fixed
+- **Same-version OTA replay guard** — the broker replays queued `ota_url`
+  messages on reconnect; a URL naming the running version is now skipped
+  (a stale trigger once kept re-installing 0.1.13 in a loop).
+- **Wedged-I²C-bus boot-loop immunity** — a miswired run holding SDA/SCL
+  low made the scans outlive the watchdog; stuck pins are now detected
+  before first I²C use, skipped, and named on the boot screen.
+- Full-screen views no longer inherit the tiles' flex layout (clipped
+  titles, unreachable tap-to-return on the info and update screens).
+- Sensor availability flags drop honestly when a flaky cable kills reads
+  after a good init (no more stale `bme280: true`).
+- BME280 accepted at 0x76 **or** 0x77 — the unstrapped default is fine
+  now that the Grove level strip (which owned 0x77) is retired.
+
+### Calibrated
+- **EC**: `EC_CAL_K = 0.9745` — stable 1.45 mS/cm in 1413 µS/cm fluid at
+  25.6 °C (20 ml in a narrow vessel suffices; ~8 min settle).
+- **pH**: two-point 1.56 V @ 7.00 / 2.10 V @ 4.00 (slope −5.56 pH/V),
+  **validated** against the 10.01 buffer (read 1.00 V vs 1.02 V
+  predicted). Buffer anchors are configurable constants; the probe's
+  wet-up drift lesson is recorded in `docs/sensors/ph.md`.
+
 ## [0.1.12] - 2026-08-27
 
 OTA release — over-the-air updates work end-to-end and untethered:
