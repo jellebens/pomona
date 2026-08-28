@@ -29,6 +29,10 @@ static lv_obj_t *blankShield; // full-screen touch catcher while blanked
 static bool blanked = false;
 static Tile tWaterTemp, tEc, tPh, tLevel, tProbe;
 static Tile tAirTemp, tRh, tPressure, tLux;
+static Readings lastReadings; // reapplied after screen rebuilds
+static int lastWifi = -1, lastMqtt = -1; // link icon change detection
+
+static void titleClicked(lv_event_t *e); // tap "Pomona" -> boot/info screen
 
 #define COL_BG lv_color_hex(0x101418)
 #define COL_TILE lv_color_hex(0x1c242c)
@@ -94,6 +98,10 @@ static void buildScreen() {
   lv_obj_t *title = lv_label_create(header);
   lv_label_set_text(title, "Pomona");
   lv_obj_set_style_text_color(title, COL_ACCENT, 0);
+  // tapping the title opens the boot/info screen (fresh I2C scan)
+  lv_obj_add_flag(title, LV_OBJ_FLAG_CLICKABLE);
+  lv_obj_set_ext_click_area(title, 20);
+  lv_obj_add_event_cb(title, titleClicked, LV_EVENT_CLICKED, NULL);
 
   // status strip, top-right: WiFi + MQTT icons, red down / green up
   // (updated live by displayLinkStatus; version label stays bottom-right)
@@ -171,6 +179,84 @@ static void displayBlankingService() {
   }
 }
 
+// ---- boot screen ------------------------------------------------------
+// Shown by displayInit() the moment the panel is up, so a power cycle is
+// visibly "booting" right away. displayBootStatus() updates the status
+// line (I2C scan results etc.) and renders synchronously — setup() has no
+// service loop yet. displayShowMain() swaps in the tiles UI when ready.
+
+static lv_obj_t *bootStatusLabel = nullptr;
+
+static void buildBootScreen() {
+  lv_obj_t *scr = lv_screen_active();
+  lv_obj_set_style_bg_color(scr, COL_BG, 0);
+  lv_obj_clear_flag(scr, LV_OBJ_FLAG_SCROLLABLE);
+
+  lv_obj_t *title = lv_label_create(scr);
+  lv_label_set_text(title, "Pomona");
+  lv_obj_set_style_text_color(title, COL_ACCENT, 0);
+  lv_obj_set_style_transform_scale(title, 768, 0); // 3x (Montserrat 14 only)
+  lv_obj_set_style_transform_pivot_x(title, lv_pct(50), 0);
+  lv_obj_set_style_transform_pivot_y(title, lv_pct(50), 0);
+  lv_obj_align(title, LV_ALIGN_CENTER, 0, -80);
+
+  lv_obj_t *ver = lv_label_create(scr);
+  lv_label_set_text(ver, "v" POMONA_FW_VERSION "  (built " __DATE__ ")");
+  lv_obj_set_style_text_color(ver, COL_TEXT, 0);
+  lv_obj_align(ver, LV_ALIGN_CENTER, 0, 0);
+
+  bootStatusLabel = lv_label_create(scr);
+  lv_label_set_text(bootStatusLabel, "booting...");
+  lv_obj_set_style_text_color(bootStatusLabel, COL_DIM, 0);
+  lv_obj_set_style_text_align(bootStatusLabel, LV_TEXT_ALIGN_CENTER, 0);
+  lv_obj_align(bootStatusLabel, LV_ALIGN_CENTER, 0, 50);
+}
+
+void displayBootStatus(const char *line) {
+  if (!bootStatusLabel) return;
+  lv_label_set_text(bootStatusLabel, line);
+  lv_refr_now(NULL); // setup() isn't pumping displayService yet
+}
+
+void displayShowMain() {
+  bootStatusLabel = nullptr;
+  lv_obj_clean(lv_screen_active());
+  buildScreen();
+  if (!blankShield) makeBlankShield(); // created once, lives on the top layer
+  lastWifi = lastMqtt = -1; // force the link icons to repaint
+  lv_display_trigger_activity(NULL); // blanking idle clock starts now
+  lv_refr_now(NULL);
+}
+
+// ---- boot/info screen on demand (tap the "Pomona" header) -------------
+
+static void infoDismissed(lv_event_t * /*e*/) {
+  displayShowMain();
+  displayUpdate(lastReadings); // tiles show the latest sweep right away
+}
+
+static void titleClicked(lv_event_t * /*e*/) {
+  lv_obj_clean(lv_screen_active());
+  buildBootScreen();
+
+  char addrs[96];
+  int found = sensorsI2CScan(addrs, sizeof(addrs));
+  char line[128];
+  snprintf(line, sizeof(line), "I2C: %s (%d found)\n\ntap to return",
+           found ? addrs : "nothing", found);
+  lv_label_set_text(bootStatusLabel, line);
+  bootStatusLabel = nullptr; // not the boot path; no displayBootStatus use
+
+  // full-screen transparent catcher: any tap returns to the tiles
+  lv_obj_t *catcher = lv_obj_create(lv_screen_active());
+  lv_obj_set_size(catcher, lv_pct(100), lv_pct(100));
+  lv_obj_set_style_bg_opa(catcher, LV_OPA_TRANSP, 0);
+  lv_obj_set_style_border_width(catcher, 0, 0);
+  lv_obj_clear_flag(catcher, LV_OBJ_FLAG_SCROLLABLE);
+  lv_obj_add_flag(catcher, LV_OBJ_FLAG_CLICKABLE);
+  lv_obj_add_event_cb(catcher, infoDismissed, LV_EVENT_CLICKED, NULL);
+}
+
 // ---- value formatting ------------------------------------------------
 
 static void setFloat(Tile &t, bool ok, float v, uint8_t decimals) {
@@ -199,8 +285,8 @@ void displayInit() {
   panel.begin(); // registers the LVGL display + tick
   touchDetector.begin(); // registers the LVGL pointer indev
   backlight.begin(100);
-  buildScreen();
-  makeBlankShield();
+  buildBootScreen(); // tiles UI comes later via displayShowMain()
+  lv_refr_now(NULL);
 }
 
 void displayService() {
@@ -210,7 +296,6 @@ void displayService() {
 
 // Cheap enough to call every loop: styles are only written on change.
 void displayLinkStatus(bool wifiUp, bool mqttUp) {
-  static int lastWifi = -1, lastMqtt = -1;
   if ((int)wifiUp != lastWifi) {
     lastWifi = wifiUp;
     lv_obj_set_style_text_color(wifiIcon, wifiUp ? COL_OK : COL_BAD, 0);
@@ -222,6 +307,7 @@ void displayLinkStatus(bool wifiUp, bool mqttUp) {
 }
 
 void displayUpdate(const Readings &r) {
+  lastReadings = r; // cached: reapplied when the tiles screen is rebuilt
   setFloat(tWaterTemp, r.waterTempOk, r.waterTempC, 1);
   setFloat(tEc, true, r.ecMsCm, 2);
   // pH: uncalibrated -> show raw probe voltage so bench work has a number

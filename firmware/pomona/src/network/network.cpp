@@ -25,6 +25,7 @@ static uint32_t nextAttemptMs = 0;
 static uint32_t backoffMs = NET_RETRY_MIN_MS;
 
 static char otaUrlPending[224] = ""; // set by onMqttMessage, run in service
+static bool i2cScanPending = false;  // set by onMqttMessage, run in service
 
 static void onMqttMessage(int /*messageSize*/) {
   String topic = mqtt.messageTopic();
@@ -35,6 +36,8 @@ static void onMqttMessage(int /*messageSize*/) {
   payload[n] = '\0';
   if (topic == TOPIC_UNIT_OTA_URL)
     snprintf(otaUrlPending, sizeof(otaUrlPending), "%s", payload);
+  else if (topic == TOPIC_UNIT_I2C_REQUEST)
+    i2cScanPending = true; // any payload = scan now
 }
 
 bool wifiConnected() { return WiFi.status() == WL_CONNECTED; }
@@ -157,6 +160,7 @@ static bool connectMqtt() {
 
   mqtt.onMessage(onMqttMessage);
   mqtt.subscribe(TOPIC_UNIT_OTA_URL, 1); // basic OTA trigger (docs/mqtt.md)
+  mqtt.subscribe(TOPIC_UNIT_I2C_REQUEST, 1); // on-demand I2C scan trigger
 
   Serial.println("MQTT: connected");
   return true;
@@ -169,6 +173,20 @@ static void handleOtaPending() {
   char url[sizeof(otaUrlPending)];
   snprintf(url, sizeof(url), "%s", otaUrlPending);
   otaUrlPending[0] = '\0';
+
+  // Same-version guard: the broker replays queued QoS1 ota_url messages on
+  // every reconnect (seen on the bench 2026-08-28 — a stale trigger kept
+  // re-installing the running version in a loop). A URL naming the version
+  // we already run is a replay, not an update: skip it.
+  if (strstr(url, "pomona-" POMONA_FW_VERSION ".ota") != NULL) {
+    Serial.print("ota: skipping same-version replay ");
+    Serial.println(url);
+    mqtt.beginMessage(TOPIC_UNIT_OTA_RESULT, true, 1);
+    mqtt.print("skipped same-version ");
+    mqtt.print(url);
+    mqtt.endMessage();
+    return;
+  }
 
   mqtt.beginMessage(TOPIC_UNIT_OTA_RESULT, true, 1);
   mqtt.print("applying ");
@@ -196,10 +214,26 @@ void networkInit() {
   wifiDiagnostics();
 }
 
+// Rescan the I2C bus and publish the retained diagnostics topic. Runs on
+// every publish cycle and immediately on a message to TOPIC_UNIT_I2C_REQUEST.
+static void publishI2CScan() {
+  char addrs[96];
+  char buf[128];
+  int found = sensorsI2CScan(addrs, sizeof(addrs));
+  snprintf(buf, sizeof(buf), "{\"found\":%d,\"addrs\":\"%s\"}", found, addrs);
+  mqtt.beginMessage(TOPIC_UNIT_I2C_SCAN, true, 1);
+  mqtt.print(buf);
+  mqtt.endMessage();
+}
+
 void networkService() {
   if (wifiConnected() && mqtt.connected()) {
-    mqtt.poll(); // keepalive + inbound (ota_url subscription)
+    mqtt.poll(); // keepalive + inbound (ota_url + i2c_scan subscriptions)
     handleOtaPending();
+    if (i2cScanPending) {
+      i2cScanPending = false;
+      publishI2CScan();
+    }
     return;
   }
 
@@ -266,4 +300,8 @@ void networkPublish(const Readings &r) {
   mqtt.beginMessage(TOPIC_UNIT_SENSORS, true, 1);
   mqtt.print(buf);
   mqtt.endMessage();
+
+  // retained I2C diagnostics: what actually answers on the bus right now,
+  // so a headless unit's wiring can be checked over MQTT (docs/mqtt.md)
+  publishI2CScan();
 }

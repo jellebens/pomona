@@ -11,7 +11,9 @@
 
 #include "../sensors/sensors.h"
 
-void displayInit(); // bring up panel + touch + backlight + build the screen
+void displayInit(); // panel + touch + backlight + BOOT SCREEN (visible at once)
+void displayBootStatus(const char *line); // update the boot status line (renders now)
+void displayShowMain(); // leave the boot screen, build + show the tiles UI
 void displayService(); // call every loop: lv_timer_handler + idle blanking
 void displayUpdate(const Readings &r); // refresh the metric tiles
 void displayLinkStatus(bool wifiUp, bool mqttUp); // call every loop

@@ -43,6 +43,22 @@ static void scanI2C() {
   if (found == 0) Serial.println("  NOTHING found — check 3V3/GND and SDA/SCL");
 }
 
+int sensorsI2CScan(char *out, size_t outLen) {
+  int found = 0;
+  size_t used = 0;
+  if (outLen > 0) out[0] = '\0';
+  for (uint8_t addr = 1; addr < 127; addr++) {
+    Wire.beginTransmission(addr);
+    if (Wire.endTransmission() == 0) {
+      int n = snprintf(out + used, outLen > used ? outLen - used : 0,
+                       "%s0x%02X", found ? "," : "", addr);
+      if (n > 0) used += (size_t)n;
+      found++;
+    }
+  }
+  return found;
+}
+
 static float readVoltageAvg(int pin, int samples = 32) {
   uint32_t sum = 0;
   for (int i = 0; i < samples; i++) {
@@ -87,7 +103,9 @@ static bool reprobeDue(uint32_t &lastAttemptMs) {
 static bool tryBme() {
   static uint32_t lastAttemptMs = 0;
   if (!bmeUp && reprobeDue(lastAttemptMs))
-    bmeUp = bme.begin(ADDR_BME280, &Wire);
+    // strapped boards sit at 0x76; an unstrapped BME280 defaults to 0x77
+    // (free on this unit — the Grove level strip is not used)
+    bmeUp = bme.begin(ADDR_BME280, &Wire) || bme.begin(ADDR_BME280_ALT, &Wire);
   return bmeUp;
 }
 
@@ -106,7 +124,7 @@ void sensorsInit() {
   scanI2C();
 
   if (!tryBme())
-    Serial.println("BME280 NOT FOUND at 0x76 — SDO strap missing? (0x77 = level strip!)");
+    Serial.println("BME280 NOT FOUND at 0x76 or 0x77 — check wiring");
   if (!tryLux())
     Serial.println("BH1750 NOT FOUND at 0x23");
 

@@ -35,12 +35,29 @@ void setup() {
   // hardware watchdog: a hang anywhere reboots the unit into a clean state
   mbed::Watchdog::get_instance().start(WATCHDOG_TIMEOUT_MS);
 
-  displayInit(); // screen first: visible even with sensors/WiFi absent
+  displayInit(); // boot screen up immediately: the unit is visibly booting
+
   sensorsInit();
+  char addrs[96];
+  int found = sensorsI2CScan(addrs, sizeof(addrs));
+  char line[128];
+  snprintf(line, sizeof(line), "I2C: %s (%d found)",
+           found ? addrs : "nothing", found);
+  displayBootStatus(line);
+
   networkInit();
   otaInit(); // capability probe; updates arrive via MQTT (network.cpp)
 
   sensorsRead(readings); // first sweep right away
+
+  // hold the boot screen long enough to read the I2C line
+  uint32_t holdStart = millis();
+  while (millis() - holdStart < BOOT_SCREEN_HOLD_MS) {
+    mbed::Watchdog::get_instance().kick();
+    delay(50);
+  }
+
+  displayShowMain(); // swap to the tiles UI
   displayUpdate(readings);
   lastReadMs = millis();
 }
