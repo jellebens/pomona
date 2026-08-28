@@ -41,8 +41,9 @@ static void titleClicked(lv_event_t *e); // tap "Pomona" -> boot/info screen
 #define COL_TEXT lv_color_hex(0xe8eef2)
 #define COL_DIM lv_color_hex(0x8a9aa8)
 #define COL_ACCENT lv_color_hex(0x4cc87a)
-#define COL_OK lv_color_hex(0x4cc87a)  // connected
-#define COL_BAD lv_color_hex(0xe05252) // disconnected
+#define COL_OK lv_color_hex(0x4cc87a)  // connected / healthy
+#define COL_WARN lv_color_hex(0xe0b13e) // getting low
+#define COL_BAD lv_color_hex(0xe05252) // disconnected / refill
 
 // ---- screen construction ---------------------------------------------
 
@@ -127,7 +128,7 @@ static void buildScreen() {
   tWaterTemp = makeTile(row1, "water temp  degC");
   tEc = makeTile(row1, "EC  mS/cm");
   tPh = makeTile(row1, "pH");
-  tProbe = makeTile(row1, "probe  pts/4");
+  tProbe = makeTile(row1, "water level");
 
   lv_obj_t *row2 = makeRow(scr, 190);
   tAirTemp = makeTile(row2, "air temp  degC");
@@ -393,7 +394,21 @@ void displayUpdate(const Readings &r) {
   } else {
     lv_label_set_text(tPh.value, "--");
   }
-  setInt(tProbe, r.probePoints >= 0, r.probePoints);
+  // water level as a status word: probe points >=3 OK / 1-2 WRN / 0 CRIT
+  // (pt 1 = 8.2 L, pt 3 = 9.7 L — docs/sensors/level-probe.md ladder)
+  if (r.probePoints < 0) {
+    lv_label_set_text(tProbe.value, "--");
+    lv_obj_set_style_text_color(tProbe.value, COL_TEXT, 0);
+  } else if (r.probePoints >= 3) {
+    lv_label_set_text(tProbe.value, "OK");
+    lv_obj_set_style_text_color(tProbe.value, COL_OK, 0);
+  } else if (r.probePoints >= 1) {
+    lv_label_set_text(tProbe.value, "WRN");
+    lv_obj_set_style_text_color(tProbe.value, COL_WARN, 0);
+  } else {
+    lv_label_set_text(tProbe.value, "CRIT");
+    lv_obj_set_style_text_color(tProbe.value, COL_BAD, 0);
+  }
   setInt(tLevel, r.levelOk && r.levelPct >= 0, r.levelPct);
   setFloat(tAirTemp, r.bmeOk, r.airTempC, 1);
   setFloat(tRh, r.bmeOk, r.humidityPct, 1);
