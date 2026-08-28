@@ -10,7 +10,9 @@
 #include <Arduino.h>
 
 // EC: single-point against 1413 uS/cm fluid. 1.0 = uncalibrated.
-const float EC_CAL_K = 1.0f;
+// 2026-08-28: fluid read a stable 1.45 mS/cm at 25.6 C (assembled unit,
+// probe settled ~8 min) -> K = 1.413 / 1.45. History: docs/sensors/ec-tds.md.
+const float EC_CAL_K = 0.9745f;
 
 // pH: two-point. Record the measured voltages in the buffers; NAN = not yet
 // calibrated, readers report raw voltage only.
