@@ -59,6 +59,7 @@ const char TOPIC_UNIT_UPTIME[] = MQTT_BASE "/unit/uptime_s";
 const char TOPIC_WATER_TEMP[] = MQTT_BASE "/water/temp_c";
 const char TOPIC_WATER_EC[] = MQTT_BASE "/water/ec_ms_cm";
 const char TOPIC_WATER_PH[] = MQTT_BASE "/water/ph";
+const char TOPIC_WATER_PH_RAW[] = MQTT_BASE "/water/ph_raw_v"; // always published (calibration/drift)
 const char TOPIC_WATER_LEVEL_PCT[] = MQTT_BASE "/water/level_pct";
 const char TOPIC_WATER_LEVEL_POINTS[] = MQTT_BASE "/water/level_points";
 const char TOPIC_AIR_TEMP[] = MQTT_BASE "/air/temp_c";

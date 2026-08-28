@@ -118,8 +118,8 @@ static float readEC(float waterTempC, float &rawVolts) {
 static float readPH(float &rawVolts) {
   rawVolts = readVoltageAvg(PIN_PH);
   if (isnan(PH_V_NEUTRAL) || isnan(PH_V_ACID)) return NAN;
-  float slope = (4.01f - 6.86f) / (PH_V_ACID - PH_V_NEUTRAL);
-  return 6.86f + (rawVolts - PH_V_NEUTRAL) * slope;
+  float slope = (PH_BUF_ACID - PH_BUF_NEUTRAL) / (PH_V_ACID - PH_V_NEUTRAL);
+  return PH_BUF_NEUTRAL + (rawVolts - PH_V_NEUTRAL) * slope;
 }
 
 // Absent-sensor re-probes are rate-limited to SENSOR_REINIT_MS: retrying

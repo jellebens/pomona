@@ -280,6 +280,7 @@ void networkPublish(const Readings &r) {
   if (r.waterTempOk) pubFloat(TOPIC_WATER_TEMP, r.waterTempC, 1);
   pubFloat(TOPIC_WATER_EC, r.ecMsCm, 2); // analog: always published
   if (r.phOk) pubFloat(TOPIC_WATER_PH, r.ph, 2);
+  if (!isnan(r.phRawV)) pubFloat(TOPIC_WATER_PH_RAW, r.phRawV, 3); // calibration/drift aid
   if (r.levelOk) pubInt(TOPIC_WATER_LEVEL_PCT, r.levelPct);
   if (r.probePoints >= 0) pubInt(TOPIC_WATER_LEVEL_POINTS, r.probePoints);
 

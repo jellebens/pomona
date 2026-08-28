@@ -15,6 +15,10 @@
 const float EC_CAL_K = 0.9745f;
 
 // pH: two-point. Record the measured voltages in the buffers; NAN = not yet
-// calibrated, readers report raw voltage only.
-const float PH_V_NEUTRAL = NAN; // volts in pH 6.86 buffer
-const float PH_V_ACID = NAN;    // volts in pH 4.01 buffer
+// calibrated, readers report raw voltage only. The BUF values are the pH
+// printed on the buffer packets actually used (owner's set is 7.00/4.00,
+// not the 6.86/4.01 family).
+const float PH_BUF_NEUTRAL = 7.00f; // pH of the neutral buffer
+const float PH_BUF_ACID = 4.00f;    // pH of the acid buffer
+const float PH_V_NEUTRAL = NAN; // volts in the neutral buffer
+const float PH_V_ACID = NAN;    // volts in the acid buffer
