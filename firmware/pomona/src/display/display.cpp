@@ -189,15 +189,23 @@ static void displayBlankingService() {
 
 static lv_obj_t *bootStatusLabel = nullptr;
 
-static void buildBootScreen() {
+// The tiles screen leaves flex+padding styles on scr; any full-screen view
+// built after it must neutralize them or its labels get flex-stacked and
+// scaled titles clip off-screen (bench bugs 0.1.20 info screen, 0.1.23
+// "ating firmware" OTA screen).
+static lv_obj_t *freshScreen() {
   lv_obj_t *scr = lv_screen_active();
-  // the tiles screen leaves flex+padding styles on scr — neutralize them,
-  // or the info-screen rebuild flex-stacks these labels (bench bug 0.1.20)
+  lv_obj_clean(scr);
   lv_obj_set_layout(scr, LV_LAYOUT_NONE);
   lv_obj_set_style_pad_all(scr, 0, 0);
   lv_obj_set_style_pad_row(scr, 0, 0);
   lv_obj_set_style_bg_color(scr, COL_BG, 0);
   lv_obj_clear_flag(scr, LV_OBJ_FLAG_SCROLLABLE);
+  return scr;
+}
+
+static void buildBootScreen() {
+  lv_obj_t *scr = freshScreen();
 
   lv_obj_t *title = lv_label_create(scr);
   lv_label_set_text(title, "Pomona");
@@ -248,9 +256,7 @@ void displayRestoreMain() {
 void displayOtaScreen(const char *stage) {
   if (!otaStageLabel) {
     bootStatusLabel = nullptr;
-    lv_obj_t *scr = lv_screen_active();
-    lv_obj_clean(scr);
-    lv_obj_set_style_bg_color(scr, COL_BG, 0);
+    lv_obj_t *scr = freshScreen(); // neutralizes the tiles' flex layout
 
     lv_obj_t *title = lv_label_create(scr);
     lv_label_set_text(title, "Updating firmware");
