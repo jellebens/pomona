@@ -36,7 +36,8 @@ const uint32_t SENSOR_REINIT_MS = 60000;    // absent-sensor re-probe cadence
 const uint32_t WATCHDOG_TIMEOUT_MS = 30000; // hardware IWDG (max ~32 s)
 const uint32_t DISPLAY_BLANK_TIMEOUT_MS = 60000; // idle -> backlight off (#248)
 const int OTA_DOWNLOAD_ATTEMPTS = 3; // download+size-verify tries (see ota.cpp)
-const uint32_t BOOT_SCREEN_HOLD_MS = 4000; // min time the boot screen stays readable
+const uint32_t BOOT_SCREEN_HOLD_MS = 2500; // final boot state stays readable this long
+const uint32_t BOOT_NET_WAIT_MS = 30000; // max boot-screen wait for WiFi+MQTT
 const int OTA_EST_TOTAL_S = 240; // whole-OTA estimate driving the on-screen countdown
 
 // ---- WiFi / MQTT connection (non-secret — passwords in secrets.h) ----

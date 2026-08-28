@@ -37,20 +37,44 @@ void setup() {
 
   displayInit(); // boot screen up immediately: the unit is visibly booting
 
+  displayBootStatus("probing sensors...");
   sensorsInit();
   char addrs[96];
   int found = sensorsI2CScan(addrs, sizeof(addrs));
-  char line[128];
-  snprintf(line, sizeof(line), "I2C: %s (%d found)",
+  char i2cLine[96];
+  snprintf(i2cLine, sizeof(i2cLine), "I2C: %s (%d found)",
            found ? addrs : "nothing", found);
-  displayBootStatus(line);
+
+  char boot[224];
+  snprintf(boot, sizeof(boot), "%s\nWiFi: connecting...", i2cLine);
+  displayBootStatus(boot);
 
   networkInit();
   otaInit(); // capability probe; updates arrive via MQTT (network.cpp)
 
   sensorsRead(readings); // first sweep right away
 
-  // hold the boot screen long enough to read the I2C line
+  // stay on the boot screen while the network comes up (capped), updating
+  // the progression line by line; the tiles' icons take over afterwards
+  uint32_t netStart = millis();
+  bool wifiShown = false;
+  while (millis() - netStart < BOOT_NET_WAIT_MS && !mqttConnected()) {
+    mbed::Watchdog::get_instance().kick();
+    networkService();
+    if (wifiConnected() && !wifiShown) {
+      wifiShown = true;
+      snprintf(boot, sizeof(boot), "%s\nWiFi: connected\nMQTT: connecting...",
+               i2cLine);
+      displayBootStatus(boot);
+    }
+    delay(100);
+  }
+  snprintf(boot, sizeof(boot), "%s\nWiFi: %s\nMQTT: %s", i2cLine,
+           wifiConnected() ? "connected" : "not yet - retrying in background",
+           mqttConnected() ? "connected" : "not yet - retrying in background");
+  displayBootStatus(boot);
+
+  // short hold so the final state is readable
   uint32_t holdStart = millis();
   while (millis() - holdStart < BOOT_SCREEN_HOLD_MS) {
     mbed::Watchdog::get_instance().kick();
