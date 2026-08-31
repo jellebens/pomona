@@ -16,3 +16,12 @@ void networkPublish(const Readings &r); // no-op unless MQTT is connected
 
 bool wifiConnected();
 bool mqttConnected();
+
+// Publish the control decisions (pump/light request + reason) — see
+// src/control and docs/mqtt.md. No-op unless MQTT is connected; the unit keeps
+// acting on its own decisions regardless of whether anyone hears them.
+void networkPublishControl();
+
+// Current UNIX epoch from NTP, or 0 if the clock has never been set. Only the
+// photoperiod consults this; the pump duty cycle is millis()-only by design.
+uint32_t networkEpochNow();

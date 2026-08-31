@@ -13,6 +13,7 @@ Monitoring-first; automated control is deferred.
 | [sensors/](sensors/README.md) | **One doc per sensor**: wiring, verification, calibration + recorded values, assumptions |
 | [mqtt.md](mqtt.md) | MQTT broker + `pomona/<zone>/<metric>` topic schema (proposed with #229, finalized with #222) |
 | [ota-and-secrets.md](ota-and-secrets.md) | Firmware security design: layered secret storage (gitignored → ATECC608A secure element) + OTA updates (dev push / production pull) |
+| [control-architecture.md](control-architecture.md) | Where the pump and light logic should live — HA vs GIGA firmware, the reboot risk, mains safety |
 | [planting-plan.md](planting-plan.md) | The 30-pod tier layout, nutrient/pH targets, commissioning sequence, shopping list |
 | [seeding/](seeding/README.md) | Sowing and germination — shared sponge method, sowing order, per-crop docs |
 | [seeding/lettuce.md](seeding/lettuce.md) | Iceberg lettuce — germinated, seedling care, and why it reaches the tower first |
@@ -27,11 +28,16 @@ Monitoring-first; automated control is deferred.
   lettuce, and strawberry on **day 4** against a 14–30 day book figure (the
   28 °C ambient accelerated it). Strawberry is 12 sponges × ~5 seeds,
   superseding the 3-sponge PoC allocation.
-- **Transplant windows: lettuce ≈21–28 Aug, strawberry ≈31 Aug – 14 Sept** —
-  both about two weeks earlier than planned.
+- **❌ The lettuce died 2026-08-07**, days after germinating — the first real
+  failure in the project. Diagnose before re-sowing, and act on the
+  strawberries, which shared the tray: post-mortem in
+  [seeding/lettuce.md](seeding/lettuce.md).
+- **Transplant: strawberry ≈31 Aug – 14 Sept**, now the first crop into the
+  tower. Re-sown lettuce follows ~3 weeks after it goes back in.
 - **⚠ The critical path is now purchases, not plants.** pH-Down + EC
-  calibration fluid in hand by **~14 Aug** (an undosed reservoir means nothing
-  transplants), and the **grow light by end of August**, pulled forward from
+  calibration fluid in hand by **~25 Aug** (an undosed reservoir means nothing
+  transplants; strawberry-driven now the lettuce is gone), and the **grow
+  light by end of August**, pulled forward from
   mid-September because seedlings that raced up in a hot room stretch just as
   fast in weak light. Both are #220 purchases still outstanding.
 - **Sensor bring-up in progress (#242, since 2026-08-25):** the first

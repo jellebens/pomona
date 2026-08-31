@@ -14,12 +14,21 @@ target layout and nutrient targets live in
 > day book figure; the 28 °C ambient that looked like a problem accelerated
 > them. See [lettuce.md](lettuce.md) and [strawberry.md](strawberry.md).
 >
-> **Transplant windows: lettuce ≈21–28 Aug, strawberry ≈31 Aug – 14 Sept** —
-> both roughly two weeks earlier than planned.
+> **❌ The lettuce then DIED** (reported 2026-08-31, exact date unrecorded).
+> First real failure in the project. Diagnose before re-sowing — and check the
+> strawberries, which shared the tray and survived it: post-mortem in
+> [lettuce.md](lettuce.md).
 >
-> **⚠ Two deadlines moved forward, and they are now the whole critical path:**
-> pH-Down + EC cal fluid in hand by **~14 Aug** (no dosed reservoir, nothing
-> transplants), and the **grow light by end of August**, not mid-September —
+> **⏰ The strawberry transplant window is OPEN NOW** (≈31 Aug – 14 Sept;
+> sown 08-03, so they are ~4 weeks old). Gate on the plants: roots through the
+> sponge + 3–4 true leaves. They are the first crop into the tower; re-sown
+> lettuce follows ~3 weeks after it goes back in.
+>
+> **⚠ Both deadlines are now due or past.** The reservoir must be dosed
+> before anything is transplanted (EC 0.8–1.0, pH → ~6.0) — **pH-Down was
+> deliberately deferred by the owner** on the #254 shopping list until the pen
+> reads above 6.5, so check the pen before dosing rather than assuming a buy is
+> needed. The **grow light was due end of August** and matters immediately:
 > seedlings that raced up in a hot room stretch just as fast in weak light.
 > [poc.md](poc.md) is superseded for strawberry; its hardware/software exit
 > criteria now have an August deadline, not a September one.
@@ -33,7 +42,7 @@ target layout and nutrient targets live in
 | Strawberry (alpine 'Rote Baron Solemacher') | [strawberry.md](strawberry.md) | **✅ GERMINATED 2026-08-07** (day 4!) — sown 08-03, 12 sponges × ~5 seeds |
 | Peppers (paprika, Dulce Italiano, chili) | _to write_ | **sow now — warm tray 25–28 °C** |
 | Parsley | _to write_ | **soak seed now, sow a day later** — cool tray |
-| Lettuce (iceberg) | [lettuce.md](lettuce.md) | **✅ GERMINATED 2026-08-07** — transplants ≈21–28 Aug, first crop into the tower |
+| Lettuce (iceberg) | [lettuce.md](lettuce.md) | **❌ DIED** (reported 2026-08-31) — diagnose, then re-sow into a clean tray |
 | Basil | _to write_ | sow in ~1 week — fast, would outgrow the cohort |
 | Dill | _to write_ | sow in ~1 week — fast, and hates root disturbance later |
 

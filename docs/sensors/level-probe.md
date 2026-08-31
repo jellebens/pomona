@@ -1,6 +1,10 @@
 # Water level — CQRobot CQRSENYW003 photoelectric probe
 
 **Status: ✅ wired, dip-tested and calibrated (2026-08-25, #242).**
+**Mount is permanent (2026-08-31):** remounting at pump-intake height was
+ruled out — the tank geometry does not allow it — so this stays a **top-up
+gauge**, blind below 8.2 L. A raw 0 while the pump runs is not trustworthy;
+see [the settle check](#reading-the-probe-while-the-pump-runs--the-settle-check).
 
 Product: [cqrobot.com/product/CQRSENYW003](https://cqrobot.com/product/CQRSENYW003) —
 contact multi-point photoelectric probe, 4 optical detection points over
@@ -56,6 +60,54 @@ show — note point 4 sits above nominal full, so 3/4 already means full):
 | 1 | ≈ 8.2 L | top up soon |
 | 0 | below 8.2 L | **refill now** (probe is blind below this line) |
 
+⚠ **Do not trust a 0 read while the pump is running** — see the settle check
+below. Dashboards and alerts should either debounce it or key off the settled
+verdict, not the raw ladder.
+
+## Reading the probe while the pump runs — the settle check
+
+**A raw 0 during a pump cycle does not even mean "below 8.2 L".**
+
+The tower holds a real volume of water **in transit** whenever the pump is on —
+in the riser, the drip line and across the six tiers. The reservoir therefore
+sits visibly lower mid-cycle than the total water in the system justifies, and
+turbulence at the optical tips adds flicker on top of that. A probe mounted at
+the 8.2 L waterline will read 0 during a cycle at fills that are perfectly
+healthy once everything drains back.
+
+That is why the raw ladder is unusable as a pump interlock, and it is a
+property of the *tower*, not a fault of the probe — any future consumer
+(dashboard tiles, #222 alerts, dosing logic) has to account for it.
+
+### The compensating control
+
+Implemented in Home Assistant — `packages/pomona_telemetry.yaml` and the
+`pomona-schedule.md` runbook in the `home-assitant` repo. On a raw 0 sustained
+for 2 minutes:
+
+1. **stop the pump**, so the tower drains back and the surface stills;
+2. **wait 5 minutes** — longer than the drain-back, costing at most one skipped
+   15-minute irrigation cycle;
+3. **re-read and decide:**
+
+| Settled reading | Verdict |
+|---|---|
+| ≥ 1 point | Water was in transit. False alarm — resume, no alert |
+| Still 0 | Genuinely below the 8.2 L line. Notify to top up, set the confirmed-low flag |
+| Unknown / unavailable | Unknown is not empty. Resume, change nothing |
+
+Rate-limited to one check per hour so it cannot thrash the pump. The 24 h pump
+inhibit is keyed off the **settled verdict**, never the raw ladder.
+
+### What it does and does not buy
+
+- **Does:** removes the false positives that made the low signal unusable, and
+  stops the pump promptly once a low reading is confirmed.
+- **Does not:** detect an empty tank. Nothing mounted at the 8.2 L line can see
+  below it, and no amount of software changes that. The reservoir still has to
+  be topped up by a human, and the mechanical indicator on the tower remains
+  the quickest way to check it.
+
 ## Assumptions
 
 Move an entry to **verified/retired** rather than deleting it, so the
@@ -88,7 +140,17 @@ reasoning stays traceable.
 
 ### A3 — Top-up mount without dry-run protection is acceptable
 
-- **Status:** accepted by owner (2026-08-25)
+- **Status:** ⚠ **still accepted, but its escape hatch is CLOSED (2026-08-31).**
+  The probe **cannot** be remounted at pump-intake height — the tank geometry
+  does not allow it. So "top-up mount without dry-run protection" is no longer
+  a choice among options; it is the permanent shape of this instrument. The
+  compensating control is the [settle check](#reading-the-probe-while-the-pump-runs--the-settle-check)
+  in Home Assistant, which cannot see an empty tank either but does make the
+  one available low signal trustworthy.
+- **Newly relevant (2026-08-31):** the tower is now planted and the pump runs
+  on an unattended HA schedule, so a dry-run can happen at 03:00 with nobody
+  watching. That raised the stakes on this assumption without changing the
+  hardware options.
 - **Assumption:** the top-up mount (blind below 8.2 L) is enough level
   protection, because the reservoir is topped up promptly when the
   0-points alert fires. There is deliberately **no sensor between 8.2 L
@@ -99,9 +161,14 @@ reasoning stays traceable.
   as a second line of defence.
 - **If wrong:** an unnoticed leak or long absence could run the pump dry
   with no alert between "8.2 L" and "damage".
-- **Escape hatch:** remount at pump-intake height (needs the cable
-  extension) — wiring unchanged, only the points→litres table would need
-  re-measuring.
+- ~~**Escape hatch:** remount at pump-intake height~~ — **ruled out
+  2026-08-31, the tank geometry does not allow it.** If dry-run protection is
+  ever genuinely wanted it needs *added hardware*, not a different mounting
+  height: a second probe low on another digital pin (the four points span only
+  ~3 cm, so one probe cannot be both a top-up gauge and an intake cutoff), or
+  the [Fibaro plug's power reading](pump-power.md) used actively — a pump
+  running dry draws measurably less than one moving water, which is a genuine
+  second signal that needs no new sensor in the tank.
 
 ### A4 — The mechanical indicator is the volume reference
 
