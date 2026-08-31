@@ -17,6 +17,62 @@ tower-appropriate choice is a **dwarf/determinate cherry** (Tiny Tim / Red
 Robin) ×2 — seed would need buying — or better, a truss variety in its own
 separate bucket with its own solution.
 
+## ✅ AS-BUILT — first transplant, 2026-08-31
+
+**18 of 30 pods planted.** The tower is live for the first time.
+
+| Tier | Planned | **As-built** |
+|---|---|---|
+| 6 (top) | Dill ×1 · Basil ×2 · Strawberry ×2 | *empty* |
+| 5 | Parsley ×3 · Lettuce ×2 | *empty* |
+| 4 | Basil ×2 · Strawberry ×3 | **Strawberry ×4** |
+| 3 | Strawberry ×5 | **Strawberry ×5** |
+| 2 | Dulce Italiano ×3 · Chili ×1 · Lettuce ×1 | **Dulce Italiano ×3 · Chili ×2** |
+| 1 (bottom) | Basil ×1 · Lettuce ×1 · Paprika ×3 | **Paprika ×4** |
+
+**As-built totals (18):** strawberry 9 · paprika 4 · Dulce Italiano 3 · chili 2
+
+**Deltas from plan:** paprika +1, chili +1, strawberry −1 (9 of 10 survived to
+planting). Basil, parsley, dill and lettuce are **not in the tower** — the
+lettuce died in the tray and the herbs were not sown in time. Tiers 5 and 6
+stay empty for them.
+
+The heavy-fruiter-low principle held: peppers occupy tiers 1–2, strawberries
+sit mid-tower at picking height. Losing the tier-6 strawberries is no loss —
+keeping all nine together on tiers 3–4 is tidier to net and to pick.
+
+### ⚠ The EC plan changed the moment the peppers went in
+
+Earlier guidance said to run **EC ~1.2 while the tower is strawberry-only**.
+That no longer applies: it was never strawberry-only. Nine peppers and chilis
+(which want ~1.8–2.4) went in beside nine strawberries (1.2–1.6) on day one,
+so the tower is mixed from the start and the shared **1.4–1.6** compromise is
+the right target.
+
+**But not yet.** These are freshly transplanted young plants: start at
+**EC 0.8–1.0, pH ~6.0** and ramp to 1.4–1.6 over the following 2–3 weeks as
+they establish.
+
+### Immediate follow-ups
+
+- [ ] **Confirm the reservoir is actually dosed.** If it is still plain
+      demineralised water, the plants are sitting at EC ~0 with no buffering
+      and will stall. This is the first thing to check.
+- [ ] **Blank off the 12 empty pods** with their plugs — cuts evaporation and
+      keeps light off the water, which keeps algae down.
+- [ ] **Check every strawberry crown sits proud** of its sponge and clear of
+      any pebbles. A buried crown rots.
+- [ ] **Confirm the drip reaches tiers 1–4.** A dry tier is easy to miss.
+- [ ] **Pinch strawberry flowers for 2–3 weeks** to force root and crown
+      growth. On the peppers, pinching the first king flower likewise helps
+      them bulk up before fruiting.
+- [ ] Shade from harsh direct sun for the first 2–3 days.
+- [ ] **Capture sensor baselines** — the telemetry stack went live the same
+      day (#222), so this is the natural moment to record what a freshly
+      planted, freshly dosed tower reads.
+- [ ] Sow basil, parsley and dill, and re-sow lettuce into a clean tray, for
+      tiers 5 and 6.
+
 ## Layout
 
 Hocomay tower, 6 tiers × 5 pods. Tier 1 = bottom.
@@ -68,9 +124,10 @@ Single 10 L reservoir → one compromise mix for all crops:
   sits much closer to every crop's real optimum.
 - **pH: 5.8–6.2, set point ~6.0**
 
-While the tower is **strawberry-only** (first weeks), run the lower
-strawberry-optimal **EC ~1.2**, then ramp to 1.4–1.6 as the peppers go in.
-Alpines sulk at high EC.
+~~While the tower is strawberry-only, run EC ~1.2.~~ **Void — the tower was
+never strawberry-only.** Peppers and strawberries went in together on
+2026-08-31, so 1.4–1.6 is the target from the start; see the as-built section
+above for the establishment ramp (0.8–1.0 first, then up over 2–3 weeks).
 
 Per-crop ideal hydro pH, all covered by the 5.8–6.2 window:
 

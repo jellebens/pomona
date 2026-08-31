@@ -265,8 +265,9 @@ Check every tier you intend to use.
 - **Pinch off every flower for the first 2–3 weeks.** It feels wrong and it is
   the highest-return thing you can do: it forces root and crown growth and
   pays back in far more fruit later.
-- Hold **EC ~1.2** while the tower is strawberry-only; step toward the shared
-  1.4–1.6 only as the peppers arrive.
+- **EC:** start at 0.8–1.0 for freshly transplanted plants and ramp to the
+  shared **1.4–1.6** over 2–3 weeks. (The old "hold ~1.2 while
+  strawberry-only" advice is void — the peppers went in the same day.)
 
 ## Timeline — as-built
 
