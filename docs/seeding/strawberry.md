@@ -187,6 +187,27 @@ Discard any sponge whose seedling is leggy and floppy rather than merely
 small — a stretched alpine seedling does not recover, and it takes a pod that
 a good one could have.
 
+**How many stems to leave (owner decision, 2026-08-31):**
+
+| Stems in the sponge | Do |
+|---|---|
+| **1** | Plant it as is. |
+| **2** | Acceptable to leave. Alpines are small and runnerless, so a pod carries two better than a pepper would — but plan to snip one within 2–3 weeks once it is clear which established. |
+| **3+** | **Thin now**, down to one or two. |
+
+Leaving extras is not free. They share one pod worth of drip and root volume,
+so both plants end up smaller and each yields less fruit; and the denser
+foliage cuts airflow inside the tower, which is exactly the condition that
+favours botrytis and damping-off — the most likely thing that killed the
+lettuce.
+
+**Better insurance than crowding a pod:** there are 12 sponges for 10 pods.
+Keep the two extras going in the tray as replacements instead of doubling up
+plants in a pod. A spare on the bench costs nothing; a crowded pod costs yield
+all season.
+
+Whatever the count, **snip at the base — never pull.**
+
 ### 2. Dose the reservoir — nothing goes in before this
 
 Plain demin water is EC ~0 and unbuffered; roots stall in it.
