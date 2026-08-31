@@ -162,14 +162,76 @@ date — a fast start does not guarantee the rest keeps pace.
    (there is no tomato in the plan). While the tower is strawberry-only, run
    **~1.2** — alpines sulk at high EC.
 
-## ⚠ The lettuce in this tray died (2026-08-07)
+## ⚠ The lettuce in this tray died (reported 2026-08-31)
 
-Days after germinating. These strawberries shared the tray and the conditions,
-so treat them as exposed: ventilate hard, strip out every dead seedling and any
+These strawberries shared the tray and the conditions and have survived it —
+which is reassuring but not proof of safety, since damping-off spreads. Treat
+them as exposed: ventilate hard, strip out every dead seedling and any
 mould or algae, replace the tray water, move to the coolest and brightest spot
 available, and **check the stem bases daily rather than the leaves** —
 damping-off shows at the base and kills within a day once it starts. Full
 differential diagnosis in [lettuce.md](lettuce.md).
+
+## Transplant day — runbook
+
+Do these in order. Steps 1–3 happen **before a single plant is touched.**
+
+### 1. Thin first, on the bench
+
+One plant per pod. If a sponge still carries 2+ seedlings, snip the weaker
+ones off **at the base with scissors** — pulling drags the keeper roots out
+with them. Do this before transplanting, not after: two seedlings sharing one
+net pod compete and both stay small.
+
+Discard any sponge whose seedling is leggy and floppy rather than merely
+small — a stretched alpine seedling does not recover, and it takes a pod that
+a good one could have.
+
+### 2. Dose the reservoir — nothing goes in before this
+
+Plain demin water is EC ~0 and unbuffered; roots stall in it.
+
+1. 7.5 L demin → A+B to **EC 0.8–1.0** (half strength; these are young
+   plants, and alpines burn easily).
+2. Stir, let it settle, then read pH with the **PH-201H pen**.
+3. Target **~6.0** (window 5.8–6.2). **pH-Down was deliberately deferred** on
+   the #254 shopping list until the pen reads above 6.5 — so measure before
+   assuming a correction is needed. If it does read high and there is no
+   pH-Down in the house, that is a hard stop: transplanting into
+   out-of-range solution is worse than waiting a day.
+4. Cross-check the dosed reservoir against the in-tank EC/pH sensors while you
+   are there. Transplant day is the natural moment to capture a baseline with
+   known-good hand readings beside the live ones.
+
+### 3. Prove the plumbing
+
+Run the pump and confirm water actually reaches **the top tier**. A tier that
+is not being dripped is easy to miss and fatal to whatever is planted in it.
+Check every tier you intend to use.
+
+### 4. Transplant
+
+1. Move the **whole sponge** into the net pod. Do not tease the roots apart.
+2. **Crown above the medium** — the point where leaf meets root must stay dry
+   and in open air. A buried crown rots, and this is the single most common
+   way to kill a hydroponic strawberry. Wedge with clay pebbles if the pod is
+   loose.
+3. Placement per the layout: **tier 3 ×5, tier 4 ×3, tier 6 ×2**. With fewer
+   survivors, fill tier 3 first (best light, fruit hangs clear), then tier 4.
+4. Blank off unused pods with their plugs — it cuts evaporation and keeps
+   light off the water, which keeps algae down.
+
+### 5. First week
+
+- Keep them out of harsh direct sun for the first 2–3 days while roots take.
+- Check daily that every planted tier is still being dripped.
+- Top up with **plain demin water** as the level drops, then re-check EC —
+  evaporation concentrates the solution, top-ups dilute it.
+- **Pinch off every flower for the first 2–3 weeks.** It feels wrong and it is
+  the highest-return thing you can do: it forces root and crown growth and
+  pays back in far more fruit later.
+- Hold **EC ~1.2** while the tower is strawberry-only; step toward the shared
+  1.4–1.6 only as the peppers arrive.
 
 ## Timeline — as-built
 
