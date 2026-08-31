@@ -6,6 +6,7 @@
 
 #include "network.h"
 #include "../../config.h"
+#include "../control/control.h" // publish what the unit decided (#260)
 #include "../ota/ota.h"
 #include "../display/display.h" // OTA progress screen restore on failure
 
@@ -15,6 +16,7 @@
 #include "../../secrets.h"
 
 #include <WiFi.h>
+#include <WiFiUdp.h> // NTP for the photoperiod (#260)
 #include <ArduinoMqttClient.h>
 #include <PomonaVersion.h>
 #include <mbed.h> // Watchdog kicks around blocking WiFi attempts
@@ -28,6 +30,50 @@ static uint32_t backoffMs = NET_RETRY_MIN_MS;
 static char otaUrlPending[224] = ""; // set by onMqttMessage, run in service
 static bool i2cScanPending = false;  // set by onMqttMessage, run in service
 
+// ---- clock (#260) ----------------------------------------------------
+// Only the photoperiod uses this. The pump duty cycle is millis()-only, so a
+// unit that never reaches an NTP server still waters correctly — it just holds
+// the light off and says "no_time".
+static WiFiUDP ntpUdp;
+static uint32_t epochAtSync = 0;   // 0 = never synced
+static uint32_t millisAtSync = 0;
+static uint32_t nextNtpMs = 0;
+
+uint32_t networkEpochNow() {
+  if (epochAtSync == 0) return 0;
+  return epochAtSync + (millis() - millisAtSync) / 1000UL;
+}
+
+// One NTP round trip, bounded by NTP_TIMEOUT_MS so the loop never stalls.
+static void ntpSync() {
+  uint8_t pkt[48] = {0};
+  pkt[0] = 0b11100011; // LI = 3 (unsynchronised), version 4, mode 3 (client)
+  if (!ntpUdp.begin(2390)) return;
+  ntpUdp.beginPacket(NTP_HOST, 123);
+  ntpUdp.write(pkt, sizeof(pkt));
+  ntpUdp.endPacket();
+
+  uint32_t t0 = millis();
+  while (millis() - t0 < NTP_TIMEOUT_MS) {
+    if (ntpUdp.parsePacket() >= 48) {
+      ntpUdp.read(pkt, sizeof(pkt));
+      // Transmit timestamp, seconds since 1900, bytes 40..43.
+      uint32_t secs1900 = ((uint32_t)pkt[40] << 24) | ((uint32_t)pkt[41] << 16) |
+                          ((uint32_t)pkt[42] << 8) | (uint32_t)pkt[43];
+      const uint32_t SEVENTY_YEARS = 2208988800UL;
+      if (secs1900 > SEVENTY_YEARS) {
+        epochAtSync = secs1900 - SEVENTY_YEARS;
+        millisAtSync = millis();
+        Serial.print("ntp: epoch ");
+        Serial.println(epochAtSync);
+      }
+      break;
+    }
+    delay(10);
+  }
+  ntpUdp.stop();
+}
+
 static void onMqttMessage(int /*messageSize*/) {
   String topic = mqtt.messageTopic();
   char payload[224];
@@ -39,6 +85,10 @@ static void onMqttMessage(int /*messageSize*/) {
     snprintf(otaUrlPending, sizeof(otaUrlPending), "%s", payload);
   else if (topic == TOPIC_UNIT_I2C_REQUEST)
     i2cScanPending = true; // any payload = scan now
+  else if (topic == TOPIC_PUMP_OVERRIDE)
+    controlSetOverride(payload); // firmware keeps the safety veto (#260)
+  else if (topic == TOPIC_CONTROL_MODE)
+    controlSetMode(payload);
 }
 
 bool wifiConnected() { return WiFi.status() == WL_CONNECTED; }
@@ -162,6 +212,15 @@ static bool connectMqtt() {
   mqtt.onMessage(onMqttMessage);
   mqtt.subscribe(TOPIC_UNIT_OTA_URL, 1); // basic OTA trigger (docs/mqtt.md)
   mqtt.subscribe(TOPIC_UNIT_I2C_REQUEST, 1); // on-demand I2C scan trigger
+  mqtt.subscribe(TOPIC_PUMP_OVERRIDE, 1);    // auto|on|off (#260)
+  mqtt.subscribe(TOPIC_CONTROL_MODE, 1);     // establishment|established
+
+  // Republish the control state on EVERY connect, not only on change: HA may
+  // have been driving its own schedule while we were away, so the retained
+  // request could predate the outage (docs/mqtt.md "Control topics").
+  controlForcePublish();
+
+  nextNtpMs = 0; // resync the clock now that we have a network
 
   Serial.println("MQTT: connected");
   return true;
@@ -234,12 +293,19 @@ static void publishI2CScan() {
 
 void networkService() {
   if (wifiConnected() && mqtt.connected()) {
-    mqtt.poll(); // keepalive + inbound (ota_url + i2c_scan subscriptions)
+    mqtt.poll(); // keepalive + inbound (ota_url, i2c_scan, override, mode)
     handleOtaPending();
     if (i2cScanPending) {
       i2cScanPending = false;
       publishI2CScan();
     }
+    if ((int32_t)(millis() - nextNtpMs) >= 0) {
+      nextNtpMs = millis() + NTP_RESYNC_MS;
+      ntpSync();
+    }
+    // Control decisions are published on change, not on the 30 s metric
+    // cadence: a stop is worth telling HA about immediately.
+    if (controlWantsPublish()) networkPublishControl();
     return;
   }
 
@@ -271,6 +337,28 @@ static void pubInt(const char *topic, long v) {
   mqtt.beginMessage(topic);
   mqtt.print(v);
   mqtt.endMessage();
+}
+
+// Retained + QoS 1, unlike the metrics: this is the current DESIRED state, so
+// a broker replay on HA restart is exactly what we want (docs/mqtt.md).
+static void pubRetained(const char *topic, const char *value) {
+  mqtt.beginMessage(topic, true, 1);
+  mqtt.print(value);
+  mqtt.endMessage();
+}
+
+void networkPublishControl() {
+  if (!mqtt.connected()) return;
+  pubRetained(TOPIC_PUMP_REQUEST, controlPumpOn() ? "on" : "off");
+  pubRetained(TOPIC_LIGHT_REQUEST, controlLightOn() ? "on" : "off");
+  pubRetained(TOPIC_PUMP_REASON, controlReasonStr());
+  controlMarkPublished();
+  Serial.print("mqtt: control pump=");
+  Serial.print(controlPumpOn() ? "on" : "off");
+  Serial.print(" light=");
+  Serial.print(controlLightOn() ? "on" : "off");
+  Serial.print(" reason=");
+  Serial.println(controlReasonStr());
 }
 
 void networkPublish(const Readings &r) {
