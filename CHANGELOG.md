@@ -6,6 +6,39 @@ firmware semver from `firmware/libraries/PomonaVersion` (single source of
 truth, bumped by the deploy scripts). Tags `v<version>` mark each release
 merged to `master`.
 
+## [1.1.0] - 2026-08-31 — on develop, NOT YET DEPLOYED
+
+The #260 control feature: the GIGA becomes the thing that decides when the
+pump and light run, publishing its decisions as requests that Home Assistant
+relays onto the Fibaro plugs. **Not compile-verified and not flashed** — the
+unit still runs 1.0.0; this version deploys on the next owner-gated OTA
+("go"), after a real build. Until the HA-side cutover switch
+(`input_boolean.pomona_firmware_control`) is turned on, the firmware's
+requests are advisory only and HA's own schedule keeps driving the plugs.
+
+### Added
+- **Local pump + light control module (#260)** — duty cycle on `millis()`
+  alone (15/15 establishment, 15/45 established day, 15/105 established
+  night), so a unit with no network still waters correctly; NTP photoperiod
+  (08:00–20:00 establishment, 06:00–20:00 established) with lights held OFF
+  when there is no clock (off is the safe failure); level interlock with the
+  5-min settle check, hourly rate limit, 24 h confirmed-low inhibit, and
+  fail-open on unknown. Priority: interlock → override → schedule — an
+  override can never outrun the interlock's veto.
+- **Control topics** — retained QoS 1 `pomona/pump/request`,
+  `pomona/light/request`, `pomona/pump/reason`, republished on every
+  connect; subscribes `pomona/pump/override` + `pomona/control/mode`.
+  Decisions publish on change, not on the 30 s metric cadence.
+- `controlInit()` runs first in `setup()` — a rebooting unit reaches a known
+  pump/light intent before anything that can hang.
+
+### Docs
+- Control architecture decision (where the logic lives) + `docs/mqtt.md`
+  control-topic contract; level-probe mount is permanent (raw 0 mid-cycle
+  is not trustworthy); planting-plan as-built (first transplant, 18/30
+  pods); seeding notes (pod seating, stems per pod); lettuce post-mortem
+  and transplant runbook.
+
 ## [1.0.0] - 2026-08-28
 
 Assembly week's finale: the tower unit is built (#254) and **every v1
