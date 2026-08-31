@@ -6,14 +6,14 @@ firmware semver from `firmware/libraries/PomonaVersion` (single source of
 truth, bumped by the deploy scripts). Tags `v<version>` mark each release
 merged to `master`.
 
-## [1.1.0] - 2026-08-31 — on develop, NOT YET DEPLOYED
+## [1.1.0] - 2026-08-31
 
 The #260 control feature: the GIGA becomes the thing that decides when the
 pump and light run, publishing its decisions as requests that Home Assistant
-relays onto the Fibaro plugs. **Not compile-verified and not flashed** — the
-unit still runs 1.0.0; this version deploys on the next owner-gated OTA
-("go"), after a real build. Until the HA-side cutover switch
-(`input_boolean.pomona_firmware_control`) is turned on, the firmware's
+relays onto the Fibaro plugs. Delivered over the air the same evening
+(compile 728 KB / 37%, OTA verified: `fw_version 1.1.0`, first requests
+published with reason `boot_safe` → `schedule`). Until the HA-side cutover
+switch (`input_boolean.pomona_firmware_control`) is turned on, the firmware's
 requests are advisory only and HA's own schedule keeps driving the plugs.
 
 ### Added

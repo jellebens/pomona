@@ -1,0 +1,92 @@
+# Changelog automation (owner directive 2026-08-31): every release updates
+# CHANGELOG.md automatically. Fires on each v* tag push (= one per release,
+# per the GitFlow release runbook) and pushes the update straight to develop
+# as the github-actions bot — the ONE sanctioned exception to the
+# "no direct commits to develop" rule, because it is deterministic, scoped to
+# CHANGELOG.md, and must not wait on a human.
+#
+# Behavior:
+#   * If CHANGELOG.md already has a "## [X.Y.Z]" section (hand-written ahead
+#     of the release, like 1.1.0), only its heading is normalized to
+#     "## [X.Y.Z] - <tag date>" — curated prose is never overwritten.
+#   * Otherwise a section is generated from the conventional commits between
+#     the previous v* tag and this one, grouped Added/Fixed/Docs/Other.
+#
+# NOTE: for tag pushes GitHub runs the workflow file AT THE TAGGED COMMIT, so
+# this becomes active for the first release tag whose master history contains
+# this file (v1.2.0 or later; v1.1.0 predates it).
+name: changelog
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  update-changelog:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: develop
+          fetch-depth: 0
+
+      - name: Update CHANGELOG.md for the released tag
+        run: |
+          set -euo pipefail
+          TAG="${GITHUB_REF_NAME}"
+          VERSION="${TAG#v}"
+          DATE=$(git log -1 --format=%cs "refs/tags/${TAG}" 2>/dev/null || date +%F)
+
+          if grep -q "^## \[${VERSION}\]" CHANGELOG.md; then
+            # Curated section exists — normalize the heading (drops any
+            # "on develop / NOT YET DEPLOYED" style suffix), keep the prose.
+            sed -i "s|^## \[${VERSION}\].*|## [${VERSION}] - ${DATE}|" CHANGELOG.md
+            echo "normalized existing ${VERSION} heading"
+          else
+            PREV=$(git describe --tags --abbrev=0 "refs/tags/${TAG}^" 2>/dev/null || echo "")
+            RANGE="${PREV:+${PREV}..}refs/tags/${TAG}"
+            SECTION=$(mktemp)
+            {
+              echo "## [${VERSION}] - ${DATE}"
+              echo
+              print_group() {
+                local title="$1" pattern="$2"
+                local lines
+                lines=$(git log --no-merges --pretty='%s' "${RANGE}" \
+                        | grep -E "${pattern}" \
+                        | sed -E 's/^[a-z]+(\([^)]*\))?!?: /- /' || true)
+                if [ -n "${lines}" ]; then
+                  echo "### ${title}"
+                  echo "${lines}"
+                  echo
+                fi
+              }
+              print_group "Added" '^feat(\(|:|!)'
+              print_group "Fixed" '^fix(\(|:|!)'
+              print_group "Docs"  '^docs(\(|:|!)'
+              print_group "Other" '^(chore|refactor|perf|test|ci|build)(\(|:|!)'
+            } > "${SECTION}"
+            # Insert above the first existing version heading.
+            awk -v section="${SECTION}" '
+              /^## \[/ && !done { while ((getline line < section) > 0) print line; done=1 }
+              { print }
+            ' CHANGELOG.md > CHANGELOG.md.new
+            mv CHANGELOG.md.new CHANGELOG.md
+            echo "generated ${VERSION} section from ${RANGE}"
+          fi
+
+      - name: Commit to develop
+        run: |
+          set -euo pipefail
+          if git diff --quiet CHANGELOG.md; then
+            echo "changelog already up to date — nothing to commit"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add CHANGELOG.md
+          git commit -m "docs(changelog): ${GITHUB_REF_NAME} release notes (automated)"
+          git push origin develop
