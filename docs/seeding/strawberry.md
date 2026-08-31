@@ -211,14 +211,28 @@ Check every tier you intend to use.
 
 ### 4. Transplant
 
-1. Move the **whole sponge** into the net pod. Do not tease the roots apart.
-2. **Crown above the medium** — the point where leaf meets root must stay dry
-   and in open air. A buried crown rots, and this is the single most common
-   way to kill a hydroponic strawberry. Wedge with clay pebbles if the pod is
-   loose.
-3. Placement per the layout: **tier 3 ×5, tier 4 ×3, tier 6 ×2**. With fewer
+1. Move the **whole sponge** into the net pod. **The seedling never leaves the
+   sponge** — do not pull it out, do not rinse it off, do not tease the roots
+   apart. The sponge is now part of the plant and stays with it for life.
+2. **Seat it, do not squeeze it.** A firm press to settle it home is fine;
+   compressing or jamming it in is not. Squeezing collapses the sponge
+   structure, drives the air out, and it then stays waterlogged — the same
+   mistake as wringing one out by hand. Aim for snug.
+   - **Sponge loose in the cup?** Pack clay pebbles around the outside to
+     wedge it. Do not stuff extra sponge in beside it.
+   - **Sponge too big?** Do not force it. Pare a sliver off the outside edge
+     with a knife, well clear of the roots.
+3. **Feed the roots down through the cup, not back up inside it.** Any roots
+   already out of the sponge bottom go through the net slots so they hang free
+   into the tower interior. Roots folded back up into the cup will circle and
+   choke.
+4. **Crown above the medium** — the point where leaf meets root must stay dry
+   and in open air, proud of the sponge and clear of any pebbles. A buried
+   crown rots, and this is the single most common way to kill a hydroponic
+   strawberry.
+5. Placement per the layout: **tier 3 ×5, tier 4 ×3, tier 6 ×2**. With fewer
    survivors, fill tier 3 first (best light, fruit hangs clear), then tier 4.
-4. Blank off unused pods with their plugs — it cuts evaporation and keeps
+6. Blank off unused pods with their plugs — it cuts evaporation and keeps
    light off the water, which keeps algae down.
 
 ### 5. First week
