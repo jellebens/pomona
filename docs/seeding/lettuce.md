@@ -1,8 +1,8 @@
 # Seeding — lettuce (iceberg)
 
-Status: **❌ DIED 2026-08-07, shortly after germinating.** Sown early August,
-up by 08-07, dead within days. Re-sow needed — see the post-mortem at the
-bottom of this doc, and **fix the cause before re-sowing**.
+Status: **❌ DIED — reported 2026-08-31.** Sown 2026-08-03, germinated
+2026-08-07, dead some time in the four weeks since. Re-sow needed — see the
+post-mortem at the bottom of this doc, and **fix the cause before re-sowing**.
 
 *Correction: this was first recorded as germinating 2026-08-03. That was the
 sow date, not the germination date; the observation is 08-07.*
@@ -83,12 +83,17 @@ after sprouting**.
 - **Bolting**: heat makes it run to seed instead of hearting. Autumn indoors
   is actually good timing for it; a hot spot next to a window is not.
 
-## ⚠ Post-mortem — the lettuce died (2026-08-07)
+## ⚠ Post-mortem — the lettuce died (reported 2026-08-31)
 
-The lettuce germinated and then died within days. This is the first real
-failure in the project, and it matters far beyond the lettuce: **the
-strawberries are in the same tray, in the same conditions, and they are much
-more fragile.**
+The lettuce germinated on 08-07 and was dead by the time it was reported on
+08-31. The exact date of death is unrecorded, which itself is the first
+lesson: **nothing was watching the tray.** It matters far beyond the lettuce
+— the strawberries are in the same tray, in the same conditions.
+
+*Note: the strawberries have survived the same four weeks, which shifts the
+diagnosis. A cause that killed everything (cooked tray, total dry-out) is
+unlikely; a cause that picks off the more delicate seedling — damping-off, or
+lettuce-specific heat stress and bolting-out at 28 °C — fits better.*
 
 ### Diagnose before re-sowing — the symptom names the cause
 
