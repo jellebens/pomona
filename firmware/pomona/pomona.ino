@@ -15,6 +15,7 @@
 #include <PomonaVersion.h> // libraries/PomonaVersion — bumped by deploy.ps1
 
 #include "config.h"
+#include "src/control/control.h"
 #include "src/display/display.h"
 #include "src/network/network.h"
 #include "src/ota/ota.h"
@@ -25,6 +26,11 @@ static uint32_t lastReadMs = 0;
 static uint32_t lastPublishMs = 0;
 
 void setup() {
+  // Safe state FIRST — before serial, watchdog, display, sensors or WiFi.
+  // A rebooting unit (OTA, watchdog, brown-out) must be in a known state
+  // before anything that can hang gets a chance to run (#260).
+  controlInit();
+
   Serial.begin(115200);
   unsigned long t0 = millis();
   while (!Serial && millis() - t0 < 3000) {}
@@ -99,6 +105,11 @@ void loop() {
     sensorsRead(readings); // blocking, worst case ~1.5 s (see sensors.h)
     displayUpdate(readings);
   }
+
+  // Decide locally, every loop. This never waits on the network: if WiFi or
+  // the broker are down the tower still waters correctly, it just cannot say
+  // so (#260, docs/control-architecture.md).
+  controlService(readings);
 
   if (mqttConnected() && now - lastPublishMs >= MQTT_PUBLISH_MS) {
     lastPublishMs = now;

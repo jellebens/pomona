@@ -60,6 +60,65 @@ Broker: the in-cluster EMQX at **`mqtt.lab.local:1883`**. Topics follow
 Publish cadence 30 s; `pomona/unit/status` is retained online/offline with
 a broker LWT.
 
+## Control — pump + light (#260)
+
+Build status: compiles clean for  (arduino-cli 1.5.1,
+core 4.6.0), , no warnings from  or .
+728,292 B flash (37%), 137,856 B RAM (26%). Not yet flashed — deploys are
+owner-gated.
+
+
+`src/control` decides what the pump and grow light should be doing; Home
+Assistant only relays those decisions onto the Fibaro plugs. Design rationale:
+`docs/control-architecture.md`. Topic contract: `docs/mqtt.md` "Control topics".
+
+**Nothing here waits on the network.** `controlService()` runs off the local
+sweep and `millis()`; if WiFi or the broker are down the tower still waters
+correctly, it just cannot report it. Publishing is reporting, not deciding.
+
+**Safe state is set first.** `controlInit()` is the first call in `setup()` —
+before serial, watchdog, display, sensors and WiFi — because a rebooting unit
+(OTA, watchdog, brown-out) must be in a known state before anything that can
+hang gets a chance to run.
+
+| Published (retained, QoS 1) | Payload |
+|---|---|
+| `pomona/pump/request` | `on` / `off` |
+| `pomona/light/request` | `on` / `off` |
+| `pomona/pump/reason` | `boot_safe` / `schedule` / `settling` / `level_low` / `override` |
+
+| Subscribed | Payload |
+|---|---|
+| `pomona/pump/override` | `auto` / `on` / `off` |
+| `pomona/control/mode` | `establishment` / `established` |
+
+Requests are republished on **every connect**, not only on change: HA may have
+been running its own schedule while the unit was away, so the retained value
+could predate the outage.
+
+### Pump duty cycle
+
+15 min on, then off for 15 min (establishment) / 45 min (established, day) /
+105 min (established, night). Runs on `millis()` only — no clock needed.
+
+### Photoperiod, and the one clock dependency
+
+The light needs wall-clock time, and NTP at connect is the only source. With no
+clock the light is held **off** and the pump falls back to the day cycle:
+lights stuck off costs growth, lights stuck on at night costs the plants their
+dark period, so off is the safe failure. `TZ_OFFSET_MINUTES` in `config.h` is a
+fixed offset — an hour of DST error is irrelevant to a 14 h photoperiod.
+
+### Level interlock
+
+The probe is a top-up gauge, blind below 8.2 L, and it reads low *during* a
+pump cycle because the tower holds water in transit. So a raw 0 triggers a
+**settle check**: stop the pump, wait 5 min for drain-back, re-read. Recovered
+means it was in transit; still low sets the confirmed flag, and only a
+confirmed low persisting 24 h inhibits the pump. No signal at all (`-1`) is
+*unknown, not empty* — it fails open. An override can never run the pump while
+the interlock is inhibiting: firmware keeps the veto.
+
 ## OTA updates (basic — #243 slice)
 
 The classic ArduinoOTA "network port" upload does **not** support the
