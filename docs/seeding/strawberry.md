@@ -162,6 +162,15 @@ date — a fast start does not guarantee the rest keeps pace.
    (there is no tomato in the plan). While the tower is strawberry-only, run
    **~1.2** — alpines sulk at high EC.
 
+## ⚠ The lettuce in this tray died (2026-08-07)
+
+Days after germinating. These strawberries shared the tray and the conditions,
+so treat them as exposed: ventilate hard, strip out every dead seedling and any
+mould or algae, replace the tray water, move to the coolest and brightest spot
+available, and **check the stem bases daily rather than the leaves** —
+damping-off shows at the base and kills within a day once it starts. Full
+differential diagnosis in [lettuce.md](lettuce.md).
+
 ## Timeline — as-built
 
 Sown **2026-08-03**. **✅ Germinated 2026-08-07 — day 4.**
@@ -178,7 +187,7 @@ the sponge count to matter (below) and watch for stretching.
 | ~~17 Aug – 2 Sept~~ | ~~Germination window (14–30 d)~~ — **superseded, it germinated on day 4** |
 | **now** | **Count sprouted sponges out of 12** — this replaces the ≈24 Aug 3-week count. 8+ → no top-up, keep the reserve seed. Under 4 → the fast warm germination came at the cost of rate; sow stratified reserve in a cooler spot. |
 | **≈14–21 Aug** | First true leaves → start quarter-strength A+B (EC 0.4–0.8, pH ~5.8); thin to one seedling per sponge at 2 true leaves. |
-| **by ≈14 Aug** | **pH-Down and EC calibration fluid must be in hand** — the binding date, set by the lettuce. |
+| **by ≈25 Aug** | **pH-Down and EC calibration fluid must be in hand** — strawberry-driven now that the lettuce died. |
 | **≈31 Aug – 14 Sept** | Transplant window, pulled ~2 weeks earlier by the fast germination (3–4 true leaves, roots through the sponge). Gate on the plant, not the date. |
 | **by end Aug** | **Grow light running** — pulled forward from mid-Sept. Seedlings that came up on day 4 are growing *now*, in a hot room, and August daylight indoors is already marginal for stopping them stretching. |
 | Sept onward | First flowers; pinch them for the first 2–3 weeks after transplant. |
