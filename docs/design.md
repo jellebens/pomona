@@ -14,8 +14,16 @@ no automated control in v1.
   bridge. The ESP32 stash is spares / future satellite nodes.
 - **Screen v1:** current readings only. On-screen history graphs are
   follow-up #223 (feasible on this display).
-- **Control:** explicitly deferred. Pump stays on its power pack; peristaltic
-  dosing (auto pH + nutrients) is phase 2, card #224.
+- **Control:** deferred in v1 — but **partially unblocked 2026-08-31**. The
+  tower was planted, so the pump and lamps now run on scheduled HA smart plugs
+  (`home-assitant` repo, `pomona-schedule.md`). That is scheduling only; the
+  GIGA still just measures and publishes.
+  **Under consideration:** moving all control logic into the firmware behind
+  relays, so the unit that holds the sensors also holds the cutoff and keeps
+  watering through a network outage — see
+  [control-architecture.md](control-architecture.md) for the options, the
+  reboot risk that decides it, and the mains-safety constraints.
+  Peristaltic dosing (auto pH + nutrients) is phase 2, card #224.
 
 ## Sensor loadout v1 (settled 2026-07-28, detail in #220)
 
