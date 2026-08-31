@@ -62,6 +62,12 @@ a broker LWT.
 
 ## Control — pump + light (#260)
 
+Build status: compiles clean for  (arduino-cli 1.5.1,
+core 4.6.0), , no warnings from  or .
+728,292 B flash (37%), 137,856 B RAM (26%). Not yet flashed — deploys are
+owner-gated.
+
+
 `src/control` decides what the pump and grow light should be doing; Home
 Assistant only relays those decisions onto the Fibaro plugs. Design rationale:
 `docs/control-architecture.md`. Topic contract: `docs/mqtt.md` "Control topics".
