@@ -41,6 +41,51 @@ parsing sentinels.
 | `pomona/unit/ota_url` | http(s) URL of a `.ota` image — **command topic, the unit subscribes**; publish **non-retained** (a retained URL would re-flash on every reconnect) | no | by the operator (basic OTA, #243 slice) |
 | `pomona/unit/ota_result` | `applying <url>` / `failed: <reason>` | **yes** | on an OTA attempt; success = new `unit/fw_version` after reboot |
 
+## Control topics — the GIGA decides, HA relays (Trello #260)
+
+Status: **contract agreed, HA side built and merged
+(`home-assitant` PR #16), firmware side not written yet.**
+
+The GIGA publishes what it wants to happen; Home Assistant relays it onto the
+Fibaro plugs. This moves the decision to the device that actually holds the
+sensors without touching any mains wiring — see
+[control-architecture.md](control-architecture.md) for why, and for the fuller
+relay-driven end state this is the first half of.
+
+| Topic | Payload | Retained | Published |
+|---|---|---|---|
+| `pomona/pump/request` | `on` / `off` | **yes**, QoS 1 | whenever the desired pump state changes |
+| `pomona/light/request` | `on` / `off` | **yes**, QoS 1 | whenever the desired light state changes |
+| `pomona/pump/reason` | free text — `schedule` / `level_low` / `settling` / `override` / `boot_safe` | **yes** | alongside each pump request |
+
+**Retain these, unlike the metrics.** The metric topics are deliberately
+non-retained because a stale sensor reading is worse than none. A *request* is
+the opposite: it is the current desired state, and on an HA restart the broker
+replaying it immediately is exactly what stops the plugs sitting stale until
+the next decision.
+
+### Who is in command
+
+HA obeys these topics only while the firmware is **both enabled and
+reachable** — `input_boolean.pomona_firmware_control` on **and**
+`pomona/unit/status` = `online`. Otherwise HA falls back to its own schedule
+and says so. So a crash, a wedge or an OTA reboot hands control back
+automatically rather than freezing the pump in its last requested state.
+
+That fallback is why the firmware must **publish a request on every connect**,
+not only on change: HA may have been driving in the meantime, and the retained
+value could be from before the outage.
+
+### Firmware obligations
+
+- Publish `boot_safe` and the safe request state **early in `setup()`**, before
+  WiFi and before the sensors — the first thing anyone learns about a rebooted
+  unit should be that it is in a known state.
+- Do not gate the schedule on WiFi. A unit that cannot reach the broker must
+  still decide correctly locally; publishing is reporting, not deciding.
+- Keep the local interlock authoritative. HA applies its own sustained-low
+  inhibit as a second opinion, but it is belt and braces, not the mechanism.
+
 Cadence: sensor sweep every **5 s** (also refreshes the screen), publish
 every **30 s**. QoS 0 for metrics; QoS 1 for the retained `unit/status`,
 `unit/fw_version` and `unit/sensors`.
