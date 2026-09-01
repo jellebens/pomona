@@ -394,16 +394,20 @@ void displayUpdate(const Readings &r) {
   } else {
     lv_label_set_text(tPh.value, "--");
   }
-  // water level as a status word: probe points >=3 OK / 1-2 WRN / 0 CRIT
+  // water level as a status word (owner semantics 2026-09-01, matches the
+  // Grafana tile): 2 pts = OK target fill / 1 LOW, 3-4 HIGH (amber) / 0 CRIT
   // (pt 1 = 8.2 L, pt 3 = 9.7 L — docs/sensors/level-probe.md ladder)
   if (r.probePoints < 0) {
     lv_label_set_text(tProbe.value, "--");
     lv_obj_set_style_text_color(tProbe.value, COL_TEXT, 0);
-  } else if (r.probePoints >= 3) {
+  } else if (r.probePoints == 2) {
     lv_label_set_text(tProbe.value, "OK");
     lv_obj_set_style_text_color(tProbe.value, COL_OK, 0);
-  } else if (r.probePoints >= 1) {
-    lv_label_set_text(tProbe.value, "WRN");
+  } else if (r.probePoints >= 3) {
+    lv_label_set_text(tProbe.value, "HIGH");
+    lv_obj_set_style_text_color(tProbe.value, COL_WARN, 0);
+  } else if (r.probePoints == 1) {
+    lv_label_set_text(tProbe.value, "LOW");
     lv_obj_set_style_text_color(tProbe.value, COL_WARN, 0);
   } else {
     lv_label_set_text(tProbe.value, "CRIT");
