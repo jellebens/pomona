@@ -336,11 +336,24 @@ static void titleClicked(lv_event_t * /*e*/) {
 static void setFloat(Tile &t, bool ok, float v, uint8_t decimals) {
   if (!ok || isnan(v)) {
     lv_label_set_text(t.value, "--");
+    lv_obj_set_style_text_color(t.value, COL_TEXT, 0);
     return;
   }
   char buf[16];
   snprintf(buf, sizeof(buf), "%.*f", decimals, (double)v);
   lv_label_set_text(t.value, buf);
+}
+
+// Band coloring (config.h BAND_*): green inside the target band, amber inside
+// tolerance, red beyond — matches Tethys and the Grafana dashboard.
+static void setFloatBanded(Tile &t, bool ok, float v, uint8_t decimals,
+                           float gLo, float gHi, float aLo, float aHi) {
+  setFloat(t, ok, v, decimals);
+  if (!ok || isnan(v)) return; // setFloat already reset to neutral
+  lv_color_t c = (v >= gLo && v <= gHi)   ? COL_OK
+                 : (v >= aLo && v <= aHi) ? COL_WARN
+                                          : COL_BAD;
+  lv_obj_set_style_text_color(t.value, c, 0);
 }
 
 static void setInt(Tile &t, bool ok, int v) {
@@ -382,17 +395,22 @@ void displayLinkStatus(bool wifiUp, bool mqttUp) {
 
 void displayUpdate(const Readings &r) {
   lastReadings = r; // cached: reapplied when the tiles screen is rebuilt
-  setFloat(tWaterTemp, r.waterTempOk, r.waterTempC, 1);
-  setFloat(tEc, true, r.ecMsCm, 2);
+  setFloatBanded(tWaterTemp, r.waterTempOk, r.waterTempC, 1,
+                 BAND_WTEMP_G_LO, BAND_WTEMP_G_HI, BAND_WTEMP_A_LO, BAND_WTEMP_A_HI);
+  setFloatBanded(tEc, true, r.ecMsCm, 2,
+                 BAND_EC_G_LO, BAND_EC_G_HI, BAND_EC_A_LO, BAND_EC_A_HI);
   // pH: uncalibrated -> show raw probe voltage so bench work has a number
   if (r.phOk) {
-    setFloat(tPh, true, r.ph, 2);
+    setFloatBanded(tPh, true, r.ph, 2,
+                   BAND_PH_G_LO, BAND_PH_G_HI, BAND_PH_A_LO, BAND_PH_A_HI);
   } else if (!isnan(r.phRawV)) {
     char buf[16];
     snprintf(buf, sizeof(buf), "%.3fV", (double)r.phRawV);
     lv_label_set_text(tPh.value, buf);
+    lv_obj_set_style_text_color(tPh.value, COL_TEXT, 0);
   } else {
     lv_label_set_text(tPh.value, "--");
+    lv_obj_set_style_text_color(tPh.value, COL_TEXT, 0);
   }
   // water level as a status word (owner semantics 2026-09-01, matches the
   // Grafana tile): 2 pts = OK target fill / 1 LOW, 3-4 HIGH (amber) / 0 CRIT
@@ -414,8 +432,12 @@ void displayUpdate(const Readings &r) {
     lv_obj_set_style_text_color(tProbe.value, COL_BAD, 0);
   }
   setInt(tLevel, r.levelOk && r.levelPct >= 0, r.levelPct);
-  setFloat(tAirTemp, r.bmeOk, r.airTempC, 1);
-  setFloat(tRh, r.bmeOk, r.humidityPct, 1);
+  setFloatBanded(tAirTemp, r.bmeOk, r.airTempC, 1,
+                 BAND_ATEMP_G_LO, BAND_ATEMP_G_HI, BAND_ATEMP_A_LO, BAND_ATEMP_A_HI);
+  setFloatBanded(tRh, r.bmeOk, r.humidityPct, 1,
+                 BAND_RH_G_LO, BAND_RH_G_HI, BAND_RH_A_LO, BAND_RH_A_HI);
+  // pressure + lux stay neutral: no meaningful band (lux is a day/night
+  // rhythm indicator, not a target).
   setFloat(tPressure, r.bmeOk, r.pressureHpa, 1);
   setFloat(tLux, r.luxOk, r.lux, 0);
 }
