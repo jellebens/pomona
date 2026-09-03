@@ -1,20 +1,25 @@
 // Pomona firmware — dosing bench module (Trello #284). See dosing.h.
 //
-// DFR0523 control is standard servo PPM (DFRobot's own examples drive it
-// with the Servo library): 500-1400us forward (500 = max speed),
-// 1400-1600us stop, 1600-2500us reverse (2500 = max reverse speed).
+// DFR0523 control is standard servo PPM: 500-1400us forward (500 = max
+// speed), 1400-1600us stop, 1600-2500us reverse (2500 = max reverse).
+//
+// Pulses are generated with mbed PwmOut directly (explicit 20 ms period,
+// pulsewidth in us). The Arduino Servo library was tried first and left the
+// pin near-constantly HIGH on the GIGA (measured ~3 V average on D4 where a
+// servo signal averages 0.1-0.4 V) — bench session 2026-09-03.
 
 #include "dosing.h"
 
 #include <Arduino.h>
-#include <Servo.h>
+#include <mbed.h>
+#include <pinDefinitions.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
 
 #include "../../config.h"
 
-static Servo ch[4];
+static mbed::PwmOut *ch[4] = {nullptr, nullptr, nullptr, nullptr};
 static const int chPins[4] = {PIN_DOSE_CH1, PIN_DOSE_CH2, PIN_DOSE_CH3,
                               PIN_DOSE_CH4};
 static int runningCh = -1; // 0-3 while a timed run is active
@@ -30,15 +35,20 @@ static void setEvent(const char *fmt, ...) {
   eventPending = true;
 }
 
+static void writeUs(int i, int us) {
+  if (ch[i]) ch[i]->pulsewidth_us(us);
+}
+
 static void stopAll() {
-  for (int i = 0; i < 4; i++) ch[i].writeMicroseconds(1500);
+  for (int i = 0; i < 4; i++) writeUs(i, 1500);
   runningCh = -1;
 }
 
 void dosingInit() {
   for (int i = 0; i < 4; i++) {
-    ch[i].attach(chPins[i]);
-    ch[i].writeMicroseconds(1500); // explicit stop from the first pulse
+    ch[i] = new mbed::PwmOut(digitalPinToPinName(chPins[i]));
+    ch[i]->period_ms(20);       // standard 50 Hz servo frame
+    ch[i]->pulsewidth_us(1500); // explicit stop from the first pulse
   }
 }
 
@@ -73,7 +83,7 @@ void dosingHandleCommand(const char *payload) {
   }
 
   stopAll(); // one channel at a time, always
-  ch[n - 1].writeMicroseconds(us);
+  writeUs(n - 1, us);
   runningCh = n - 1;
   runUntil = millis() + (unsigned long)ms;
   setEvent("ch%d %s %ldms speed%d", n, dir, ms, speed);
