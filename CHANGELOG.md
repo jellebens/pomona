@@ -6,6 +6,16 @@ firmware semver from `firmware/libraries/PomonaVersion` (single source of
 truth, bumped by the deploy scripts). Tags `v<version>` mark each release
 merged to `master`.
 
+## [1.2.0] - 2026-09-03
+
+### Added
+- band color coding on all metric tiles
+- water level tile follows the 2026-09-01 level semantics
+
+### Other
+- v1.2.0
+- auto-update CHANGELOG.md on every release tag
+
 ## [1.1.0] - 2026-08-31
 
 The #260 control feature: the GIGA becomes the thing that decides when the

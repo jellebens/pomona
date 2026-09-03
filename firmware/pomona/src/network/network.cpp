@@ -7,6 +7,7 @@
 #include "network.h"
 #include "../../config.h"
 #include "../control/control.h" // publish what the unit decided (#260)
+#include "../dosing/dosing.h"   // bench test commands (#284)
 #include "../ota/ota.h"
 #include "../display/display.h" // OTA progress screen restore on failure
 
@@ -89,6 +90,8 @@ static void onMqttMessage(int /*messageSize*/) {
     controlSetOverride(payload); // firmware keeps the safety veto (#260)
   else if (topic == TOPIC_CONTROL_MODE)
     controlSetMode(payload);
+  else if (topic == TOPIC_DOSE_TEST)
+    dosingHandleCommand(payload); // hard-capped bench runs only (#284)
 }
 
 bool wifiConnected() { return WiFi.status() == WL_CONNECTED; }
@@ -214,6 +217,7 @@ static bool connectMqtt() {
   mqtt.subscribe(TOPIC_UNIT_I2C_REQUEST, 1); // on-demand I2C scan trigger
   mqtt.subscribe(TOPIC_PUMP_OVERRIDE, 1);    // auto|on|off (#260)
   mqtt.subscribe(TOPIC_CONTROL_MODE, 1);     // establishment|established
+  mqtt.subscribe(TOPIC_DOSE_TEST, 1);        // bench dosing commands (#284)
 
   // Republish the control state on EVERY connect, not only on change: HA may
   // have been driving its own schedule while we were away, so the retained
@@ -298,6 +302,12 @@ void networkService() {
     if (i2cScanPending) {
       i2cScanPending = false;
       publishI2CScan();
+    }
+    const char *doseEv = dosingTakeEvent();
+    if (doseEv) {
+      mqtt.beginMessage(TOPIC_DOSE_RESULT, true, 1); // retained: last action
+      mqtt.print(doseEv);
+      mqtt.endMessage();
     }
     if ((int32_t)(millis() - nextNtpMs) >= 0) {
       nextNtpMs = millis() + NTP_RESYNC_MS;
