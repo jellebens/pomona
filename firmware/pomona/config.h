@@ -113,3 +113,19 @@ const char TOPIC_PUMP_REASON[] = MQTT_BASE "/pump/reason";     // retained
 const char TOPIC_LIGHT_REQUEST[] = MQTT_BASE "/light/request"; // retained on|off
 const char TOPIC_PUMP_OVERRIDE[] = MQTT_BASE "/pump/override"; // subscribed auto|on|off
 const char TOPIC_CONTROL_MODE[] = MQTT_BASE "/control/mode";   // subscribed establishment|established
+
+// ---- display band coloring (owner 2026-09-02) -------------------------
+// Tile values render green inside the target band, amber inside tolerance,
+// red beyond. Bands MUST match Tethys (.claude/agents/tethys.md, gitops) and
+// the Grafana dashboard. EC is the TRANSPLANT band (0.8-1.0); when
+// establishment ends (~2026-09-14, card #262) ramp these toward 1.4-1.6.
+const float BAND_PH_G_LO = 5.8f,  BAND_PH_G_HI = 6.2f;
+const float BAND_PH_A_LO = 5.4f,  BAND_PH_A_HI = 6.5f;
+const float BAND_EC_G_LO = 0.8f,  BAND_EC_G_HI = 1.0f;
+const float BAND_EC_A_LO = 0.7f,  BAND_EC_A_HI = 1.1f;
+const float BAND_WTEMP_G_LO = 18.0f, BAND_WTEMP_G_HI = 24.0f;
+const float BAND_WTEMP_A_LO = 15.0f, BAND_WTEMP_A_HI = 26.5f;
+const float BAND_ATEMP_G_LO = 18.0f, BAND_ATEMP_G_HI = 28.0f;
+const float BAND_ATEMP_A_LO = 12.0f, BAND_ATEMP_A_HI = 32.0f;
+const float BAND_RH_G_LO = 40.0f, BAND_RH_G_HI = 70.0f;
+const float BAND_RH_A_LO = 30.0f, BAND_RH_A_HI = 80.0f;
