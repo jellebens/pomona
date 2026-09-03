@@ -8,4 +8,4 @@
 
 #pragma once
 
-#define POMONA_FW_VERSION "1.2.0"
+#define POMONA_FW_VERSION "1.3.0"
