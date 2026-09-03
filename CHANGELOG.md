@@ -6,6 +6,17 @@ firmware semver from `firmware/libraries/PomonaVersion` (single source of
 truth, bumped by the deploy scripts). Tags `v<version>` mark each release
 merged to `master`.
 
+## [1.3.0] - 2026-09-03
+
+### Added
+- bench-test module for the DFR0523 channels (#284)
+
+### Docs
+- v1.2.0 release notes (automated)
+
+### Other
+- v1.3.0
+
 ## [1.2.0] - 2026-09-03
 
 ### Added
