@@ -17,6 +17,7 @@
 #include "config.h"
 #include "src/control/control.h"
 #include "src/display/display.h"
+#include "src/dosing/dosing.h"
 #include "src/network/network.h"
 #include "src/ota/ota.h"
 #include "src/sensors/sensors.h"
@@ -30,6 +31,7 @@ void setup() {
   // A rebooting unit (OTA, watchdog, brown-out) must be in a known state
   // before anything that can hang gets a chance to run (#260).
   controlInit();
+  dosingInit(); // all DFR0523 channels held at explicit stop (#284)
 
   Serial.begin(115200);
   unsigned long t0 = millis();
@@ -110,6 +112,7 @@ void loop() {
   // the broker are down the tower still waters correctly, it just cannot say
   // so (#260, docs/control-architecture.md).
   controlService(readings);
+  dosingService(); // stop timed bench runs on schedule (#284)
 
   if (mqttConnected() && now - lastPublishMs >= MQTT_PUBLISH_MS) {
     lastPublishMs = now;
