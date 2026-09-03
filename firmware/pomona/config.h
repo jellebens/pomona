@@ -14,7 +14,12 @@
 const int PIN_TDS = A0;    // Grove TDS, powered from 3V3
 const int PIN_PH = A1;     // SEN0169-V2 via DFR0504 isolator
 const int PIN_ONEWIRE = 2; // DS18B20 data, 4.7k pull-up to 3V3
-const int PIN_PROBE = 3;   // CQRSENYW003 green wire (open collector)
+const int PIN_PROBE = 3;   // CQRSENYW003 green wire (open collector; probe REMOVED 2026-09-03, pin kept reserved)
+// DFR0523 dosing pumps (#284-287): PPM signal per channel, D4-D7 block.
+const int PIN_DOSE_CH1 = 4; // ch1 pH-Down (BPT tube)
+const int PIN_DOSE_CH2 = 5; // ch2 Nutrient A (reserved until #285)
+const int PIN_DOSE_CH3 = 6; // ch3 Nutrient B (reserved until #286)
+const int PIN_DOSE_CH4 = 7; // ch4 spare, configured but idle (#287)
 
 // ---- ADC -------------------------------------------------------------
 const float VREF = 3.3f;
@@ -113,6 +118,11 @@ const char TOPIC_PUMP_REASON[] = MQTT_BASE "/pump/reason";     // retained
 const char TOPIC_LIGHT_REQUEST[] = MQTT_BASE "/light/request"; // retained on|off
 const char TOPIC_PUMP_OVERRIDE[] = MQTT_BASE "/pump/override"; // subscribed auto|on|off
 const char TOPIC_CONTROL_MODE[] = MQTT_BASE "/control/mode";   // subscribed establishment|established
+// Dosing bench (#284): explicit test commands only, hard-capped per command.
+// No autonomous dosing until the #224 controller module exists.
+const char TOPIC_DOSE_TEST[] = MQTT_BASE "/dose/test";     // subscribed "chN fwd|rev|stop [ms] [speed]"
+const char TOPIC_DOSE_RESULT[] = MQTT_BASE "/dose/result"; // retained, last action
+const unsigned long DOSE_TEST_MAX_MS = 10000; // hard cap per test command
 
 // ---- display band coloring (owner 2026-09-02) -------------------------
 // Tile values render green inside the target band, amber inside tolerance,
