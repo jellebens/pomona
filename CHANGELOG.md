@@ -6,6 +6,20 @@ firmware semver from `firmware/libraries/PomonaVersion` (single source of
 truth, bumped by the deploy scripts). Tags `v<version>` mark each release
 merged to `master`.
 
+## [1.3.2] - 2026-09-04
+
+### Added
+- serial debug commands for the bench session
+
+### Fixed
+- use DFRobot GravityPump reference pulse values
+
+### Docs
+- v1.3.1 release notes (automated)
+
+### Other
+- v1.3.2
+
 ## [1.3.1] - 2026-09-03
 
 ### Fixed
