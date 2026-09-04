@@ -173,6 +173,17 @@ static void makeBlankShield() {
   lv_obj_add_event_cb(blankShield, blankShieldEvent, LV_EVENT_ALL, NULL);
 }
 
+// Force the panel visibly on RIGHT NOW: backlight up, blank shield gone,
+// idle clock reset. The OTA path needs this — backlight.set(100) alone left
+// a blanked screen showing a lit black rectangle (the shield still covered
+// everything), and a >60 s update could re-blank mid-apply.
+static void displayForceAwake() {
+  backlight.set(100);
+  if (blankShield) lv_obj_add_flag(blankShield, LV_OBJ_FLAG_HIDDEN);
+  blanked = false;
+  lv_display_trigger_activity(NULL);
+}
+
 static void displayBlankingService() {
   if (!blanked &&
       lv_display_get_inactive_time(NULL) > DISPLAY_BLANK_TIMEOUT_MS) {
@@ -281,14 +292,15 @@ void displayOtaScreen(const char *stage) {
     lv_obj_set_style_text_color(warn, COL_BAD, 0);
     lv_obj_align(warn, LV_ALIGN_CENTER, 0, 90);
 
-    backlight.set(100); // make sure a blanked screen wakes for this
   }
+  displayForceAwake(); // wake + unblank on every stage, not just the first
   lv_label_set_text(otaStageLabel, stage);
   lv_refr_now(NULL);
 }
 
 void displayOtaTick(uint32_t elapsedS, int remainingEstS) {
   if (!otaTimeLabel) return;
+  lv_display_trigger_activity(NULL); // never re-blank mid-OTA
   char buf[64];
   if (remainingEstS > 0)
     snprintf(buf, sizeof(buf), "%lus elapsed  ~%ds left",

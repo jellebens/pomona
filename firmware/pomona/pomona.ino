@@ -147,7 +147,7 @@ void loop() {
   if (mqttConnected() && now - lastPublishMs >= MQTT_PUBLISH_MS) {
     lastPublishMs = now;
     networkPublish(readings);
-    Serial.println("mqtt: published readings");
+    Serial.println("[MQTT] published readings");
   }
 
   displayService(); // LVGL timers + idle blanking (#248)
