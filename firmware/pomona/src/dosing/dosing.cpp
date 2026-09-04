@@ -26,6 +26,7 @@ static int runningCh = -1; // 0-3 while a timed run is active
 static unsigned long runUntil = 0;
 static char lastEvent[96];
 static bool eventPending = false;
+static int lastUs[4] = {1500, 1500, 1500, 1500};
 
 static void setEvent(const char *fmt, ...) {
   va_list ap;
@@ -33,10 +34,13 @@ static void setEvent(const char *fmt, ...) {
   vsnprintf(lastEvent, sizeof(lastEvent), fmt, ap);
   va_end(ap);
   eventPending = true;
+  Serial.print("dose: "); // serial debug mirror of pomona/dose/result
+  Serial.println(lastEvent);
 }
 
 static void writeUs(int i, int us) {
   if (ch[i]) ch[i]->pulsewidth_us(us);
+  lastUs[i] = us;
 }
 
 static void stopAll() {
@@ -101,4 +105,18 @@ const char *dosingTakeEvent() {
   if (!eventPending) return NULL;
   eventPending = false;
   return lastEvent;
+}
+
+void dosingDebugStatus() {
+  Serial.println("dose status:");
+  for (int i = 0; i < 4; i++) {
+    Serial.print("  ch");
+    Serial.print(i + 1);
+    Serial.print(" pin D");
+    Serial.print(chPins[i]);
+    Serial.print(" pulse ");
+    Serial.print(lastUs[i]);
+    Serial.print("us");
+    Serial.println(i == runningCh ? "  <RUNNING>" : "");
+  }
 }

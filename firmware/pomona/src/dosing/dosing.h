@@ -16,3 +16,5 @@ void dosingService(); // stop timed runs; call every loop
 void dosingHandleCommand(const char *payload);
 // One-shot event line for pomona/dose/result (NULL when nothing new).
 const char *dosingTakeEvent();
+// Print per-channel pin + pulse width + run state to Serial ("dose status").
+void dosingDebugStatus();
