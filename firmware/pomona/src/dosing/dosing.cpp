@@ -34,7 +34,15 @@ static void setEvent(const char *fmt, ...) {
   vsnprintf(lastEvent, sizeof(lastEvent), fmt, ap);
   va_end(ap);
   eventPending = true;
-  Serial.print("dose: "); // serial debug mirror of pomona/dose/result
+  // Serial mirror of pomona/dose/result, tagged per channel: [PUMP001]..[PUMP004]
+  if (lastEvent[0] == 'c' && lastEvent[1] == 'h' && lastEvent[2] >= '1' &&
+      lastEvent[2] <= '4') {
+    Serial.print("[PUMP00");
+    Serial.print(lastEvent[2]);
+    Serial.print("] ");
+  } else {
+    Serial.print("[PUMP] ");
+  }
   Serial.println(lastEvent);
 }
 
