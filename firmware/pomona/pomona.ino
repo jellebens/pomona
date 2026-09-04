@@ -94,9 +94,39 @@ void setup() {
   lastReadMs = millis();
 }
 
+// Serial debug commands (#284 bench work): "dose chN fwd|rev|stop [ms]
+// [speed]", "dose status", "help". Same code paths as pomona/dose/test, so
+// USB-tethered testing needs no broker round-trip.
+static void pollSerialCommands() {
+  static char line[96];
+  static size_t len = 0;
+  while (Serial.available()) {
+    char c = (char)Serial.read();
+    if (c == '\n' || c == '\r') {
+      if (len == 0) continue;
+      line[len] = '\0';
+      len = 0;
+      if (strcmp(line, "dose status") == 0)
+        dosingDebugStatus();
+      else if (strncmp(line, "dose ", 5) == 0)
+        dosingHandleCommand(line + 5);
+      else if (strcmp(line, "help") == 0)
+        Serial.println(
+            "commands: dose chN fwd|rev|stop [ms] [speed] | dose status | help");
+      else {
+        Serial.print("unknown command: ");
+        Serial.println(line);
+      }
+    } else if (len < sizeof(line) - 1) {
+      line[len++] = c;
+    }
+  }
+}
+
 void loop() {
   mbed::Watchdog::get_instance().kick();
 
+  pollSerialCommands(); // USB bench commands (#284)
   networkService(); // reconnect state machine + MQTT keepalive + OTA trigger
 
   displayLinkStatus(wifiConnected(), mqttConnected()); // live status icons

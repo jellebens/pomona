@@ -6,6 +6,17 @@ firmware semver from `firmware/libraries/PomonaVersion` (single source of
 truth, bumped by the deploy scripts). Tags `v<version>` mark each release
 merged to `master`.
 
+## [1.3.1] - 2026-09-03
+
+### Fixed
+- generate PPM with mbed PwmOut — Servo lib holds the pin high on GIGA
+
+### Docs
+- v1.3.0 release notes (automated)
+
+### Other
+- v1.3.1
+
 ## [1.3.0] - 2026-09-03
 
 ### Added
