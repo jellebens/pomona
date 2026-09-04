@@ -26,7 +26,7 @@ static int runningCh = -1; // 0-3 while a timed run is active
 static unsigned long runUntil = 0;
 static char lastEvent[96];
 static bool eventPending = false;
-static int lastUs[4] = {1500, 1500, 1500, 1500};
+static int lastUs[4] = {1472, 1472, 1472, 1472};
 
 static void setEvent(const char *fmt, ...) {
   va_list ap;
@@ -44,7 +44,7 @@ static void writeUs(int i, int us) {
 }
 
 static void stopAll() {
-  for (int i = 0; i < 4; i++) writeUs(i, 1500);
+  for (int i = 0; i < 4; i++) writeUs(i, 1472);
   runningCh = -1;
 }
 
@@ -52,7 +52,7 @@ void dosingInit() {
   for (int i = 0; i < 4; i++) {
     ch[i] = new mbed::PwmOut(digitalPinToPinName(chPins[i]));
     ch[i]->period_ms(20);       // standard 50 Hz servo frame
-    ch[i]->pulsewidth_us(1500); // explicit stop from the first pulse
+    ch[i]->pulsewidth_us(1472); // DFRobot stop value from the first pulse
   }
 }
 
@@ -76,11 +76,14 @@ void dosingHandleCommand(const char *payload) {
   if (speed < 1) speed = 1;
   if (speed > 100) speed = 100;
 
+  // Pulse values copied from DFRobot's own GravityPump library (it calls
+  // Servo.attach(pin) + write(0..180) with defaults): write(0)=544us max
+  // forward, write(90)=1472us stop, write(180)=2400us max reverse @ 50 Hz.
   int us;
   if (strcmp(dir, "fwd") == 0)
-    us = 1400 - 9 * speed; // 100 -> 500us = max forward
+    us = 1472 - (speed * 928) / 100; // 100 -> 544us = DFRobot max forward
   else if (strcmp(dir, "rev") == 0)
-    us = 1600 + 9 * speed; // 100 -> 2500us = max reverse
+    us = 1472 + (speed * 928) / 100; // 100 -> 2400us = DFRobot max reverse
   else {
     setEvent("bad direction: %.20s", dir);
     return;
