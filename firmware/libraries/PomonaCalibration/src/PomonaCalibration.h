@@ -22,6 +22,7 @@ const float EC_CAL_K = 0.7692f;
 // not the 6.86/4.01 family).
 const float PH_BUF_NEUTRAL = 7.00f; // pH of the neutral buffer
 const float PH_BUF_ACID = 4.00f;    // pH of the acid buffer
-const float PH_V_NEUTRAL = 1.56f; // 2026-08-28, pH 7.00 buffer @ 25.5 C (settled, 2nd pass)
-const float PH_V_ACID = 2.10f;    // 2026-08-28, pH 4.00 buffer @ 25.4 C (settled, 2nd pass)
-// Validation: pH 10.01 buffer read 1.00 V vs 1.02 V predicted — linear.
+const float PH_V_NEUTRAL = 1.529f; // 2026-09-10, pH 7.00 buffer @ 26.1 C (settled, 2nd pass; post-Cat5e)
+const float PH_V_ACID = 2.074f;    // 2026-09-10, pH 4.00 buffer @ 26.1 C (settled, 2nd pass)
+// Validation: pH 10.01 buffer read 0.979 V vs 0.982 V predicted — linear.
+// History (2026-08-28 anchors 1.56/2.10): same slope, ~0.03 V offset drift.
