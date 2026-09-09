@@ -6,6 +6,25 @@ firmware semver from `firmware/libraries/PomonaVersion` (single source of
 truth, bumped by the deploy scripts). Tags `v<version>` mark each release
 merged to `master`.
 
+## [1.3.3] - 2026-09-09
+
+### Added
+- OTA screen force-awake + tagged serial logs
+
+### Fixed
+- ch1 pH-Down = D12, spare = D13 (owner correction)
+
+### Docs
+- ch3 slow-speed constant 0.20 ml/s (#286)
+- ch2 + ch3 commissioned and calibrated (#285, #286)
+- DFR0523 as-built — ch1 commissioned + calibrated (#284)
+- v1.3.2 release notes (automated)
+
+### Other
+- v1.3.3
+- OneWire moves to D1 (perm wiring)
+- final wiring pin map — ch1 D13, ch2 D10, ch3 D11, ch4 D12
+
 ## [1.3.2] - 2026-09-04
 
 ### Added
