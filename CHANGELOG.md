@@ -6,6 +6,15 @@ firmware semver from `firmware/libraries/PomonaVersion` (single source of
 truth, bumped by the deploy scripts). Tags `v<version>` mark each release
 merged to `master`.
 
+## [1.3.5] - 2026-09-09
+
+### Fixed
+- pin map as-landed by owner - ch1 pH=D6, ch2 A=D4, ch3 B=D5
+- move pump signals back to bench-proven D4-D7 block
+
+### Docs
+- v1.3.4 release notes (automated)
+
 ## [1.3.4] - 2026-09-09
 
 ### Fixed
