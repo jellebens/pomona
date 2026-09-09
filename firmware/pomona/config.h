@@ -15,12 +15,15 @@ const int PIN_TDS = A0;    // Grove TDS, powered from 3V3
 const int PIN_PH = A1;     // SEN0169-V2 via DFR0504 isolator
 const int PIN_ONEWIRE = 1; // DS18B20 data via Rnaenaor T2 (perm wiring 2026-09-09; bench: D2). Pull-up on the board. NOTE: D1 belongs to a hardware UART — that port is now off-limits (A02YYUW level sensor must use another Serial).
 const int PIN_PROBE = 3;   // CQRSENYW003 green wire (open collector; probe REMOVED 2026-09-03, pin kept reserved)
-// DFR0523 dosing pumps (#284-287): PPM signal per channel. Final wiring
-// layout (owner, 2026-09-09) moved these from the bench D4-D7 block.
-const int PIN_DOSE_CH1 = 13; // ch1 pH-Down (BPT tube) — verified at the panel 2026-09-09
-const int PIN_DOSE_CH2 = 10; // ch2 Nutrient A
-const int PIN_DOSE_CH3 = 11; // ch3 Nutrient B
-const int PIN_DOSE_CH4 = 12; // ch4 spare, configured but idle (#287)
+// DFR0523 dosing pumps (#284-287): PPM signal per channel, back on the
+// bench-proven D4-D7 block (owner + meter, 2026-09-09). The perm-wiring
+// move to D10-D13 failed: on the GIGA only D10 of that block produces
+// mbed PwmOut frames — D11/D12/D13 sit on STM32 port pins with no timer
+// route and idle at ~3.3 V. NEVER put a servo/PPM signal on D11-D13.
+const int PIN_DOSE_CH1 = 4; // ch1 pH-Down (BPT tube)
+const int PIN_DOSE_CH2 = 5; // ch2 Nutrient A
+const int PIN_DOSE_CH3 = 6; // ch3 Nutrient B
+const int PIN_DOSE_CH4 = 7; // ch4 spare, configured but idle (#287)
 
 // ---- ADC -------------------------------------------------------------
 const float VREF = 3.3f;
