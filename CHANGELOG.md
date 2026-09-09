@@ -6,6 +6,14 @@ firmware semver from `firmware/libraries/PomonaVersion` (single source of
 truth, bumped by the deploy scripts). Tags `v<version>` mark each release
 merged to `master`.
 
+## [1.3.8] - 2026-09-10
+
+### Fixed
+- pH recalibration post-Cat5e - anchors 1.529/2.074 V
+
+### Docs
+- v1.3.7 release notes (automated)
+
 ## [1.3.7] - 2026-09-10
 
 ### Fixed
