@@ -13,13 +13,14 @@
 // ---- pins (docs/wiring.md pin map) -----------------------------------
 const int PIN_TDS = A0;    // Grove TDS, powered from 3V3
 const int PIN_PH = A1;     // SEN0169-V2 via DFR0504 isolator
-const int PIN_ONEWIRE = 2; // DS18B20 data, 4.7k pull-up to 3V3
+const int PIN_ONEWIRE = 1; // DS18B20 data via Rnaenaor T2 (perm wiring 2026-09-09; bench: D2). Pull-up on the board. NOTE: D1 belongs to a hardware UART — that port is now off-limits (A02YYUW level sensor must use another Serial).
 const int PIN_PROBE = 3;   // CQRSENYW003 green wire (open collector; probe REMOVED 2026-09-03, pin kept reserved)
-// DFR0523 dosing pumps (#284-287): PPM signal per channel, D4-D7 block.
-const int PIN_DOSE_CH1 = 4; // ch1 pH-Down (BPT tube)
-const int PIN_DOSE_CH2 = 5; // ch2 Nutrient A (reserved until #285)
-const int PIN_DOSE_CH3 = 6; // ch3 Nutrient B (reserved until #286)
-const int PIN_DOSE_CH4 = 7; // ch4 spare, configured but idle (#287)
+// DFR0523 dosing pumps (#284-287): PPM signal per channel. Final wiring
+// layout (owner, 2026-09-09) moved these from the bench D4-D7 block.
+const int PIN_DOSE_CH1 = 12; // ch1 pH-Down (BPT tube)
+const int PIN_DOSE_CH2 = 10; // ch2 Nutrient A
+const int PIN_DOSE_CH3 = 11; // ch3 Nutrient B
+const int PIN_DOSE_CH4 = 13; // ch4 spare, configured but idle (#287)
 
 // ---- ADC -------------------------------------------------------------
 const float VREF = 3.3f;

@@ -195,12 +195,12 @@ static bool connectMqtt() {
   mqtt.print("offline");
   mqtt.endWill();
 
-  Serial.print("MQTT: connecting to ");
+  Serial.print("[MQTT] connecting to ");
   Serial.print(MQTT_HOST);
   Serial.print(":");
   Serial.println(MQTT_PORT);
   if (!mqtt.connect(MQTT_HOST, MQTT_PORT)) {
-    Serial.print("MQTT: connect FAILED, error ");
+    Serial.print("[MQTT] connect FAILED, error ");
     Serial.println(mqtt.connectError());
     return false;
   }
@@ -226,7 +226,7 @@ static bool connectMqtt() {
 
   nextNtpMs = 0; // resync the clock now that we have a network
 
-  Serial.println("MQTT: connected");
+  Serial.println("[MQTT] connected");
   return true;
 }
 
@@ -363,7 +363,7 @@ void networkPublishControl() {
   pubRetained(TOPIC_LIGHT_REQUEST, controlLightOn() ? "on" : "off");
   pubRetained(TOPIC_PUMP_REASON, controlReasonStr());
   controlMarkPublished();
-  Serial.print("mqtt: control pump=");
+  Serial.print("[MQTT] control pump=");
   Serial.print(controlPumpOn() ? "on" : "off");
   Serial.print(" light=");
   Serial.print(controlLightOn() ? "on" : "off");
