@@ -6,6 +6,14 @@ firmware semver from `firmware/libraries/PomonaVersion` (single source of
 truth, bumped by the deploy scripts). Tags `v<version>` mark each release
 merged to `master`.
 
+## [1.3.7] - 2026-09-10
+
+### Fixed
+- EC recalibration post-Cat5e - K 0.9745 -> 0.7692
+
+### Docs
+- v1.3.6 release notes (automated)
+
 ## [1.3.6] - 2026-09-10
 
 ### Fixed
