@@ -26,7 +26,7 @@ Reference for the module:
 | GND | analog sensor ground | GND |
 | P0 | pH output (analog) | unconnected — pH comes from the [SEN0169-V2](ph.md) |
 | T1 | output of the onboard LM35 temp sensor (analog) | unconnected — air temp comes from the [BME280](air-bme280.md) |
-| **T2** | **output of the DS18B20 waterproof temp sensor (digital, 1-Wire)** | → **GIGA D2** |
+| **T2** | **output of the DS18B20 waterproof temp sensor (digital, 1-Wire)** | → **GIGA D1** (perm wiring 2026-09-09; bench build used D2) |
 
 ### Other module details (from the article, for the record)
 
