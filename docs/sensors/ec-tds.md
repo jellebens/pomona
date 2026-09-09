@@ -7,8 +7,10 @@ Targets: EC 1.4–1.6 mS/cm shared (≈1.2 while strawberry-only) — see
 
 ## Wiring (as built)
 
-Analog: signal → **A0**, Vcc → **3V3 (not 5 V — the GIGA's ADC tolerates
-max 3.3 V)**, GND → GND. The as-built cable is a 3-wire black/red/green
+Analog: signal → **A2** (perm wiring 2026-09-10; bench was A0 — a flat
+phantom ~0.15 mS/cm after the move was the firmware still reading the
+floating A0, fixed in fw v1.3.6), Vcc → **3V3 (not 5 V — the GIGA's ADC
+tolerates max 3.3 V)**, GND → GND. The as-built cable is a 3-wire black/red/green
 set: **green = signal, red = 3V3, black = GND** — when in doubt, follow
 the TDS board's own silkscreen (GND/VCC/A), not wire colors. Probe in the
 tank (away from the [pH probe](ph.md) — the DFR0504 isolator on the pH
