@@ -6,6 +6,17 @@ firmware semver from `firmware/libraries/PomonaVersion` (single source of
 truth, bumped by the deploy scripts). Tags `v<version>` mark each release
 merged to `master`.
 
+## [1.3.4] - 2026-09-09
+
+### Fixed
+- pH-Down = D13, spare = D12 — verified at the panel
+
+### Docs
+- v1.3.3 release notes (automated)
+
+### Other
+- v1.3.4
+
 ## [1.3.3] - 2026-09-09
 
 ### Added
