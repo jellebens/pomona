@@ -17,10 +17,10 @@ const int PIN_ONEWIRE = 2; // DS18B20 data, 4.7k pull-up to 3V3
 const int PIN_PROBE = 3;   // CQRSENYW003 green wire (open collector; probe REMOVED 2026-09-03, pin kept reserved)
 // DFR0523 dosing pumps (#284-287): PPM signal per channel. Final wiring
 // layout (owner, 2026-09-09) moved these from the bench D4-D7 block.
-const int PIN_DOSE_CH1 = 13; // ch1 pH-Down (BPT tube)
+const int PIN_DOSE_CH1 = 12; // ch1 pH-Down (BPT tube)
 const int PIN_DOSE_CH2 = 10; // ch2 Nutrient A
 const int PIN_DOSE_CH3 = 11; // ch3 Nutrient B
-const int PIN_DOSE_CH4 = 12; // ch4 spare, configured but idle (#287)
+const int PIN_DOSE_CH4 = 13; // ch4 spare, configured but idle (#287)
 
 // ---- ADC -------------------------------------------------------------
 const float VREF = 3.3f;
