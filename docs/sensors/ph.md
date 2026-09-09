@@ -47,6 +47,7 @@ prediction.
 | Date | PH_V_NEUTRAL | PH_V_ACID | Notes |
 |---|---|---|---|
 | 2026-08-28 | **1.56 V** @ 7.00, 25.5 °C | **2.10 V** @ 4.00, 25.4 °C | first calibration, assembled unit; slope −5.56 pH/V (180 mV/pH); validated: 10.01 buffer read 1.00 V vs 1.02 V predicted |
+| 2026-09-10 | **1.529 V** @ 7.00, 26.1 °C | **2.074 V** @ 4.00, 26.1 °C | post-Cat5e perm wiring (fw 1.3.8); slope unchanged (0.1817 V/pH), ~0.03 V offset drift vs 08-28; wet-up creep on pass 1 only (1.515→1.527), pass 2 stable immediately; validated: 10.01 read 0.979 V vs 0.982 V predicted (±0.02 pH) |
 
 ## Care
 
