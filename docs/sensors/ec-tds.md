@@ -37,3 +37,4 @@ suspicious.
 | Date | EC_CAL_K | Fluid temp | Notes |
 |---|---|---|---|
 | 2026-08-28 | **0.9745** | 25.6 °C | first calibration, assembled unit; stable 1.45 mS/cm raw (K=1.0) after ~8 min settling, drift 1.57→1.45 while settling |
+| 2026-09-10 | **0.7692** | 26.2 °C | post-Cat5e perm wiring (signal → A2, fw 1.3.6/1.3.7); stable 1.79 mS/cm with old K from first reading (no settle drift this time); 21% shift = the new cable run — recalibrate after any wiring change |
