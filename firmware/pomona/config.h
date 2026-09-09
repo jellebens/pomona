@@ -20,9 +20,9 @@ const int PIN_PROBE = 3;   // CQRSENYW003 green wire (open collector; probe REMO
 // move to D10-D13 failed: on the GIGA only D10 of that block produces
 // mbed PwmOut frames — D11/D12/D13 sit on STM32 port pins with no timer
 // route and idle at ~3.3 V. NEVER put a servo/PPM signal on D11-D13.
-const int PIN_DOSE_CH1 = 4; // ch1 pH-Down (BPT tube)
-const int PIN_DOSE_CH2 = 5; // ch2 Nutrient A
-const int PIN_DOSE_CH3 = 6; // ch3 Nutrient B
+const int PIN_DOSE_CH1 = 6; // ch1 pH-Down (BPT tube) — as-landed by owner 2026-09-09
+const int PIN_DOSE_CH2 = 4; // ch2 Nutrient A
+const int PIN_DOSE_CH3 = 5; // ch3 Nutrient B
 const int PIN_DOSE_CH4 = 7; // ch4 spare, configured but idle (#287)
 
 // ---- ADC -------------------------------------------------------------
