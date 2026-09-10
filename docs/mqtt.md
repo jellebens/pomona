@@ -95,9 +95,11 @@ zwave_js (Fibaro plug), see [design.md](design.md).
 
 ## Dosing topics — Demeter, the k3s autodosing brain (#278, design #224)
 
-Status: **controller built (`controller/`), deploys via gitops
-`landingzones/pomona`; ships in `shadow` mode.** The interim Tethys agent
-regime retires when Demeter goes `active` — never both.
+Status: **LIVE (active) since 2026-09-10.** The controller lives in its own
+private repo, <https://github.com/jellebens/demeter> (extracted from this
+repo's `controller/` on 2026-09-11, history preserved); it deploys via gitops
+`landingzones/pomona`. The interim Tethys agent regime is retired — never
+both.
 
 Demeter connects as the dedicated broker user **`pomona-demeter`**
 (subscribe `pomona/#`; publish only `pomona/dose/test` and
