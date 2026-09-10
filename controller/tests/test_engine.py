@@ -44,13 +44,17 @@ def test_ph_high_needs_confirmation():
     assert first.action == engine.NONE  # not yet confirmed
 
 
-def test_ph_above_7_doses_1ml_full_speed():
+def test_ph_above_7_doses_full_speed_sized_by_the_brain():
     telem, ledger, cfg = make_state(ph=7.4)
     decision, _ = confirm(telem, ledger, cfg)
     assert decision.action == engine.DOSE_PH_FULL
     (step,) = decision.steps
-    assert step.command() == "ch1 fwd 2083"  # 1 ml @ 0.48 ml/s
-    assert step.ml == 1.0
+    # nothing learned yet: the wide prior's 97.5 % upper drop binds at 0.8 ml
+    assert step.ml == 0.8
+    assert step.command() == "ch1 fwd 1667"  # 0.8 ml @ 0.48 ml/s
+    cfg.adaptive.enabled = False
+    decision, _ = confirm(telem, ledger, cfg)
+    assert decision.steps[0].command() == "ch1 fwd 2083"  # the fixed 1 ml playbook
 
 
 def test_ph_marginal_doses_half_ml_slow():

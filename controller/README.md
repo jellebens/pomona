@@ -44,9 +44,43 @@ One corrective action per cycle, pH before EC. In doubt, don't dose.
   exist (the lockout on foreign doses is the belt-and-braces for exactly
   that transition window).
 
+## The self-learning brain (0.2.0 — `adapt.py`)
+
+The first live evening (2026-09-10) showed the fixed playbook's blind spot:
+at pH 8.2 every hourly 1 ml landed on a regenerated buffer and did nothing,
+the 4 ml cap would have been spent by morning with pH still above 8, and a
+manual dose whose line was still full of water showed no response — which
+the fixed 60 min lockout turned into an hour of waiting. Demeter now learns.
+The config has exactly two rails for it, `adaptive.enabled` and
+`adaptive.ph_max_single_dose_ml`; everything else comes from two small,
+deterministic AI models whose whole state is a few hundred bytes in the
+retained ledger:
+
+| model | what it is | what it gives |
+|---|---|---|
+| **A — dose response** | Bayesian linear regression `drop = k·ml − b + ε` with a Gaussian posterior over `k` (pH per ml) and `b` (what the buffer swallows first, the "knee"); prior = the Tethys titration, wide | the dose is sized so the posterior *mean* drop lands on the aim, then clipped so the *97.5 % upper* predictive drop keeps pH ≥ `ph_tol_low`. Uncertainty grows with `ml²·Var(k)`, so extrapolating beyond observed doses is penalised by the model itself — no safety factor, no trust region, no `k_max` |
+| **B — pH signal** | Kalman filter, local linear trend `[level, slope]`, measurement noise estimated online from the innovations | the pre-dose level; the **trough** after a dose (its true effect, independent of the rebound); "the fall has stopped" (slope no longer significantly negative for 5 min → settled → the lockout releases at 2× the learned settle time, floor 5 min, ceiling `lockout_minutes`); the **rebound** rate (a significantly positive slope 15 min–2 h after the trough), which pulls the aim from the top of the target band toward the bottom |
+
+Why not an LLM: the loop puts acid into a living reservoir on 2–6
+observations a day; it needs calibrated uncertainty, a deterministic and
+unit-testable decision, and no network dependency. Tethys/Cortana remain
+the *advisors* reading the same metrics; nothing with a prompt sits on the
+actuation path.
+
+A dose with no measurable response (drop below `2·sd` of the probe noise,
+floor 0.1 pH) is **never learned from** — a delivery failure looks exactly
+like "the buffer ate 2 ml" and would poison the posterior — it re-doses
+after the early release, and three in a row is an **ALERT** (unprimed
+line, empty bottle, dead pump). An observation more than 4 sd off the
+predictive is likewise ignored. The fine tier (6.5–7.0 → 0.5 ml slow) is
+deliberately still fixed; `adaptive.enabled: false` restores 0.1.0
+behaviour exactly. Structural constants (prior, process noise, windows,
+z-scores) live at the top of `adapt.py` and are not tuning knobs.
+
 ## State across restarts
 
-The rolling 24 h dose ledger is retained JSON on `pomona/demeter/ledger`;
+The rolling 24 h dose ledger (v2: plus the pending response, settled responses,
+learned sensitivity and no-response streak) is retained JSON on `pomona/demeter/ledger`;
 a restarted pod reloads it before it may dose. No retained ledger → Demeter
 assumes a dose just happened and waits out one lockout (conservative by
 construction). A live `pomona/dose/result` it did not command (owner manual
@@ -57,6 +91,12 @@ dose) restarts the lockout clock.
 `demeter_doses_total{reagent}`, `demeter_dosed_ml_total{reagent}`,
 `demeter_last_dose_timestamp_seconds{reagent}`,
 `demeter_budget_used_ml_24h{reagent}`, `demeter_lockout_remaining_seconds`,
+`demeter_ph_sensitivity_ph_per_ml` (±`_sd`), `demeter_ph_buffer_knee_ph`,
+`demeter_ph_sensitivity_observations`, `demeter_learned_noise_ph`,
+`demeter_ph_filtered`, `demeter_ph_slope_per_hour`, `demeter_learned_settle_seconds`,
+`demeter_learned_rebound_ph_per_hour`, `demeter_aim_ph`,
+`demeter_last_dose_response_ph_drop`, `demeter_no_response_streak`,
+`demeter_dose_response_pending`, `demeter_planned_ph_dose_ml`,
 `demeter_decisions_total{action,condition}`, `demeter_reading{metric}` +
 `demeter_reading_age_seconds{metric}`, `demeter_unit_online`,
 `demeter_would_dose`. Scraped by kube-prometheus-stack via the landing
@@ -74,7 +114,7 @@ python3 -m venv .venv && .venv/bin/pip install -e '.[dev]'
 
 ```sh
 docker buildx build --platform linux/arm64 --provenance=false \
-  -t jellebens/pomona-demeter:0.1.0 --push controller/
+  -t jellebens/pomona-demeter:0.2.0 --push controller/
 ```
 
 ## Deploy

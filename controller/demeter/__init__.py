@@ -8,4 +8,4 @@ agent operated under. The firmware keeps the final veto (10 s hard cap per
 command, one channel at a time).
 """
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"

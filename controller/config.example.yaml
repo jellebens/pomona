@@ -48,3 +48,11 @@ dosing:
   ph_down:     { channel: 1, full_ml_s: 0.48, slow_ml_s: 0.11, slow_speed: 50 }
   nutrient_a:  { channel: 2, full_ml_s: 0.66, slow_ml_s: 0.24, slow_speed: 50 }
   nutrient_b:  { channel: 3, full_ml_s: 0.60, slow_ml_s: 0.11, slow_speed: 50 }
+
+adaptive:
+  # The self-learning brain (demeter/adapt.py, 0.2.0). Two rails, no tuning.
+  # Sensitivity, probe noise, settle time, rebound rate and how big a dose may
+  # grow are all OBSERVED from the reservoir and persisted in the retained
+  # ledger; the hard rails above (24 h cap, 10 s firmware cap) still apply.
+  enabled: true
+  ph_max_single_dose_ml: 2.0   # no single pH-Down dose ever exceeds this

@@ -89,6 +89,17 @@ class DosingConfig:
 
 
 @dataclass
+class AdaptiveConfig:
+    """The self-learning brain (demeter/adapt.py). Two rails, no tuning:
+    everything else — sensitivity, probe noise, settle time, rebound, how
+    big a dose may grow — is observed from the reservoir and persisted in
+    the retained ledger."""
+
+    enabled: bool = True
+    ph_max_single_dose_ml: float = 2.0  # no single pH-Down dose ever exceeds this
+
+
+@dataclass
 class Config:
     mode: str = "shadow"  # shadow | active
     interval_seconds: float = 60.0
@@ -98,6 +109,7 @@ class Config:
     mqtt: MqttConfig = field(default_factory=MqttConfig)
     bands: Bands = field(default_factory=Bands)
     dosing: DosingConfig = field(default_factory=DosingConfig)
+    adaptive: AdaptiveConfig = field(default_factory=AdaptiveConfig)
 
 
 def _apply(obj, data: dict):
@@ -107,6 +119,10 @@ def _apply(obj, data: dict):
         current = getattr(obj, key)
         if isinstance(value, dict) and not isinstance(current, (int, float, str)):
             _apply(current, value)
+        elif isinstance(current, bool):
+            if isinstance(value, str):
+                value = value.strip().lower() in ("1", "true", "yes", "on")
+            setattr(obj, key, bool(value))
         else:
             setattr(obj, key, type(current)(value) if current is not None else value)
 
@@ -115,7 +131,7 @@ def load(path: str) -> Config:
     with open(path, "r", encoding="utf-8") as fh:
         raw = _expand_env(yaml.safe_load(fh) or {})
     cfg = Config()
-    for section in ("mqtt", "bands", "dosing"):
+    for section in ("mqtt", "bands", "dosing", "adaptive"):
         if section in raw:
             _apply(getattr(cfg, section), raw.pop(section))
     _apply(cfg, raw)
