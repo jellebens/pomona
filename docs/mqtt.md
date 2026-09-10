@@ -110,7 +110,7 @@ Demeter connects as the dedicated broker user **`pomona-demeter`**
 | `pomona/demeter/status` | `online` / `offline` (LWT) | **yes** | Demeter |
 | `pomona/demeter/mode` | `shadow` / `active` | **yes** | Demeter, on connect |
 | `pomona/demeter/decision` | JSON — ts, action, condition, reason, steps, `executed` | **yes** | Demeter, on every non-quiet decision |
-| `pomona/demeter/ledger` | JSON rolling 24 h dose ledger | **yes** | Demeter; reloaded at boot so a restart cannot forget the acid cap or lockout |
+| `pomona/demeter/ledger` | JSON rolling 24 h dose ledger (v2 since controller 0.2.0: + pending dose response, settled responses, learned pH sensitivity, no-response streak) | **yes** | Demeter; reloaded at boot so a restart cannot forget the acid cap, lockout or what it learned |
 
 **Why the commands are non-retained and the ledger is retained:** a replayed
 dose command would dose twice (same reason as `ota_url`); a replayed ledger

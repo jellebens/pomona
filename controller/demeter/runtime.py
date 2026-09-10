@@ -13,6 +13,10 @@ Transport notes:
   patience costs nothing; a forgotten budget could overdose).
 - A live (non-retained) ``pomona/dose/result`` we did not command means the
   owner dosed by hand: unknown ml, but it restarts the lockout clock.
+- The ledger is v2 since 0.2.0: it also carries the adaptive state (pending
+  dose response, settled responses, learned sensitivity, no-response
+  streak — see adapt.py). A v1 ledger still loads; the adaptive fields
+  simply start from their priors.
 """
 
 from __future__ import annotations
@@ -24,7 +28,7 @@ import time
 
 import paho.mqtt.client as mqtt
 
-from . import __version__, engine, metrics
+from . import __version__, adapt, engine, metrics
 from .config import Config
 from .engine import Decision, Ledger, Sample, Telemetry
 
@@ -94,6 +98,8 @@ class Runtime:
             log.warning("non-numeric %s payload: %r", name, payload)
             return
         setattr(self.telem, name, Sample(value, now))
+        if name == "ph":
+            adapt.ingest_ph(self.ledger.model, value, now)
         metrics.READING.labels(name).set(value)
 
     def _dose_result(self, retained: bool, now: float) -> None:
@@ -104,7 +110,16 @@ class Runtime:
             return
         log.info("foreign dose observed on dose/result — restarting lockout")
         self.ledger.record(now, "foreign", 0.0)
+        adapt.note_dose(self.ledger, now, "foreign", 0.0, self._pre_ph(now))
         self._publish_ledger()
+
+    def _pre_ph(self, now: float) -> float | None:
+        """The pH a dose is judged against: the filtered level, if fresh."""
+        s = self.telem.ph
+        if s is None or (now - s.ts) > self.cfg.freshness_seconds:
+            return None
+        level = adapt.current_ph(self.ledger.model)
+        return level if level is not None else s.value
 
     def _load_ledger(self, payload: str) -> None:
         if self._ledger_loaded.is_set():
@@ -112,17 +127,29 @@ class Runtime:
         self._ledger_loaded.set()
         try:
             data = json.loads(payload)
-            self.ledger.doses = [
-                (float(ts), str(reagent), float(ml))
-                for ts, reagent, ml in data.get("doses", [])
-            ]
-            log.info("ledger restored: %d dose(s) in window", len(self.ledger.doses))
-        except (ValueError, TypeError) as exc:
+            adapt.ledger_from_dict(self.ledger, data)
+            m = self.ledger.model
+            log.info(
+                "ledger restored (v%s): %d dose(s) in window, posterior k=%.2f±%.2f b=%.2f (n=%d) "
+                "noise sd=%.3f settle=%s rebound=%s/h, no-response streak=%d, pending=%s",
+                data.get("v", 1),
+                len(self.ledger.doses),
+                m.k,
+                m.k_sd,
+                m.b,
+                m.n,
+                m.noise_sd,
+                m.settle_s,
+                m.rebound_ph_h,
+                m.no_response_streak,
+                "yes" if self.ledger.pending else "no",
+            )
+        except (ValueError, TypeError, KeyError) as exc:
             log.error("unreadable retained ledger (%s) — assuming fresh dose", exc)
             self.ledger.record(time.time(), "foreign", 0.0)
 
     def _publish_ledger(self) -> None:
-        payload = json.dumps({"v": 1, "doses": self.ledger.doses})
+        payload = json.dumps(adapt.ledger_to_dict(self.ledger))
         self.client.publish(f"{self.base}/demeter/ledger", payload, qos=1, retain=True)
 
     def _publish_decision(self, decision: Decision, executed: bool, now: float) -> None:
@@ -158,6 +185,7 @@ class Runtime:
                 # Record BEFORE the pump runs: if we crash mid-dose the ledger
                 # over-counts (safe) rather than under-counts (unsafe).
                 self.ledger.record(now, step.reagent, step.ml)
+                adapt.note_dose(self.ledger, now, step.reagent, step.ml, self._pre_ph(now))
                 self.ledger.prune(now)
                 self._publish_ledger()
             info = self.client.publish(f"{self.base}/dose/test", cmd, qos=1)
@@ -176,7 +204,9 @@ class Runtime:
             with self.lock:
                 if not self.ledger.doses:
                     log.info("no retained ledger — conservative boot lockout")
-                    self.ledger.record(time.time(), "foreign", 0.0)
+                    boot = time.time()
+                    self.ledger.record(boot, "foreign", 0.0)
+                    adapt.note_dose(self.ledger, boot, "foreign", 0.0, None)
             self._ledger_loaded.set()
 
         log.info(
@@ -198,6 +228,29 @@ class Runtime:
     def _cycle(self, now: float) -> None:
         with self.lock:
             self.ledger.prune(now)
+            settled = adapt.observe(now, self.ledger, self.cfg)
+            if settled is not None:
+                drop = settled.drop
+                m = self.ledger.model
+                log.info(
+                    "dose response settled: %s %.2f ml, pH %s -> trough %.2f (drop %s), "
+                    "learned=%s posterior k=%.2f±%.2f b=%.2f n=%d settle=%ss no-response streak=%d",
+                    settled.reagent,
+                    settled.ml,
+                    "?" if settled.pre_ph is None else f"{settled.pre_ph:.2f}",
+                    settled.post_ph,
+                    "?" if drop is None else f"{drop:+.2f}",
+                    settled.learned,
+                    m.k,
+                    m.k_sd,
+                    m.b,
+                    m.n,
+                    None if m.settle_s is None else int(m.settle_s),
+                    m.no_response_streak,
+                )
+                if drop is not None:
+                    metrics.LAST_RESPONSE_DROP.set(drop)
+                self._publish_ledger()
             decision = engine.decide(now, self.telem, self.ledger, self.cfg)
             self._update_gauges(now)
 
@@ -230,7 +283,22 @@ class Runtime:
                 metrics.READING_AGE.labels(name).set(now - sample.ts)
         for reagent in ("ph_down", "nutrient_a", "nutrient_b"):
             metrics.BUDGET_ML_24H.labels(reagent).set(self.ledger.ml_24h(reagent, now))
-        last = self.ledger.last_dose_ts()
-        lockout_s = self.cfg.dosing.lockout_minutes * 60
-        remaining = max(0.0, lockout_s - (now - last)) if last is not None else 0.0
-        metrics.LOCKOUT_REMAINING.set(remaining)
+        metrics.LOCKOUT_REMAINING.set(adapt.lockout_remaining(now, self.ledger, self.cfg))
+        m = self.ledger.model
+        metrics.PH_SENSITIVITY.set(m.k)
+        metrics.PH_SENSITIVITY_SD.set(m.k_sd)
+        metrics.PH_BUFFER.set(m.b)
+        metrics.PH_SENSITIVITY_OBS.set(m.n)
+        metrics.NO_RESPONSE_STREAK.set(m.no_response_streak)
+        metrics.RESPONSE_PENDING.set(1 if self.ledger.pending else 0)
+        metrics.LEARNED_NOISE.set(m.noise_sd)
+        metrics.LEARNED_SETTLE_S.set(m.settle_s or 0.0)
+        metrics.LEARNED_REBOUND.set(m.rebound_ph_h or 0.0)
+        metrics.PH_FILTERED.set(m.kf_level if m.kf_level is not None else 0.0)
+        metrics.PH_SLOPE.set(m.kf_slope * 3600.0)
+        metrics.AIM_PH.set(adapt.aim_ph(self.ledger, self.cfg))
+        ph = self.telem.ph
+        if ph is not None and ph.value > self.cfg.bands.ph_high_full:
+            metrics.PLANNED_PH_DOSE_ML.set(adapt.plan_ph_dose(ph.value, self.ledger, self.cfg)[0])
+        else:
+            metrics.PLANNED_PH_DOSE_ML.set(0)

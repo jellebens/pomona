@@ -16,6 +16,20 @@ Series (prefix demeter_):
 - demeter_budget_used_ml_24h{reagent}         rolling 24 h ml (acid cap watch)
 - demeter_lockout_remaining_seconds           0 when dosing is allowed
 - demeter_would_dose                          1 when shadow mode WOULD have dosed
+- demeter_ph_sensitivity_ph_per_ml            posterior mean k (pH per ml)
+- demeter_ph_sensitivity_sd                   posterior sd of k (shrinks with evidence)
+- demeter_ph_buffer_knee_ph                   posterior mean b (pH the buffer swallows first)
+- demeter_ph_sensitivity_observations         settled pH-Down responses that trained the posterior
+- demeter_learned_noise_ph                    probe jitter sd (Kalman measurement noise)
+- demeter_ph_filtered                         Kalman level estimate of pH
+- demeter_ph_slope_per_hour                   Kalman slope estimate (pH/h)
+- demeter_learned_settle_seconds              how long a dose takes to settle (drives the lockout)
+- demeter_learned_rebound_ph_per_hour         post-dose pH climb rate (drives the aim point)
+- demeter_aim_ph                              where the next dose aims to land
+- demeter_last_dose_response_ph_drop          pre - post pH of the last settled dose
+- demeter_no_response_streak                  consecutive doses that did nothing
+- demeter_dose_response_pending               1 while the last dose's response is unsettled
+- demeter_planned_ph_dose_ml                  what the next pH-Down dose would be (0 = none due)
 """
 
 from __future__ import annotations
@@ -48,6 +62,32 @@ LOCKOUT_REMAINING = Gauge(
 )
 WOULD_DOSE = Gauge(
     "demeter_would_dose", "1 when shadow mode would have dosed this cycle"
+)
+PH_SENSITIVITY = Gauge(
+    "demeter_ph_sensitivity_ph_per_ml", "Learned (or prior) pH drop per ml past the knee"
+)
+PH_SENSITIVITY_OBS = Gauge(
+    "demeter_ph_sensitivity_observations", "Settled pH-Down responses learned from"
+)
+LAST_RESPONSE_DROP = Gauge(
+    "demeter_last_dose_response_ph_drop", "pre - post pH of the last settled dose"
+)
+NO_RESPONSE_STREAK = Gauge(
+    "demeter_no_response_streak", "Consecutive doses that produced no pH response"
+)
+RESPONSE_PENDING = Gauge(
+    "demeter_dose_response_pending", "1 while the last dose's response is unsettled"
+)
+PH_SENSITIVITY_SD = Gauge("demeter_ph_sensitivity_sd", "Posterior sd of k")
+PH_BUFFER = Gauge("demeter_ph_buffer_knee_ph", "Posterior mean b: pH the buffer swallows first")
+LEARNED_NOISE = Gauge("demeter_learned_noise_ph", "Learned probe jitter sd (Kalman R)")
+PH_FILTERED = Gauge("demeter_ph_filtered", "Kalman level estimate of pH")
+PH_SLOPE = Gauge("demeter_ph_slope_per_hour", "Kalman slope estimate of pH, per hour")
+LEARNED_SETTLE_S = Gauge("demeter_learned_settle_seconds", "Learned dose settle time")
+LEARNED_REBOUND = Gauge("demeter_learned_rebound_ph_per_hour", "Learned post-dose pH rebound")
+AIM_PH = Gauge("demeter_aim_ph", "pH the next dose aims to land on")
+PLANNED_PH_DOSE_ML = Gauge(
+    "demeter_planned_ph_dose_ml", "Size of the pH-Down dose the planner would send now"
 )
 
 

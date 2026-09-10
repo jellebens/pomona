@@ -24,6 +24,14 @@ Guards, all of which must hold before any dose:
 - the 24 h budget for that reagent not exhausted.
 
 In doubt, don't dose: a skipped hour is free, an overdose is not.
+
+Self-learning layer (adapt.py, since 0.2.0): above ph_high_full the pH-Down
+dose is *sized* by a Bayesian dose-response model (posterior mean lands on
+the aim; the 97.5 % upper predictive drop must keep pH >= ph_tol_low), and
+the lockout may end early once a Kalman filter on the pH signal says the
+last dose's fall has stopped. Doses that produce no response are never
+learned from; a streak of them is an alert, not more acid. The rails above
+are untouched.
 """
 
 from __future__ import annotations
@@ -31,6 +39,7 @@ from __future__ import annotations
 import math
 from dataclasses import dataclass, field
 
+from . import adapt
 from .config import Config, PumpChannel
 
 # Decision actions
@@ -58,7 +67,6 @@ class Telemetry:
     unit_online: bool = False
     # condition name -> ts the current uninterrupted violation streak began
     streaks: dict[str, float] = field(default_factory=dict)
-
     def update_streak(self, condition: str, violating: bool, ts: float) -> None:
         if violating:
             self.streaks.setdefault(condition, ts)
@@ -78,6 +86,11 @@ class Ledger:
     # "foreign"}; foreign = a dose/result event we did not command (owner or
     # Tethys): unknown ml, but it still restarts the lockout clock.
     doses: list[tuple[float, str, float]] = field(default_factory=list)
+    # adaptive state (adapt.py) — persisted in the retained ledger v2
+    pending: "adapt.PendingDose | None" = None
+    settled_dose_ts: float | None = None
+    responses: list["adapt.Response"] = field(default_factory=list)
+    model: "adapt.Model" = field(default_factory=lambda: adapt.Model())
 
     def prune(self, now: float, horizon_s: float = 24 * 3600) -> None:
         self.doses = [d for d in self.doses if now - d[0] <= horizon_s]
@@ -169,7 +182,9 @@ def _validate_steps(steps: list[DoseStep], cfg: Config) -> str | None:
 def decide(now: float, telem: Telemetry, ledger: Ledger, cfg: Config) -> Decision:
     b = cfg.bands
     confirm_s = cfg.confirm_minutes * 60
-    lockout_s = cfg.dosing.lockout_minutes * 60
+
+    # -- settle a pending dose response first (learning + lockout evidence) --
+    adapt.observe(now, ledger, cfg)
 
     # -- update violation streaks from the current samples ------------------
     ph = telem.ph.value if _fresh(telem.ph, now, cfg) else None
@@ -192,7 +207,10 @@ def decide(now: float, telem: Telemetry, ledger: Ledger, cfg: Config) -> Decisio
 
     # -- pick the (single) corrective action, pH before EC ------------------
     if telem.streak_age("ph_high_full", now) >= confirm_s:
-        condition, steps = "ph_high_full", [_ph_step(cfg, cfg.dosing.ph_full_dose_ml, slow=False)]
+        plan_ml, plan_note = adapt.plan_ph_dose(ph, ledger, cfg) if ph is not None else (
+            cfg.dosing.ph_full_dose_ml, "no pH"
+        )
+        condition, steps = "ph_high_full", [_ph_step(cfg, plan_ml, slow=False)]
     elif telem.streak_age("ph_high_fine", now) >= confirm_s:
         condition, steps = "ph_high_fine", [_ph_step(cfg, cfg.dosing.ph_fine_dose_ml, slow=True)]
     elif telem.streak_age("ec_low", now) >= confirm_s:
@@ -208,11 +226,19 @@ def decide(now: float, telem: Telemetry, ledger: Ledger, cfg: Config) -> Decisio
     if condition == "ec_low" and ec is None:
         return Decision(BLOCKED, condition, "EC reading stale")
 
-    last = ledger.last_dose_ts()
-    if last is not None and (now - last) < lockout_s:
-        return Decision(BLOCKED, condition, f"lockout: {int(lockout_s - (now - last))} s remaining")
+    remaining = adapt.lockout_remaining(now, ledger, cfg)
+    if remaining > 0:
+        return Decision(BLOCKED, condition, f"lockout: {int(remaining)} s remaining")
 
     if condition.startswith("ph"):
+        streak = ledger.model.no_response_streak
+        if cfg.adaptive.enabled and streak >= adapt.NO_RESPONSE_ALERT_STREAK:
+            return Decision(
+                ALERT,
+                condition,
+                f"no pH response to {streak} consecutive doses — "
+                "check line prime / reagent / pump before any more acid",
+            )
         want = sum(s.ml for s in steps)
         used = ledger.ml_24h("ph_down", now)
         if used + want > cfg.dosing.ph_daily_cap_ml + 1e-9:
@@ -233,4 +259,7 @@ def decide(now: float, telem: Telemetry, ledger: Ledger, cfg: Config) -> Decisio
         "ph_high_fine": DOSE_PH_FINE,
         "ec_low": DOSE_NUTRIENTS,
     }[condition]
-    return Decision(action, condition, "confirmed out of band", steps)
+    reason = "confirmed out of band"
+    if condition == "ph_high_full":
+        reason += f"; planned {plan_note}"
+    return Decision(action, condition, reason, steps)
