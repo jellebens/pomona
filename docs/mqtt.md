@@ -93,6 +93,35 @@ every **30 s**. QoS 0 for metrics; QoS 1 for the retained `unit/status`,
 Pump power is **not** on MQTT from the unit — it arrives via Home Assistant
 zwave_js (Fibaro plug), see [design.md](design.md).
 
+## Dosing topics — Demeter, the k3s autodosing brain (#278, design #224)
+
+Status: **controller built (`controller/`), deploys via gitops
+`landingzones/pomona`; ships in `shadow` mode.** The interim Tethys agent
+regime retires when Demeter goes `active` — never both.
+
+Demeter connects as the dedicated broker user **`pomona-demeter`**
+(subscribe `pomona/#`; publish only `pomona/dose/test` and
+`pomona/demeter/#`).
+
+| Topic | Payload | Retained | Who |
+|---|---|---|---|
+| `pomona/dose/test` | `chN fwd <ms> [speed]` — v1 command channel (bench module, 10 s hard cap, one channel at a time) | no | Demeter publishes (active mode), unit subscribes |
+| `pomona/dose/result` | event line per run | **yes** | unit publishes; Demeter treats a live event it did not command as a foreign dose → lockout restarts |
+| `pomona/demeter/status` | `online` / `offline` (LWT) | **yes** | Demeter |
+| `pomona/demeter/mode` | `shadow` / `active` | **yes** | Demeter, on connect |
+| `pomona/demeter/decision` | JSON — ts, action, condition, reason, steps, `executed` | **yes** | Demeter, on every non-quiet decision |
+| `pomona/demeter/ledger` | JSON rolling 24 h dose ledger | **yes** | Demeter; reloaded at boot so a restart cannot forget the acid cap or lockout |
+
+**Why the commands are non-retained and the ledger is retained:** a replayed
+dose command would dose twice (same reason as `ota_url`); a replayed ledger
+is exactly what a restarted controller needs.
+
+**#224 firmware follow-up:** replace the bench channel with a first-class
+`pomona/dose/request` contract — ml-based payloads, per-command idempotency
+ids, explicit acks, and local rails (per-channel ml caps + daily budget
+mirrored in firmware) so the unit stays safe even against a misbehaving
+controller. Only Demeter's `runtime.py` transport changes.
+
 ## #222 checklist (when finalizing)
 
 - Create the `pomona` broker account (+ ACL limited to `pomona/#`).
