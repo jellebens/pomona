@@ -1,0 +1,50 @@
+# Demeter configuration — example / documentation copy.
+# The deployed copy is rendered by the gitops chart (landingzones/pomona);
+# this file documents every key and its playbook default.
+
+mode: shadow            # shadow = decide + publish + metrics, NEVER dose.
+                        # active = dose for real. Flip only via gitops.
+interval_seconds: 60    # evaluation cadence (doses remain lockout-limited)
+freshness_seconds: 120  # readings older than this are not dosing-grade
+confirm_minutes: 10     # a violation must hold this long before any action
+metrics_port: 9000
+
+mqtt:
+  host: mqtt.lab.local  # the EMQX VIP — never a pod/node IP
+  port: 1883
+  client_id: pomona-demeter
+  username: "${MQTT_USER}"   # dedicated pomona-demeter broker user
+  password: "${MQTT_PASS}"
+  base_topic: pomona
+
+bands:
+  # Establishment-phase bands (2026-09; #262 ramps EC toward 1.4-1.6 when
+  # establishment ends). Keep in sync with firmware config.h display bands,
+  # the Grafana dashboard and Tethys.
+  ph_target_low: 5.8
+  ph_target_high: 6.2
+  ph_tol_low: 5.4
+  ph_tol_high: 6.5
+  ph_high_full: 7.0
+  ec_target_low: 0.8
+  ec_target_high: 1.0
+  ec_tol_low: 0.7
+  ec_tol_high: 1.1
+  water_temp_max_c: 26.5
+
+dosing:
+  lockout_minutes: 60       # after ANY dose (ours or foreign)
+  ph_full_dose_ml: 1.0      # pH > ph_high_full
+  ph_fine_dose_ml: 0.5      # ph_tol_high < pH <= ph_high_full (slow speed)
+  ph_daily_cap_ml: 4.0      # rolling 24 h acid hard cap
+  nutrient_dose_ml: 5.0     # each of A and B
+  nutrient_gap_seconds: 120 # A first, then B — never simultaneous
+  nutrient_max_per_24h: 1
+  max_command_ms: 10000     # firmware DOSE_TEST_MAX_MS; longer = config error
+
+  # DFR0523 calibration, 2026-09-09 recalibration on the FINAL plumbing
+  # (docs/dosing/dfr0523.md). Per-channel AND per-speed — never interpolate.
+  # Recalibrate after any tube/routing change and after the first week of use.
+  ph_down:     { channel: 1, full_ml_s: 0.48, slow_ml_s: 0.11, slow_speed: 50 }
+  nutrient_a:  { channel: 2, full_ml_s: 0.66, slow_ml_s: 0.24, slow_speed: 50 }
+  nutrient_b:  { channel: 3, full_ml_s: 0.60, slow_ml_s: 0.11, slow_speed: 50 }
