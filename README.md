@@ -53,8 +53,14 @@ Start at the docs index: **[docs/README.md](docs/README.md)**.
 
 ## Repo layout
 
-- `docs/` — design + operations documentation
-- `firmware/` — Arduino GIGA firmware (future)
+- `docs/` — design + operations documentation (incl. the MQTT topic contract
+  and the DFR0523 dosing-pump calibration Demeter relies on)
+- `firmware/` — Arduino GIGA firmware
+
+**Demeter — the k3s autodosing controller (#278)** lives in its own private
+repo: <https://github.com/jellebens/demeter> (extracted from `controller/`
+here on 2026-09-11, history preserved). Its deployment is gitops
+`landingzones/pomona`.
 
 ## Branching
 
