@@ -57,6 +57,7 @@ relay-driven end state this is the first half of.
 | `pomona/pump/request` | `on` / `off` | **yes**, QoS 1 | whenever the desired pump state changes |
 | `pomona/light/request` | `on` / `off` | **yes**, QoS 1 | whenever the desired light state changes |
 | `pomona/pump/reason` | free text — `schedule` / `level_low` / `settling` / `override` / `boot_safe` | **yes** | alongside each pump request |
+| `pomona/pump/power` | watts drawn by the pump plug, e.g. `4.7` / `0.0` — **published by Home Assistant** (`sensor.pomona_pump_power`, the Fibaro), not the GIGA | **yes**, QoS 1 | on every change, at HA start and every 5 min (`pomona_schedule.yaml` ≥ 1.3.0). Demeter's proof that the pump actually ran before it judges a dose (demeter ADR-0005) |
 
 **Retain these, unlike the metrics.** The metric topics are deliberately
 non-retained because a stale sensor reading is worse than none. A *request* is
@@ -102,8 +103,11 @@ repo's `controller/` on 2026-09-11, history preserved); it deploys via gitops
 both.
 
 Demeter connects as the dedicated broker user **`pomona-demeter`**
-(subscribe `pomona/#`; publish only `pomona/dose/test` and
-`pomona/demeter/#`).
+(subscribe `pomona/#`; publish only `pomona/dose/test`,
+`pomona/pump/override` and `pomona/demeter/#`). Around every dose it
+forces the circulation pump via `pomona/pump/override` (demeter ADR-0003)
+and, since 0.5.1, counts mixing time from `pomona/pump/power` above
+(demeter ADR-0005).
 
 | Topic | Payload | Retained | Who |
 |---|---|---|---|
