@@ -135,3 +135,37 @@ controller. Only Demeter's `runtime.py` transport changes.
 - Revisit payload format here if ingestion prefers JSON-per-zone — the
   firmware's topic definitions sit in one place
   ([`firmware/pomona/config.h`](../firmware/pomona/config.h)).
+
+## Archive — where every topic lands in InfluxDB (#290, ADR-0001)
+
+**Every `pomona/#` topic is archived in the `pomona` InfluxDB bucket with
+infinite retention** ([ADR-0001](adr/0001-telemetry-archived-forever.md);
+platform decision gitops ADR-0002). The gitops `landingzones/pomona` Telegraf
+bridge does the ingestion; the bucket and its retention are declared in
+`platform/influxdb-config` and reconciled hourly.
+
+| Topics | Measurement | How |
+|---|---|---|
+| `pomona/water/+`, `pomona/air/+`, `pomona/unit/rssi_dbm`, `pomona/unit/uptime_s` | `pomona` | float `value`, tags `zone`/`metric` |
+| `pomona/unit/status`, `pomona/unit/fw_version`, `pomona/unit/sensors` | `pomona_meta` | string `value`, verbatim |
+| `pomona/dose/+`, `pomona/demeter/+`, `pomona/pump/+`, `pomona/light/+`, `pomona/control/+`, `pomona/unit/ota_result`, `pomona/unit/i2c_scan` | `pomona_events` | string `value`, **verbatim** (JSON stays JSON) — the lossless record |
+| `pomona/demeter/decision` | `demeter_decision` | parsed: tags `action`,`condition`,`stage`,`mode`; fields `executed`,`reason`,`ml`,`reagent`,`version`; point time = the document's `ts` |
+| `pomona/demeter/ledger` | `demeter_model` | parsed: `model.*` → `k`,`b`,`n`,`settle_s`,`rebound_ph_h`,`kf_level`,`kf_slope`,`kf_r`,`trough_ph`,`no_response_streak`,`overshoots`; `reagents.*.pumped_ml`; `pending.ml`/`pre_ph`; tag `last_dose_tier` |
+| Demeter's `demeter_*` Prometheus series | `prometheus` bucket, measurement `prometheus` | cluster-wide `remote_write` archive (field = metric name) |
+
+Contract consequences:
+
+- A **new topic** under any of the archived prefixes is archived with no
+  config change. A new top-level zone needs one line in the gitops Telegraf
+  config.
+- The parsed measurements read specific keys (`ts`, `action`, `condition`,
+  `steps[0].ml`, `steps[0].reagent`, `model.*`, `reagents.*.pumped_ml`);
+  **renaming one is a breaking change** made together with the gitops config.
+- **Retained topics replay on every Telegraf reconnect** → one duplicate
+  string point per retained topic at reconnect time in `pomona_events`.
+  `demeter_decision` is immune (document `ts` as point time).
+- Topics that were live but undocumented until #290 and are now archived:
+  `pomona/water/ph_raw_v` (raw electrode volts, always published),
+  `pomona/unit/i2c_scan` (retained JSON), `pomona/pump/override` (Demeter →
+  unit, `on`/`auto`, non-retained), `pomona/control/mode`
+  (`establishment`/`established`, subscribed).
