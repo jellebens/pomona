@@ -12,6 +12,7 @@ Monitoring-first; automated control is deferred.
 | [wiring.md](wiring.md) | Shared wiring rules, combined GIGA pin map, first power-on checklist |
 | [sensors/](sensors/README.md) | **One doc per sensor**: wiring, verification, calibration + recorded values, assumptions |
 | [mqtt.md](mqtt.md) | MQTT broker + `pomona/<zone>/<metric>` topic schema (proposed with #229, finalized with #222) |
+| [adr/](adr/README.md) | **Architecture decision records** — ADR-0001: every Pomona topic archived in InfluxDB forever (#290) |
 | [ota-and-secrets.md](ota-and-secrets.md) | Firmware security design: layered secret storage (gitignored → ATECC608A secure element) + OTA updates (dev push / production pull) |
 | [control-architecture.md](control-architecture.md) | Where the pump and light logic should live — HA vs GIGA firmware, the reboot risk, mains safety |
 | [planting-plan.md](planting-plan.md) | The 30-pod tier layout, nutrient/pH targets, commissioning sequence, shopping list |
