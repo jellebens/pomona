@@ -8,4 +8,6 @@
 
 #pragma once
 
-#define POMONA_FW_VERSION "1.3.8"
+// 2.0.0 (#295): the v2 wire — demeter/pomona-0001/… (demeter ADR-0008). Set by
+// hand for the breaking release; deploy it with `-Bump none`.
+#define POMONA_FW_VERSION "2.0.0"
