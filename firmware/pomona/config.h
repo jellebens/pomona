@@ -88,17 +88,17 @@ const uint32_t NTP_TIMEOUT_MS = 1200; // short: the watchdog is 30 s, do not sta
 #define MQTT_HOST "mqtt.lab.local" // in-cluster EMQX (docs/mqtt.md)
 #define MQTT_PORT 1883
 
-// ---- THE UNIT on the wire — demeter/<unit_id>/… (demeter ADR-0008/0009, #295)
-// Firmware 2.0.0 speaks contract v2: the tree is Demeter's, keyed by the
+// ---- THE UNIT on the wire — ceres/<unit_id>/… (ceres ADR-0008/0009, #295)
+// Firmware 2.0.0 speaks contract v2: the tree is Ceres's, keyed by the
 // unit id (<name>-NNNN); below the unit, `sys/` is the system layer (what
-// the node says about itself + what Demeter concludes) and everything else
+// the node says about itself + what Ceres concludes) and everything else
 // is process data (tele/, actuator/, dose/, desired). Full schema and
-// payloads: docs/mqtt.md (points at the demeter repo's ADR-0008).
+// payloads: docs/mqtt.md (points at the ceres repo's ADR-0008).
 #define MQTT_UNIT_ID "pomona-0001"
 #define MQTT_USER "unit-" MQTT_UNIT_ID     // the node's own least-privilege broker user
 const char MQTT_CLIENT_ID[] = "unit-" MQTT_UNIT_ID;
-#define MQTT_BASE "demeter/" MQTT_UNIT_ID
-#define UNIT_TYPE "aeroponic_tower"        // selects Demeter's profile
+#define MQTT_BASE "ceres/" MQTT_UNIT_ID
+#define UNIT_TYPE "aeroponic_tower"        // selects Ceres's profile
 #define UNIT_NODE "giga-r1"                // the board, informational
 #define MQTT_CONTRACT 2
 const float UNIT_RESERVOIR_L = 10.0f;      // announced in sys/meta; the config document is authoritative
@@ -135,10 +135,10 @@ const char TOPIC_PUMP_REASON[] = MQTT_BASE "/actuator/pump/reason";   // retaine
 const char TOPIC_PUMP_SET[] = MQTT_BASE "/actuator/pump/set";         // subscribed auto|on|off
 const char TOPIC_LIGHT_STATE[] = MQTT_BASE "/actuator/light/state";   // retained on|off
 const char TOPIC_LIGHT_SET[] = MQTT_BASE "/actuator/light/set";       // subscribed auto|on|off (new in 2.0.0)
-// -- desired state (Demeter's registry, retained JSON): the node applies what
+// -- desired state (Annona (Ceres' config service), retained JSON): the node applies what
 // it supports — today `stage` (establishment|established) — and ignores the rest.
 const char TOPIC_DESIRED[] = MQTT_BASE "/desired";                    // subscribed
-// -- dosing (#224 contract, demeter ADR-0008 rule 4): an ml-based request with
+// -- dosing (#224 contract, ceres ADR-0008 rule 4): an ml-based request with
 // an id, NEVER retained; the node converts ml with ITS OWN calibration
 // (PomonaCalibration.h), enforces its own caps below and acks every request on
 // dose/result (done|refused|failed). A result without an id is a bench dose.
@@ -146,7 +146,7 @@ const char TOPIC_DOSE_REQUEST[] = MQTT_BASE "/dose/request";  // subscribed JSON
 const char TOPIC_DOSE_RESULT[] = MQTT_BASE "/dose/result";    // retained JSON, last action
 // THE NODE'S OWN RAILS — the unit stays safe against a misbehaving controller.
 // Per command: pH-Down 0.2 ml/L * 10 L; nutrients one feed of 10 ml. Per
-// rolling 24 h: twice Demeter's derived acid cap (0.4 ml/L), four feeds of A/B.
+// rolling 24 h: twice Ceres's derived acid cap (0.4 ml/L), four feeds of A/B.
 // Channel 4 is idle (#287): 0 = every request refused.
 const float DOSE_MAX_ML_PER_CMD[4] = {2.0f, 10.0f, 10.0f, 0.0f};
 const float DOSE_MAX_ML_PER_24H[4] = {8.0f, 40.0f, 40.0f, 0.0f};
