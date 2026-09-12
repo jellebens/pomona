@@ -6,7 +6,7 @@ firmware semver from `firmware/libraries/PomonaVersion` (single source of
 truth, bumped by the deploy scripts). Tags `v<version>` mark each release
 merged to `master`.
 
-## [2.1.0] - 2026-09-12 (ceres card #297 — NOT flashed; supersedes 2.0.0 before any deploy)
+## [2.1.0] - 2026-09-12
 
 ### Changed — the topic root is `ceres/`
 - Demeter is Ceres (ceres ADR-0012: one pantheon, Roman only). Every v2 topic
