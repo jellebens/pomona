@@ -1,9 +1,9 @@
 # MQTT — broker & topic schema
 
-Status: **v2 since firmware 2.0.0** (demeter card #295, 2026-09-12). The
-contract of record is the demeter repo's
+Status: **v2 since firmware 2.0.0** (ceres card #295, 2026-09-12). The
+contract of record is the ceres repo's
 **ADR-0008 — MQTT topic contract v2** (`docs/adr/0008-mqtt-topic-contract-v2.md`):
-one flat tree per Demeter unit, `demeter/<unit_id>/…`, owned by role. This
+one flat tree per Ceres unit, `ceres/<unit_id>/…`, owned by role. This
 page is the node's view of it — what the GIGA publishes and reads — plus the
 v1 history the archive still carries. Firmware 1.x spoke `pomona/<zone>/<metric>`
 (section "v1 — history" below); during the transition the platform broker's
@@ -23,8 +23,8 @@ On the unit the credentials live in the gitignored `secrets.h`
 
 ## The unit: `pomona-0001`
 
-Unit ids are `<name>-NNNN` (demeter ADR-0009); the tower is `pomona-0001`.
-Everything below is under `demeter/pomona-0001/`. Payloads: telemetry is a
+Unit ids are `<name>-NNNN` (ceres ADR-0009); the tower is `pomona-0001`.
+Everything below is under `ceres/pomona-0001/`. Payloads: telemetry is a
 plain number per topic, non-retained; state is retained; commands are never
 retained; documents are JSON with a `ts` (unix seconds, `0` when the node has
 no clock yet).
@@ -42,7 +42,7 @@ no clock yet).
 | `sys/ota/result` | `applying <url>` / `failed: <reason>` / `skipped same-version <url>` | yes | on an OTA attempt; success = a new `fw_version` in `sys/meta` after reboot |
 
 The rest of `sys/` (`role`, `decision`, `ledger`, `alerts`, `advice`,
-`config`) is Demeter's view of the unit — published by the brain, Robigus
+`config`) is Ceres's view of the unit — published by the brain, Robigus
 and the registry, never by the node.
 
 ### `tele/<zone>/<metric>` — telemetry
@@ -79,9 +79,9 @@ touched — see [control-architecture.md](control-architecture.md).
 | `actuator/pump/state` | `on` / `off` — the node's decision | **yes**, QoS 1 | node, on change and on every connect |
 | `actuator/pump/reason` | `boot_safe` / `schedule` / `settling` / `level_low` / `override` | **yes** | node |
 | `actuator/light/state` | `on` / `off` | **yes**, QoS 1 | node |
-| `actuator/pump/set` | `auto` / `on` / `off` — a *request*; the level interlock always wins | **no**, QoS 1 | Demeter (mixing around a dose, ADR-0003), HA / a human |
+| `actuator/pump/set` | `auto` / `on` / `off` — a *request*; the level interlock always wins | **no**, QoS 1 | Ceres (mixing around a dose, ADR-0003), HA / a human |
 | `actuator/light/set` | `auto` / `on` / `off` — a human override of the photoperiod; resets to `auto` at boot | **no**, QoS 1 | HA / a human (new in 2.0.0) |
-| `actuator/pump/power_w` | watts drawn by the pump plug, e.g. `4.7` / `0.0` — **published by Home Assistant** (the Fibaro), not the GIGA | **yes**, QoS 1 | HA on every change, at start and every 5 min — Demeter's proof the pump ran before it judges a dose (ADR-0005) |
+| `actuator/pump/power_w` | watts drawn by the pump plug, e.g. `4.7` / `0.0` — **published by Home Assistant** (the Fibaro), not the GIGA | **yes**, QoS 1 | HA on every change, at start and every 5 min — Ceres's proof the pump ran before it judges a dose (ADR-0005) |
 
 **Retain the state, unlike the metrics.** A stale metric is worse than none;
 a *state* is the current desired state, and on an HA restart the broker
@@ -93,9 +93,9 @@ been driving in the meantime.
 enabled (`input_boolean.pomona_firmware_control`) and reachable (`sys/status`
 = `online`); otherwise HA falls back to its own schedule and says so.
 
-### `desired` — what Demeter wants the unit to be
+### `desired` — what Ceres wants the unit to be
 
-Retained JSON published by Demeter's registry (ADR-0011):
+Retained JSON published by Annona (Ceres' config service) (ADR-0011):
 `{"unit", "stage": "establishment|established", "targets": {...}, "photoperiod": {"hours"},
 "dosing_enabled", "config_version", "ts"}`. The node applies what it supports —
 today the **stage** (the wetter establishment cycle vs. established, v1's
@@ -105,8 +105,8 @@ today the **stage** (the wetter establishment cycle vs. established, v1's
 
 | Topic | Payload | Retained | Who |
 |---|---|---|---|
-| `dose/request` | JSON `{"id": "<unique>", "reagent": "ph_down\|nutrient_a\|nutrient_b", "ml": 1.1, "rate": "full\|slow", "ts"}` | **no**, QoS 1 | Demeter publishes, the unit subscribes |
-| `dose/result` | JSON `{"id", "reagent", "status": "done\|refused\|failed", "ml", "ms", "channel", "reason", "ts"}` — `id` absent = a bench dose (foreign to Demeter → its lockout restarts) | **yes**, QoS 1 | node, on every request and on every bench run |
+| `dose/request` | JSON `{"id": "<unique>", "reagent": "ph_down\|nutrient_a\|nutrient_b", "ml": 1.1, "rate": "full\|slow", "ts"}` | **no**, QoS 1 | Ceres publishes, the unit subscribes |
+| `dose/result` | JSON `{"id", "reagent", "status": "done\|refused\|failed", "ml", "ms", "channel", "reason", "ts"}` — `id` absent = a bench dose (foreign to Ceres → its lockout restarts) | **yes**, QoS 1 | node, on every request and on every bench run |
 
 The node converts ml with **its own** calibration
 (`firmware/libraries/PomonaCalibration` `DOSER_CAL`, announced in `sys/meta`)
@@ -114,7 +114,7 @@ and enforces **its own rails** — `config.h` `DOSE_MAX_ML_PER_CMD`
 (pH-Down 2 ml, A/B 10 ml), `DOSE_MAX_ML_PER_24H` (8 / 40 / 40 ml, rolling),
 one channel at a time, an absolute 60 s run cap — so the unit stays safe
 against a misbehaving controller. Every request is acked: a `refused` or
-`failed` dose never reached the tank and Demeter takes it back out of its
+`failed` dose never reached the tank and Ceres takes it back out of its
 ledger; `done` carries the ms actually run. The bench channel
 (`chN fwd|rev|stop [ms] [speed]`, 10 s cap) survives over USB Serial only
 (`dose chN …`).
@@ -123,10 +123,10 @@ ledger; `done` carries the ms actually run. The bench channel
 
 | Consumer | Reads | Writes |
 |---|---|---|
-| Demeter brain (`brain-pomona-0001`) | `demeter/pomona-0001/#`, `demeter/sys/mode` | `actuator/+/set`, `dose/request`, its `sys/role\|decision\|ledger`, `demeter/sys/status/brain-pomona-0001` |
-| Robigus, the registry | `demeter/#` | `sys/alerts\|advice`, `sys/config`, `desired` |
-| Home Assistant (`homeassistant`) | `demeter/#` | `actuator/+/power_w`, `actuator/+/set` |
-| Telegraf archive (`telegraf-demeter`) | `demeter/#` | — (InfluxDB bucket `demeter`, forever) |
+| Vertumnus (`vertumnus-pomona-0001`) | `ceres/pomona-0001/#`, `ceres/sys/mode` | `actuator/+/set`, `dose/request`, its `sys/role\|decision\|ledger`, `ceres/sys/status/vertumnus-pomona-0001` |
+| Robigus, Annona | `ceres/#` | `sys/alerts\|advice`, `sys/config`, `desired` |
+| Home Assistant (`homeassistant`) | `ceres/#` | `actuator/+/power_w`, `actuator/+/set` |
+| Telegraf archive (`telegraf-ceres`) | `ceres/#` | — (InfluxDB bucket `ceres`, forever) |
 
 ## v1 — history (firmware 1.x, `pomona/…`)
 
@@ -135,8 +135,9 @@ Until 2.0.0 the unit spoke its own tree: `pomona/<water|air>/<metric>`,
 `pomona/pump/{request,reason,override,power}`, `pomona/light/request`,
 `pomona/control/mode`, the bench dose channel `pomona/dose/test` (`chN fwd
 <ms> [speed]`, no id, no ack) and `pomona/dose/result` (an event line), and
-Demeter's own `pomona/demeter/{status,mode,decision,ledger}`. The InfluxDB
-`pomona` bucket keeps that era forever; the `demeter` bucket carries v2. The
+the controller's own `pomona/demeter/{status,mode,decision,ledger}` (the
+`demeter` segment is a fact of the old wire, kept until it is retired). The
+InfluxDB `pomona` bucket keeps that era forever; the `ceres` bucket carries v2. The
 mapping v1 → v2 is the republish bridge's table in the gitops
 `platform/mqtt` README; the bridge and the v1 users (`pomona`,
 `pomona-demeter`, `pomona-ingest`) are retired once 2.0.0 is on the tower.

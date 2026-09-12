@@ -70,9 +70,9 @@ one place — without throwing away observability:
 
 - **The GIGA owns:** the schedule, the level interlock, the settle logic, and
   a safe state on boot. It decides, always, and it decides alone.
-- **The GIGA publishes what it decided:** `demeter/pomona-0001/actuator/pump/state`,
+- **The GIGA publishes what it decided:** `ceres/pomona-0001/actuator/pump/state`,
   `actuator/pump/reason` (`schedule` / `level_low` / `override` / `boot_safe`)
-  — firmware 2.0.0, demeter ADR-0008; v1 was `pomona/pump/request|reason`.
+  — firmware 2.0.0, ceres ADR-0008; v1 was `pomona/pump/request|reason`.
   HA and Grafana get full visibility without holding any authority.
 - **The GIGA subscribes to an override:** `actuator/pump/set` = `auto` /
   `on` / `off`, non-retained, defaulting to `auto`. HA and the owner can force
@@ -127,7 +127,7 @@ Options in order of preference:
 
 Yes, and it needs no new plumbing.
 
-- **MQTT trigger:** an HA automation with `platform: mqtt, topic: demeter/pomona-0001/...`
+- **MQTT trigger:** an HA automation with `platform: mqtt, topic: ceres/pomona-0001/...`
   fires on *any* message the GIGA publishes. This is the natural path for
   GIGA-raised events — a level alarm, an OTA result, a sensor fault — and it
   reaches HA in about a second at QoS 1.

@@ -55,8 +55,8 @@ WiFiFirmwareUpdater` sketch over USB.
 ## MQTT
 
 Broker: the in-cluster EMQX at **`mqtt.lab.local:1883`**, as the unit's own
-user `unit-pomona-0001`. Since 2.0.0 (demeter card #295) the unit speaks the
-**v2 wire** `demeter/pomona-0001/…` of the demeter repo's ADR-0008:
+user `unit-pomona-0001`. Since 2.0.0 (ceres card #295) the unit speaks the
+**v2 wire** `ceres/pomona-0001/…` of the ceres repo's ADR-0008:
 `tele/<zone>/<metric>` telemetry, `sys/status` (retained online/offline with
 a broker LWT), `sys/meta` (self-description incl. doser calibration + caps),
 `sys/health`, `actuator/<pump|light>/state|reason`, `dose/result` acks — full
@@ -87,7 +87,7 @@ before serial, watchdog, display, sensors and WiFi — because a rebooting unit
 (OTA, watchdog, brown-out) must be in a known state before anything that can
 hang gets a chance to run.
 
-| Published (retained, QoS 1; below `demeter/pomona-0001/`) | Payload |
+| Published (retained, QoS 1; below `ceres/pomona-0001/`) | Payload |
 |---|---|
 | `actuator/pump/state` | `on` / `off` |
 | `actuator/light/state` | `on` / `off` |

@@ -31,14 +31,14 @@ const float PH_V_ACID = 2.074f;    // 2026-09-10, pH 4.00 buffer @ 26.1 C (settl
 // DFR0523 dosing channels (docs/dosing/dfr0523.md — 2026-09-09 recalibration on
 // the FINAL wiring and tube runs). ml/s is per channel AND per speed: the
 // speed->flow curve is nonlinear, never interpolate; use speed 50 for fine
-// doses and 100 for volume. Since firmware 2.0.0 (#295, demeter ADR-0008) the
-// node converts Demeter's ml-based dose/request with THESE numbers and
+// doses and 100 for volume. Since firmware 2.0.0 (#295, ceres ADR-0008) the
+// node converts Ceres's ml-based dose/request with THESE numbers and
 // announces them in sys/meta; the same facts sit in the unit's config document
-// (Demeter's registry) for the brain's own sizing. Recalibrate after any tube
+// (Annona (Ceres' config service)) for the brain's own sizing. Recalibrate after any tube
 // change and after the first week of use; keep both copies in step.
 // Channel order = DFR0523 ch1..ch4; an empty reagent = no doser on that channel.
 struct DoserCal {
-  const char *reagent; // Demeter's reagent id
+  const char *reagent; // Ceres's reagent id
   float fullMlS;       // speed 100
   float slowMlS;       // at slowSpeed
   int slowSpeed;

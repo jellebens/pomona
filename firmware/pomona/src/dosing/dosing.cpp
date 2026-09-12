@@ -68,7 +68,7 @@ static void setEventRaw(const char *fmt, ...) {
   Serial.println(lastEvent);
 }
 
-// A bench event: JSON WITHOUT an id (ADR-0008 rule 4: foreign to Demeter).
+// A bench event: JSON WITHOUT an id (ADR-0008 rule 4: foreign to Ceres).
 static void setBenchEvent(int n, const char *status, const char *detail, long ms) {
   setEventRaw("{\"status\":\"%s\",\"channel\":%d,\"ms\":%ld,\"reason\":\"bench %s\",\"ts\":0}", status, n, ms, detail);
 }

@@ -2,19 +2,19 @@
 //
 // Drives the DFR0523 peristaltic channels. Two entry points:
 //
-//   * dosingHandleRequest(json, epoch) — the v2 contract (demeter ADR-0008
-//     rule 4): an ml-based request {"id","reagent","ml","rate"} from Demeter.
+//   * dosingHandleRequest(json, epoch) — the v2 contract (ceres ADR-0008
+//     rule 4): an ml-based request {"id","reagent","ml","rate"} from Ceres.
 //     The node converts ml with ITS OWN calibration (PomonaCalibration.h
 //     DOSER_CAL), enforces ITS OWN rails (per command + rolling 24 h ml caps in
 //     config.h, one channel at a time, an absolute ms cap) and acks every
 //     request on dose/result: {"id","reagent","status":"done|refused|failed",
 //     "ml","ms","channel","reason","ts"}. The unit stays safe against a
 //     misbehaving controller — a refused dose never reaches the tank and
-//     Demeter takes it back out of its ledger.
+//     Ceres takes it back out of its ledger.
 //   * dosingHandleCommand(line) — the bench channel "chN fwd|rev|stop [ms]
 //     [speed]" for wiring and calibration, over USB Serial ONLY since 2.0.0
 //     (no MQTT topic any more). Its result carries no id: a bench dose is a
-//     foreign dose to Demeter and restarts its lockout, as it should.
+//     foreign dose to Ceres and restarts its lockout, as it should.
 
 #pragma once
 #include <stddef.h>

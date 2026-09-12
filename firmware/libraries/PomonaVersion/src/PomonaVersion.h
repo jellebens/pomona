@@ -8,6 +8,7 @@
 
 #pragma once
 
-// 2.0.0 (#295): the v2 wire — demeter/pomona-0001/… (demeter ADR-0008). Set by
+// 2.0.0 (#295): the v2 wire — demeter/pomona-0001/… (ADR-0008); 2.1.0 (#297, ADR-0012):
+// the root is ceres/pomona-0001/… — Demeter became Ceres before anything v2 was flashed. Set by
 // hand for the breaking release; deploy it with `-Bump none`.
-#define POMONA_FW_VERSION "2.0.0"
+#define POMONA_FW_VERSION "2.1.0"
