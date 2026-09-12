@@ -1,15 +1,17 @@
-// Pomona firmware v1 — network module implementation (Trello #229).
+// Pomona firmware — network module implementation (Trello #229; v2 wire #295).
 //
-// Broker + topic schema: docs/mqtt.md (EMQX mqtt.lab.local:1883, finalized
-// with #222). Credentials come from secrets.h (gitignored, Layer 1 of
+// Broker + topic schema: docs/mqtt.md — since 2.0.0 the v2 contract
+// demeter/<unit_id>/… of the demeter repo's ADR-0008 (EMQX mqtt.lab.local:1883).
+// Credentials come from secrets.h (gitignored, Layer 1 of
 // docs/ota-and-secrets.md); #244 moves them into the ATECC608A.
 
 #include "network.h"
 #include "../../config.h"
 #include "../control/control.h" // publish what the unit decided (#260)
-#include "../dosing/dosing.h"   // bench test commands (#284)
+#include "../dosing/dosing.h"   // the ml-based dose/request contract (#224, #295)
 #include "../ota/ota.h"
 #include "../display/display.h" // OTA progress screen restore on failure
+#include "../util/json.h"
 
 #if !__has_include("../../secrets.h")
 #error "Copy firmware/secrets.h.example to firmware/pomona/secrets.h and fill in the two passwords (docs/ota-and-secrets.md, Layer 1)"
@@ -32,9 +34,9 @@ static char otaUrlPending[224] = ""; // set by onMqttMessage, run in service
 static bool i2cScanPending = false;  // set by onMqttMessage, run in service
 
 // ---- clock (#260) ----------------------------------------------------
-// Only the photoperiod uses this. The pump duty cycle is millis()-only, so a
-// unit that never reaches an NTP server still waters correctly — it just holds
-// the light off and says "no_time".
+// Only the photoperiod (and the ts of our documents) uses this. The pump duty
+// cycle is millis()-only, so a unit that never reaches an NTP server still
+// waters correctly — it just holds the light off and says "no_time".
 static WiFiUDP ntpUdp;
 static uint32_t epochAtSync = 0;   // 0 = never synced
 static uint32_t millisAtSync = 0;
@@ -75,23 +77,39 @@ static void ntpSync() {
   ntpUdp.stop();
 }
 
+// ---- publishing helpers ----------------------------------------------
+
+// A payload of known length, so nothing is silently cut at the client's
+// default 256-byte buffer (sys/meta and the dose acks are longer).
+static void pubSized(const char *topic, const char *body, bool retain, uint8_t qos) {
+  mqtt.beginMessage(topic, (unsigned long)strlen(body), retain, qos);
+  mqtt.print(body);
+  mqtt.endMessage();
+}
+
 static void onMqttMessage(int /*messageSize*/) {
   String topic = mqtt.messageTopic();
-  char payload[224];
+  char payload[512]; // a `desired` document is the longest thing we read
   size_t n = 0;
   while (mqtt.available() && n < sizeof(payload) - 1)
     payload[n++] = (char)mqtt.read();
   payload[n] = '\0';
-  if (topic == TOPIC_UNIT_OTA_URL)
+  while (mqtt.available()) mqtt.read(); // drain anything beyond the buffer
+  if (topic == TOPIC_SYS_OTA_URL)
     snprintf(otaUrlPending, sizeof(otaUrlPending), "%s", payload);
-  else if (topic == TOPIC_UNIT_I2C_REQUEST)
+  else if (topic == TOPIC_SYS_DIAG_I2C_GET)
     i2cScanPending = true; // any payload = scan now
-  else if (topic == TOPIC_PUMP_OVERRIDE)
+  else if (topic == TOPIC_PUMP_SET)
     controlSetOverride(payload); // firmware keeps the safety veto (#260)
-  else if (topic == TOPIC_CONTROL_MODE)
-    controlSetMode(payload);
-  else if (topic == TOPIC_DOSE_TEST)
-    dosingHandleCommand(payload); // hard-capped bench runs only (#284)
+  else if (topic == TOPIC_LIGHT_SET)
+    controlSetLightOverride(payload);
+  else if (topic == TOPIC_DESIRED) {
+    // Demeter's desired state: apply what this node supports (the stage);
+    // targets, photoperiod and dosing_enabled are informational here.
+    char stage[24];
+    if (jsonGetString(payload, "stage", stage, sizeof(stage))) controlSetMode(stage);
+  } else if (topic == TOPIC_DOSE_REQUEST)
+    dosingHandleRequest(payload, networkEpochNow()); // the node's rails decide (#224)
 }
 
 bool wifiConnected() { return WiFi.status() == WL_CONNECTED; }
@@ -186,42 +204,58 @@ static bool connectWifi() {
   return false;
 }
 
+// sys/meta — the node's self-description (ADR-0008): what it is, what it
+// carries, how its dosers are calibrated and capped. Retained, on connect.
+static void publishMeta() {
+  char dosers[400];
+  dosingMetaJson(dosers, sizeof(dosers));
+  char buf[720];
+  snprintf(buf, sizeof(buf),
+           "{\"unit\":\"%s\",\"type\":\"%s\",\"node\":\"%s\",\"fw_version\":\"%s\",\"contract\":%d,"
+           "\"sensors\":[\"water_temp\",\"ec\",\"ph\",\"level_points\",\"bme280\",\"bh1750\"],"
+           "\"actuators\":[\"pump\",\"light\"],\"reservoir_l\":%.1f,%s,\"ts\":%lu}",
+           MQTT_UNIT_ID, UNIT_TYPE, UNIT_NODE, POMONA_FW_VERSION, MQTT_CONTRACT, (double)UNIT_RESERVOIR_L,
+           dosers, (unsigned long)networkEpochNow());
+  pubSized(TOPIC_SYS_META, buf, true, 1);
+}
+
 static bool connectMqtt() {
   mqtt.setId(MQTT_CLIENT_ID);
   mqtt.setUsernamePassword(MQTT_USER, MQTT_PASS);
 
   // last will: broker flips the retained status to offline if we vanish
-  mqtt.beginWill(TOPIC_UNIT_STATUS, true, 1);
+  mqtt.beginWill(TOPIC_SYS_STATUS, true, 1);
   mqtt.print("offline");
   mqtt.endWill();
 
   Serial.print("[MQTT] connecting to ");
   Serial.print(MQTT_HOST);
   Serial.print(":");
-  Serial.println(MQTT_PORT);
+  Serial.print(MQTT_PORT);
+  Serial.print(" as ");
+  Serial.println(MQTT_USER);
   if (!mqtt.connect(MQTT_HOST, MQTT_PORT)) {
     Serial.print("[MQTT] connect FAILED, error ");
     Serial.println(mqtt.connectError());
     return false;
   }
 
-  mqtt.beginMessage(TOPIC_UNIT_STATUS, true, 1);
+  mqtt.beginMessage(TOPIC_SYS_STATUS, true, 1);
   mqtt.print("online");
   mqtt.endMessage();
-  mqtt.beginMessage(TOPIC_UNIT_FWVER, true, 1);
-  mqtt.print(POMONA_FW_VERSION);
-  mqtt.endMessage();
+  publishMeta();
 
   mqtt.onMessage(onMqttMessage);
-  mqtt.subscribe(TOPIC_UNIT_OTA_URL, 1); // basic OTA trigger (docs/mqtt.md)
-  mqtt.subscribe(TOPIC_UNIT_I2C_REQUEST, 1); // on-demand I2C scan trigger
-  mqtt.subscribe(TOPIC_PUMP_OVERRIDE, 1);    // auto|on|off (#260)
-  mqtt.subscribe(TOPIC_CONTROL_MODE, 1);     // establishment|established
-  mqtt.subscribe(TOPIC_DOSE_TEST, 1);        // bench dosing commands (#284)
+  mqtt.subscribe(TOPIC_SYS_OTA_URL, 1);      // basic OTA trigger (docs/mqtt.md)
+  mqtt.subscribe(TOPIC_SYS_DIAG_I2C_GET, 1); // on-demand I2C scan trigger
+  mqtt.subscribe(TOPIC_PUMP_SET, 1);         // auto|on|off (#260)
+  mqtt.subscribe(TOPIC_LIGHT_SET, 1);        // auto|on|off (2.0.0)
+  mqtt.subscribe(TOPIC_DESIRED, 1);          // the registry's desired state (stage)
+  mqtt.subscribe(TOPIC_DOSE_REQUEST, 1);     // ml-based dose requests (#224)
 
-  // Republish the control state on EVERY connect, not only on change: HA may
+  // Republish the actuator state on EVERY connect, not only on change: HA may
   // have been driving its own schedule while we were away, so the retained
-  // request could predate the outage (docs/mqtt.md "Control topics").
+  // state could predate the outage (docs/mqtt.md).
   controlForcePublish();
 
   nextNtpMs = 0; // resync the clock now that we have a network
@@ -245,14 +279,14 @@ static void handleOtaPending() {
   if (strstr(url, "pomona-" POMONA_FW_VERSION ".ota") != NULL) {
     Serial.print("ota: skipping same-version replay ");
     Serial.println(url);
-    mqtt.beginMessage(TOPIC_UNIT_OTA_RESULT, true, 1);
+    mqtt.beginMessage(TOPIC_SYS_OTA_RESULT, true, 1);
     mqtt.print("skipped same-version ");
     mqtt.print(url);
     mqtt.endMessage();
     return;
   }
 
-  mqtt.beginMessage(TOPIC_UNIT_OTA_RESULT, true, 1);
+  mqtt.beginMessage(TOPIC_SYS_OTA_RESULT, true, 1);
   mqtt.print("applying ");
   mqtt.print(url);
   mqtt.endMessage();
@@ -262,7 +296,7 @@ static void handleOtaPending() {
     Serial.print("ota: FAILED — ");
     Serial.println(err);
     if (mqtt.connected()) {
-      mqtt.beginMessage(TOPIC_UNIT_OTA_RESULT, true, 1);
+      mqtt.beginMessage(TOPIC_SYS_OTA_RESULT, true, 1);
       mqtt.print("failed: ");
       mqtt.print(err);
       mqtt.endMessage();
@@ -284,36 +318,32 @@ void networkInit() {
 }
 
 // Rescan the I2C bus and publish the retained diagnostics topic. Runs on
-// every publish cycle and immediately on a message to TOPIC_UNIT_I2C_REQUEST.
+// every publish cycle and immediately on a message to TOPIC_SYS_DIAG_I2C_GET.
 static void publishI2CScan() {
   char addrs[96];
   char buf[128];
   int found = sensorsI2CScan(addrs, sizeof(addrs));
   snprintf(buf, sizeof(buf), "{\"found\":%d,\"addrs\":\"%s\"}", found, addrs);
-  mqtt.beginMessage(TOPIC_UNIT_I2C_SCAN, true, 1);
+  mqtt.beginMessage(TOPIC_SYS_DIAG_I2C, true, 1);
   mqtt.print(buf);
   mqtt.endMessage();
 }
 
 void networkService() {
   if (wifiConnected() && mqtt.connected()) {
-    mqtt.poll(); // keepalive + inbound (ota_url, i2c_scan, override, mode)
+    mqtt.poll(); // keepalive + inbound (ota url, diag get, set, desired, dose request)
     handleOtaPending();
     if (i2cScanPending) {
       i2cScanPending = false;
       publishI2CScan();
     }
     const char *doseEv = dosingTakeEvent();
-    if (doseEv) {
-      mqtt.beginMessage(TOPIC_DOSE_RESULT, true, 1); // retained: last action
-      mqtt.print(doseEv);
-      mqtt.endMessage();
-    }
+    if (doseEv) pubSized(TOPIC_DOSE_RESULT, doseEv, true, 1); // retained: last action / ack
     if ((int32_t)(millis() - nextNtpMs) >= 0) {
       nextNtpMs = millis() + NTP_RESYNC_MS;
       ntpSync();
     }
-    // Control decisions are published on change, not on the 30 s metric
+    // Actuator decisions are published on change, not on the 30 s metric
     // cadence: a stop is worth telling HA about immediately.
     if (controlWantsPublish()) networkPublishControl();
     return;
@@ -359,11 +389,11 @@ static void pubRetained(const char *topic, const char *value) {
 
 void networkPublishControl() {
   if (!mqtt.connected()) return;
-  pubRetained(TOPIC_PUMP_REQUEST, controlPumpOn() ? "on" : "off");
-  pubRetained(TOPIC_LIGHT_REQUEST, controlLightOn() ? "on" : "off");
+  pubRetained(TOPIC_PUMP_STATE, controlPumpOn() ? "on" : "off");
   pubRetained(TOPIC_PUMP_REASON, controlReasonStr());
+  pubRetained(TOPIC_LIGHT_STATE, controlLightOn() ? "on" : "off");
   controlMarkPublished();
-  Serial.print("[MQTT] control pump=");
+  Serial.print("[MQTT] actuators pump=");
   Serial.print(controlPumpOn() ? "on" : "off");
   Serial.print(" light=");
   Serial.print(controlLightOn() ? "on" : "off");
@@ -390,21 +420,20 @@ void networkPublish(const Readings &r) {
   }
   if (r.luxOk) pubFloat(TOPIC_AIR_LUX, r.lux, 0);
 
-  // unit health
-  pubInt(TOPIC_UNIT_RSSI, WiFi.RSSI());
-  pubInt(TOPIC_UNIT_UPTIME, millis() / 1000);
+  // node health as telemetry
+  pubInt(TOPIC_NODE_RSSI, WiFi.RSSI());
+  pubInt(TOPIC_NODE_UPTIME, millis() / 1000);
 
-  // retained availability map: consumers see which metrics to expect
-  char buf[192];
+  // sys/health — retained availability map: consumers see which metrics to expect
+  char buf[224];
   snprintf(buf, sizeof(buf),
            "{\"water_temp\":%s,\"ph_calibrated\":%s,\"level_strip\":%s,"
-           "\"level_probe\":%s,\"bme280\":%s,\"bh1750\":%s}",
+           "\"level_probe\":%s,\"bme280\":%s,\"bh1750\":%s,\"ts\":%lu}",
            r.waterTempOk ? "true" : "false", r.phOk ? "true" : "false",
            r.levelOk ? "true" : "false", r.probePoints >= 0 ? "true" : "false",
-           r.bmeOk ? "true" : "false", r.luxOk ? "true" : "false");
-  mqtt.beginMessage(TOPIC_UNIT_SENSORS, true, 1);
-  mqtt.print(buf);
-  mqtt.endMessage();
+           r.bmeOk ? "true" : "false", r.luxOk ? "true" : "false",
+           (unsigned long)networkEpochNow());
+  pubSized(TOPIC_SYS_HEALTH, buf, true, 1);
 
   // retained I2C diagnostics: what actually answers on the bus right now,
   // so a headless unit's wiring can be checked over MQTT (docs/mqtt.md)

@@ -6,6 +6,37 @@ firmware semver from `firmware/libraries/PomonaVersion` (single source of
 truth, bumped by the deploy scripts). Tags `v<version>` mark each release
 merged to `master`.
 
+## [2.0.0] - 2026-09-12 (demeter card #295 — NOT yet flashed; deploy with `-Bump none` in a maintenance window)
+
+### Changed — BREAKING: the v2 wire (demeter ADR-0008)
+- Every topic moves to `demeter/pomona-0001/…`: `tele/<zone>/<metric>`
+  (+ `tele/node/rssi_dbm|uptime_s`), `sys/status` (LWT), `sys/health`,
+  `sys/diag/i2c_scan[/get]`, `sys/ota/url|result`, `actuator/pump/state|reason`,
+  `actuator/light/state`, `actuator/pump/set`, `desired`. The unit connects as
+  its own broker user `unit-pomona-0001` (client id the same). `docs/mqtt.md`
+  rewritten; the v1 tree is history the archive keeps.
+- `sys/meta` (retained, on connect): the node's self-description — type,
+  node, fw_version, contract 2, sensors, actuators, reservoir_l, and every
+  doser's calibration + caps.
+
+### Added
+- **The #224 dosing contract:** `dose/request` `{id, reagent, ml, rate}` is
+  converted with the node's OWN calibration (`PomonaCalibration.h` `DOSER_CAL`)
+  and checked against the node's OWN rails (`config.h`: per-command ml caps,
+  rolling 24 h ml caps, one channel at a time, 60 s absolute run cap); every
+  request is acked on `dose/result` `{id, status: done|refused|failed, ml, ms,
+  channel, reason, ts}`. A bench run (USB Serial `dose chN …` only — the MQTT
+  bench topic is gone) acks without an id.
+- `actuator/light/set` (`auto|on|off`): a human override of the photoperiod
+  (#263 wanted it for testability); resets to `auto` at boot.
+- `desired.stage` replaces `control/mode` as the establishment/established
+  switch (Demeter's registry publishes the document).
+- A tiny flat-JSON reader (`src/util/json.h`) for the two documents the node reads.
+
+### Docs
+- `docs/mqtt.md` is the node's view of ADR-0008; `docs/control-architecture.md`
+  topic names; the sketch README.
+
 ## [1.3.8] - 2026-09-10
 
 ### Fixed

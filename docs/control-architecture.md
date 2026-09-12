@@ -70,10 +70,11 @@ one place — without throwing away observability:
 
 - **The GIGA owns:** the schedule, the level interlock, the settle logic, and
   a safe state on boot. It decides, always, and it decides alone.
-- **The GIGA publishes what it decided:** `pomona/pump/state`,
-  `pomona/pump/reason` (`schedule` / `level_low` / `override` / `boot_safe`).
+- **The GIGA publishes what it decided:** `demeter/pomona-0001/actuator/pump/state`,
+  `actuator/pump/reason` (`schedule` / `level_low` / `override` / `boot_safe`)
+  — firmware 2.0.0, demeter ADR-0008; v1 was `pomona/pump/request|reason`.
   HA and Grafana get full visibility without holding any authority.
-- **The GIGA subscribes to an override:** `pomona/pump/override` = `auto` /
+- **The GIGA subscribes to an override:** `actuator/pump/set` = `auto` /
   `on` / `off`, non-retained, defaulting to `auto`. HA and the owner can force
   it — but **firmware keeps the safety veto**: an override can never make the
   pump run when the local interlock says no.
@@ -126,7 +127,7 @@ Options in order of preference:
 
 Yes, and it needs no new plumbing.
 
-- **MQTT trigger:** an HA automation with `platform: mqtt, topic: pomona/...`
+- **MQTT trigger:** an HA automation with `platform: mqtt, topic: demeter/pomona-0001/...`
   fires on *any* message the GIGA publishes. This is the natural path for
   GIGA-raised events — a level alarm, an OTA result, a sensor fault — and it
   reaches HA in about a second at QoS 1.
@@ -136,7 +137,7 @@ Yes, and it needs no new plumbing.
   worse here: they need a URL and token baked into firmware, while the MQTT
   connection already exists and already has credentials.
 
-And in the other direction, HA publishes to `pomona/pump/override` to ask for
+And in the other direction, HA publishes to `actuator/pump/set` to ask for
 something — which is exactly the Option C split.
 
 ## Suggested order of work

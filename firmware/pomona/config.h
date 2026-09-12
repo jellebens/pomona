@@ -1,4 +1,4 @@
-// Pomona firmware v1 — application configuration (Trello #229/#251).
+// Pomona firmware — application configuration (Trello #229/#251; v2 wire #295).
 //
 // Pins, ADC, I2C addresses, timing, WiFi/MQTT connection settings and
 // topics for the pomona sketch. Calibration constants live in
@@ -87,46 +87,71 @@ const uint32_t NTP_TIMEOUT_MS = 1200; // short: the watchdog is 30 s, do not sta
 #define WIFI_SSID "B3ns-2-4"
 #define MQTT_HOST "mqtt.lab.local" // in-cluster EMQX (docs/mqtt.md)
 #define MQTT_PORT 1883
-#define MQTT_USER "pomona"
 
-// ---- MQTT topics — pomona/<zone>/<metric> (docs/mqtt.md, final w/ #222)
-const char MQTT_CLIENT_ID[] = "pomona-giga";
-#define MQTT_BASE "pomona"
-const char TOPIC_UNIT_STATUS[] = MQTT_BASE "/unit/status"; // retained + LWT
-const char TOPIC_UNIT_FWVER[] = MQTT_BASE "/unit/fw_version"; // retained
-const char TOPIC_UNIT_SENSORS[] = MQTT_BASE "/unit/sensors"; // retained JSON
-const char TOPIC_UNIT_I2C_SCAN[] = MQTT_BASE "/unit/i2c_scan"; // retained JSON (diagnostics)
-const char TOPIC_UNIT_I2C_REQUEST[] = MQTT_BASE "/unit/i2c_scan/get"; // any msg -> scan now (subscribed)
-const char TOPIC_UNIT_RSSI[] = MQTT_BASE "/unit/rssi_dbm";
-const char TOPIC_UNIT_UPTIME[] = MQTT_BASE "/unit/uptime_s";
-const char TOPIC_WATER_TEMP[] = MQTT_BASE "/water/temp_c";
-const char TOPIC_WATER_EC[] = MQTT_BASE "/water/ec_ms_cm";
-const char TOPIC_WATER_PH[] = MQTT_BASE "/water/ph";
-const char TOPIC_WATER_PH_RAW[] = MQTT_BASE "/water/ph_raw_v"; // always published (calibration/drift)
-const char TOPIC_WATER_LEVEL_PCT[] = MQTT_BASE "/water/level_pct";
-const char TOPIC_WATER_LEVEL_POINTS[] = MQTT_BASE "/water/level_points";
-const char TOPIC_AIR_TEMP[] = MQTT_BASE "/air/temp_c";
-const char TOPIC_AIR_RH[] = MQTT_BASE "/air/humidity_pct";
-const char TOPIC_AIR_PRESSURE[] = MQTT_BASE "/air/pressure_hpa";
-const char TOPIC_AIR_LUX[] = MQTT_BASE "/air/lux";
-// OTA (basic slice of #243, see docs/mqtt.md): publish an http(s) .ota URL
-// NON-retained to ota_url; the unit stages it in QSPI and reboots to apply.
-const char TOPIC_UNIT_OTA_URL[] = MQTT_BASE "/unit/ota_url"; // subscribed
-const char TOPIC_UNIT_OTA_RESULT[] = MQTT_BASE "/unit/ota_result"; // retained
-// Control (#260, docs/mqtt.md "Control topics"): the unit publishes what it
-// WANTS to happen and HA relays it to the Fibaro plugs. Retained, unlike the
-// metrics — a request is the current desired state, so the broker replaying it
-// on an HA restart is exactly right, whereas a replayed stale metric is not.
-const char TOPIC_PUMP_REQUEST[] = MQTT_BASE "/pump/request";   // retained on|off
-const char TOPIC_PUMP_REASON[] = MQTT_BASE "/pump/reason";     // retained
-const char TOPIC_LIGHT_REQUEST[] = MQTT_BASE "/light/request"; // retained on|off
-const char TOPIC_PUMP_OVERRIDE[] = MQTT_BASE "/pump/override"; // subscribed auto|on|off
-const char TOPIC_CONTROL_MODE[] = MQTT_BASE "/control/mode";   // subscribed establishment|established
-// Dosing bench (#284): explicit test commands only, hard-capped per command.
-// No autonomous dosing until the #224 controller module exists.
-const char TOPIC_DOSE_TEST[] = MQTT_BASE "/dose/test";     // subscribed "chN fwd|rev|stop [ms] [speed]"
-const char TOPIC_DOSE_RESULT[] = MQTT_BASE "/dose/result"; // retained, last action
-const unsigned long DOSE_TEST_MAX_MS = 10000; // hard cap per test command
+// ---- THE UNIT on the wire — demeter/<unit_id>/… (demeter ADR-0008/0009, #295)
+// Firmware 2.0.0 speaks contract v2: the tree is Demeter's, keyed by the
+// unit id (<name>-NNNN); below the unit, `sys/` is the system layer (what
+// the node says about itself + what Demeter concludes) and everything else
+// is process data (tele/, actuator/, dose/, desired). Full schema and
+// payloads: docs/mqtt.md (points at the demeter repo's ADR-0008).
+#define MQTT_UNIT_ID "pomona-0001"
+#define MQTT_USER "unit-" MQTT_UNIT_ID     // the node's own least-privilege broker user
+const char MQTT_CLIENT_ID[] = "unit-" MQTT_UNIT_ID;
+#define MQTT_BASE "demeter/" MQTT_UNIT_ID
+#define UNIT_TYPE "aeroponic_tower"        // selects Demeter's profile
+#define UNIT_NODE "giga-r1"                // the board, informational
+#define MQTT_CONTRACT 2
+const float UNIT_RESERVOIR_L = 10.0f;      // announced in sys/meta; the config document is authoritative
+
+// -- the system layer the NODE publishes
+const char TOPIC_SYS_STATUS[] = MQTT_BASE "/sys/status";   // retained + LWT: online|offline
+const char TOPIC_SYS_META[] = MQTT_BASE "/sys/meta";       // retained JSON self-description (on connect)
+const char TOPIC_SYS_HEALTH[] = MQTT_BASE "/sys/health";   // retained JSON availability map (every publish cycle)
+const char TOPIC_SYS_DIAG_I2C[] = MQTT_BASE "/sys/diag/i2c_scan";         // retained JSON (diagnostics)
+const char TOPIC_SYS_DIAG_I2C_GET[] = MQTT_BASE "/sys/diag/i2c_scan/get"; // any msg -> scan now (subscribed)
+// OTA (basic slice of #243): publish an http(s) .ota URL NON-retained to
+// sys/ota/url; the unit stages it in QSPI and reboots to apply.
+const char TOPIC_SYS_OTA_URL[] = MQTT_BASE "/sys/ota/url";       // subscribed
+const char TOPIC_SYS_OTA_RESULT[] = MQTT_BASE "/sys/ota/result"; // retained
+// -- telemetry: plain numbers, one per topic, NON-retained, only when the sensor answered
+const char TOPIC_NODE_RSSI[] = MQTT_BASE "/tele/node/rssi_dbm";
+const char TOPIC_NODE_UPTIME[] = MQTT_BASE "/tele/node/uptime_s";
+const char TOPIC_WATER_TEMP[] = MQTT_BASE "/tele/water/temp_c";
+const char TOPIC_WATER_EC[] = MQTT_BASE "/tele/water/ec_ms_cm";
+const char TOPIC_WATER_PH[] = MQTT_BASE "/tele/water/ph";
+const char TOPIC_WATER_PH_RAW[] = MQTT_BASE "/tele/water/ph_raw_v"; // always published (calibration/drift)
+const char TOPIC_WATER_LEVEL_PCT[] = MQTT_BASE "/tele/water/level_pct";
+const char TOPIC_WATER_LEVEL_POINTS[] = MQTT_BASE "/tele/water/level_points";
+const char TOPIC_AIR_TEMP[] = MQTT_BASE "/tele/air/temp_c";
+const char TOPIC_AIR_RH[] = MQTT_BASE "/tele/air/humidity_pct";
+const char TOPIC_AIR_PRESSURE[] = MQTT_BASE "/tele/air/pressure_hpa";
+const char TOPIC_AIR_LUX[] = MQTT_BASE "/tele/air/lux";
+// -- actuators (#260, docs/control-architecture.md): the unit publishes what
+// it DECIDED (state + reason, retained — a request is the current desired
+// state, so a broker replay on an HA restart is exactly right) and accepts a
+// REQUEST (set: auto|on|off, never retained) that its interlock may veto.
+const char TOPIC_PUMP_STATE[] = MQTT_BASE "/actuator/pump/state";     // retained on|off
+const char TOPIC_PUMP_REASON[] = MQTT_BASE "/actuator/pump/reason";   // retained
+const char TOPIC_PUMP_SET[] = MQTT_BASE "/actuator/pump/set";         // subscribed auto|on|off
+const char TOPIC_LIGHT_STATE[] = MQTT_BASE "/actuator/light/state";   // retained on|off
+const char TOPIC_LIGHT_SET[] = MQTT_BASE "/actuator/light/set";       // subscribed auto|on|off (new in 2.0.0)
+// -- desired state (Demeter's registry, retained JSON): the node applies what
+// it supports — today `stage` (establishment|established) — and ignores the rest.
+const char TOPIC_DESIRED[] = MQTT_BASE "/desired";                    // subscribed
+// -- dosing (#224 contract, demeter ADR-0008 rule 4): an ml-based request with
+// an id, NEVER retained; the node converts ml with ITS OWN calibration
+// (PomonaCalibration.h), enforces its own caps below and acks every request on
+// dose/result (done|refused|failed). A result without an id is a bench dose.
+const char TOPIC_DOSE_REQUEST[] = MQTT_BASE "/dose/request";  // subscribed JSON {id, reagent, ml, rate, ts}
+const char TOPIC_DOSE_RESULT[] = MQTT_BASE "/dose/result";    // retained JSON, last action
+// THE NODE'S OWN RAILS — the unit stays safe against a misbehaving controller.
+// Per command: pH-Down 0.2 ml/L * 10 L; nutrients one feed of 10 ml. Per
+// rolling 24 h: twice Demeter's derived acid cap (0.4 ml/L), four feeds of A/B.
+// Channel 4 is idle (#287): 0 = every request refused.
+const float DOSE_MAX_ML_PER_CMD[4] = {2.0f, 10.0f, 10.0f, 0.0f};
+const float DOSE_MAX_ML_PER_24H[4] = {8.0f, 40.0f, 40.0f, 0.0f};
+const unsigned long DOSE_MAX_MS = 60000;      // absolute cap per run
+const unsigned long DOSE_TEST_MAX_MS = 10000; // hard cap per bench command (Serial "dose chN …")
 
 // ---- display band coloring (owner 2026-09-02) -------------------------
 // Tile values render green inside the target band, amber inside tolerance,
