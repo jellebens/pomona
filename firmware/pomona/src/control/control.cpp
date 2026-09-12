@@ -24,6 +24,7 @@ static bool cycleOnPhase = false;
 // override / mode
 enum class Override : uint8_t { Auto, ForceOn, ForceOff };
 static Override overrideMode = Override::Auto;
+static Override lightOverride = Override::Auto;  // actuator/light/set (2.0.0)
 static bool establishment = true;  // safer default for young transplants
 
 // level interlock state machine
@@ -70,6 +71,10 @@ static int32_t localSecondsOfDay() {
 }
 
 static void serviceLight() {
+  // A human override wins over the schedule (and over "no clock"): the person
+  // at the tower knows better than a photoperiod table. Boot resets it to auto.
+  if (lightOverride == Override::ForceOn) { setLight(true); return; }
+  if (lightOverride == Override::ForceOff) { setLight(false); return; }
   int32_t sod = localSecondsOfDay();
   if (sod < 0) {
     // No clock. Hold the light off — see the header for why off is the safe
@@ -239,6 +244,15 @@ void controlSetOverride(const char *payload) {
   if (strcasecmp(payload, "auto") == 0) overrideMode = Override::Auto;
   else if (strcasecmp(payload, "on") == 0) overrideMode = Override::ForceOn;
   else if (strcasecmp(payload, "off") == 0) overrideMode = Override::ForceOff;
+  else return;  // unknown payload: ignore rather than guess
+  dirty = true;
+}
+
+void controlSetLightOverride(const char *payload) {
+  if (!payload) return;
+  if (strcasecmp(payload, "auto") == 0) lightOverride = Override::Auto;
+  else if (strcasecmp(payload, "on") == 0) lightOverride = Override::ForceOn;
+  else if (strcasecmp(payload, "off") == 0) lightOverride = Override::ForceOff;
   else return;  // unknown payload: ignore rather than guess
   dirty = true;
 }
