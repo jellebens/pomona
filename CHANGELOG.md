@@ -6,7 +6,7 @@ firmware semver from `firmware/libraries/PomonaVersion` (single source of
 truth, bumped by the deploy scripts). Tags `v<version>` mark each release
 merged to `master`.
 
-## [2.0.0] - 2026-09-12 (demeter card #295 — NOT yet flashed; deploy with `-Bump none` in a maintenance window)
+## [2.0.0] - 2026-09-12
 
 ### Changed — BREAKING: the v2 wire (demeter ADR-0008)
 - Every topic moves to `demeter/pomona-0001/…`: `tele/<zone>/<metric>`
