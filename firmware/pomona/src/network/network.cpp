@@ -1,7 +1,7 @@
 // Pomona firmware — network module implementation (Trello #229; v2 wire #295).
 //
 // Broker + topic schema: docs/mqtt.md — since 2.0.0 the v2 contract
-// demeter/<unit_id>/… of the demeter repo's ADR-0008 (EMQX mqtt.lab.local:1883).
+// ceres/<unit_id>/… of the ceres repo's ADR-0008 (EMQX mqtt.lab.local:1883).
 // Credentials come from secrets.h (gitignored, Layer 1 of
 // docs/ota-and-secrets.md); #244 moves them into the ATECC608A.
 
@@ -104,7 +104,7 @@ static void onMqttMessage(int /*messageSize*/) {
   else if (topic == TOPIC_LIGHT_SET)
     controlSetLightOverride(payload);
   else if (topic == TOPIC_DESIRED) {
-    // Demeter's desired state: apply what this node supports (the stage);
+    // Ceres's desired state: apply what this node supports (the stage);
     // targets, photoperiod and dosing_enabled are informational here.
     char stage[24];
     if (jsonGetString(payload, "stage", stage, sizeof(stage))) controlSetMode(stage);

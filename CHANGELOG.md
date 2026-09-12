@@ -6,7 +6,14 @@ firmware semver from `firmware/libraries/PomonaVersion` (single source of
 truth, bumped by the deploy scripts). Tags `v<version>` mark each release
 merged to `master`.
 
-## [2.0.0] - 2026-09-12 (demeter card #295 — NOT yet flashed; deploy with `-Bump none` in a maintenance window)
+## [2.1.0] - 2026-09-12 (ceres card #297 — NOT flashed; supersedes 2.0.0 before any deploy)
+
+### Changed — the topic root is `ceres/`
+- Demeter is Ceres (ceres ADR-0012: one pantheon, Roman only). Every v2 topic
+  is `ceres/pomona-0001/…`; the controller is Vertumnus (`vertumnus-pomona-0001`),
+  the config service Annona. Nothing else changes; 2.0.0 was never on the tower.
+
+## [2.0.0] - 2026-09-12
 
 ### Changed — BREAKING: the v2 wire (demeter ADR-0008)
 - Every topic moves to `demeter/pomona-0001/…`: `tele/<zone>/<metric>`
