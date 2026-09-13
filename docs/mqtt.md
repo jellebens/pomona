@@ -105,8 +105,8 @@ today the **stage** (the wetter establishment cycle vs. established, v1's
 
 | Topic | Payload | Retained | Who |
 |---|---|---|---|
-| `dose/request` | JSON `{"id": "<unique>", "reagent": "ph_down\|nutrient_a\|nutrient_b", "ml": 1.1, "rate": "full\|slow", "ts"}` | **no**, QoS 1 | Ceres publishes, the unit subscribes |
-| `dose/result` | JSON `{"id", "reagent", "status": "done\|refused\|failed", "ml", "ms", "channel", "reason", "ts"}` — `id` absent = a bench dose (foreign to Ceres → its lockout restarts) | **yes**, QoS 1 | node, on every request and on every bench run |
+| `dose/request` | JSON `{"id": "<unique>", "reagent": "ph_down\|nutrient_a\|nutrient_b", "ml": 1.1, "rate": "full\|slow", "ts", "traceparent"?}` | **no**, QoS 1 | Ceres publishes, the unit subscribes |
+| `dose/result` | JSON `{"id", "reagent", "status": "done\|refused\|failed", "ml", "ms", "channel", "reason", "ts", "traceparent"?}` — `id` absent = a bench dose (foreign to Ceres → its lockout restarts) | **yes**, QoS 1 | node, on every request and on every bench run |
 
 The node converts ml with **its own** calibration
 (`firmware/libraries/PomonaCalibration` `DOSER_CAL`, announced in `sys/meta`)
@@ -141,3 +141,12 @@ InfluxDB `pomona` bucket keeps that era forever; the `ceres` bucket carries v2. 
 mapping v1 → v2 is the republish bridge's table in the gitops
 `platform/mqtt` README; the bridge and the v1 users (`pomona`,
 `pomona-demeter`, `pomona-ingest`) are retired once 2.0.0 is on the tower.
+
+### Trace context (2.2.0, ceres card #302)
+
+A `dose/request` may carry a W3C `traceparent` (and `tracestate`) next to its
+own fields — Vertumnus puts it in only while a trace is live. The node echoes
+`traceparent` unchanged in every `dose/result` for that request (a refusal at
+request time, the `done` when the run ends) and ignores it otherwise. Opaque
+string, never parsed or validated; the EMQX republish bridge copies payloads
+verbatim, so the value survives the v1 ↔ v2 hop. Ceres ADR-0008 addendum.

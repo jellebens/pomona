@@ -6,7 +6,18 @@ firmware semver from `firmware/libraries/PomonaVersion` (single source of
 truth, bumped by the deploy scripts). Tags `v<version>` mark each release
 merged to `master`.
 
-## [2.1.0] - 2026-09-12 (ceres card #297 — NOT flashed; supersedes 2.0.0 before any deploy)
+## [2.2.0] - 2026-09-13 (ceres card #302 — NOT flashed; supersedes 2.1.0 before any deploy)
+
+### Added — the ack echoes the request's trace context
+- A `dose/request` may carry a W3C `traceparent` (Vertumnus 0.13.0 puts it in
+  while a trace is live). Every `dose/result` for that request — a refusal at
+  request time or the `done` when the run ends — echoes the value unchanged, so
+  one Jaeger trace spans decision → broker → node → ack → judgement (ceres
+  ADR-0008 addendum). Opaque string, never parsed; requests without it produce
+  the 2.1.0 acks byte for byte. The event buffer grows 224 → 320 bytes so an ack
+  with the 55-char value never truncates.
+
+## [2.1.0] - 2026-09-12
 
 ### Changed — the topic root is `ceres/`
 - Demeter is Ceres (ceres ADR-0012: one pantheon, Roman only). Every v2 topic
