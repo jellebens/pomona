@@ -28,7 +28,7 @@ static const int chPins[4] = {PIN_DOSE_CH1, PIN_DOSE_CH2, PIN_DOSE_CH3,
 static int runningCh = -1; // 0-3 while a timed run is active
 static unsigned long runUntil = 0;
 static unsigned long runStarted = 0;
-static char lastEvent[224];
+static char lastEvent[320]; // an ack with a 55-char traceparent (ceres #302) must never truncate
 static bool eventPending = false;
 static int lastUs[4] = {1472, 1472, 1472, 1472};
 
@@ -37,6 +37,12 @@ static char activeId[48] = "";
 static char activeReagent[16] = "";
 static float activeMl = 0.0f;
 static uint32_t activeEpoch = 0;
+// ceres card #302 (ADR-0008 addendum): a request may carry a W3C traceparent;
+// every ack for it echoes the value unchanged. ackTrace = for the ack being
+// built now (refusals at request time), activeTrace = for the running dose's
+// eventual "done". Opaque strings: never parsed, never validated.
+static char activeTrace[64] = "";
+static char ackTrace[64] = "";
 
 // Rolling 24 h budget per channel: a small ring of (millis, ml).
 struct DoseLog { uint32_t ms; float ml; };
@@ -76,6 +82,11 @@ static void setBenchEvent(int n, const char *status, const char *detail, long ms
 // The ack of a v2 request.
 static void setAck(const char *id, const char *reagent, const char *status, float ml, long ms, int channel,
                    const char *reason, uint32_t epoch) {
+  if (ackTrace[0]) {
+    setEventRaw("{\"id\":\"%s\",\"reagent\":\"%s\",\"status\":\"%s\",\"ml\":%.3f,\"ms\":%ld,\"channel\":%d,\"reason\":\"%s\",\"ts\":%lu,\"traceparent\":\"%s\"}",
+                id, reagent, status, (double)ml, ms, channel, reason, (unsigned long)epoch, ackTrace);
+    return;
+  }
   setEventRaw("{\"id\":\"%s\",\"reagent\":\"%s\",\"status\":\"%s\",\"ml\":%.3f,\"ms\":%ld,\"channel\":%d,\"reason\":\"%s\",\"ts\":%lu}",
               id, reagent, status, (double)ml, ms, channel, reason, (unsigned long)epoch);
 }
@@ -160,6 +171,8 @@ void dosingHandleRequest(const char *json, uint32_t epochNow) {
   char reagent[16] = "";
   char rate[8] = "full";
   float ml = 0.0f;
+  ackTrace[0] = '\0';
+  jsonGetString(json, "traceparent", ackTrace, sizeof(ackTrace)); // ceres #302: echoed in every ack for this request
   if (!jsonGetString(json, "id", id, sizeof(id)) || id[0] == '\0') {
     setEventRaw("{\"status\":\"refused\",\"reason\":\"request without id\",\"ts\":%lu}", (unsigned long)epochNow);
     return;
@@ -211,6 +224,7 @@ void dosingHandleRequest(const char *json, uint32_t epochNow) {
   snprintf(activeReagent, sizeof(activeReagent), "%s", reagent);
   activeMl = ml;
   activeEpoch = epochNow;
+  snprintf(activeTrace, sizeof(activeTrace), "%s", ackTrace); // the "done" ack echoes it too
   logDose(i, ml); // count it when it STARTS: a crash mid-dose over-counts, never under
   startRun(i, forwardUs(slow ? DOSER_CAL[i].slowSpeed : 100), ms);
   Serial.print("[DOSE] request ");
@@ -232,8 +246,11 @@ void dosingService() {
     const long ran = (long)(millis() - runStarted);
     stopAll();
     if (activeId[0]) {
+      snprintf(ackTrace, sizeof(ackTrace), "%s", activeTrace);
       setAck(activeId, activeReagent, "done", activeMl, ran, done + 1, "", activeEpoch);
       activeId[0] = '\0';
+      activeTrace[0] = '\0';
+      ackTrace[0] = '\0';
     } else {
       setBenchEvent(done + 1, "done", "run", ran);
     }
