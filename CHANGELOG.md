@@ -6,7 +6,7 @@ firmware semver from `firmware/libraries/PomonaVersion` (single source of
 truth, bumped by the deploy scripts). Tags `v<version>` mark each release
 merged to `master`.
 
-## [2.2.0] - 2026-09-13 (ceres card #302 — NOT flashed; supersedes 2.1.0 before any deploy)
+## [2.2.0] - 2026-09-13
 
 ### Added — the ack echoes the request's trace context
 - A `dose/request` may carry a W3C `traceparent` (Vertumnus 0.13.0 puts it in
