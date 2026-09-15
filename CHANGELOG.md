@@ -6,6 +6,18 @@ firmware semver from `firmware/libraries/PomonaVersion` (single source of
 truth, bumped by the deploy scripts). Tags `v<version>` mark each release
 merged to `master`.
 
+## [2.3.0] - 2026-09-15
+
+### Changed — the home screen (PR #102)
+- Six tiles in two rows of three replace the nine-tile grid: water temp, EC and pH
+  on top; air temp, humidity and a dimmed "tank level" placeholder below. Pressure,
+  lux, the Grove level % and the probe status word leave the screen (still published
+  on MQTT; the probe still drives the pump interlock). The placeholder waits for the
+  continuous level sensor (#270 / #283). Unused `setInt()` removed so the build stays
+  warning-free. Compiles clean for `arduino:mbed_giga:giga` (arduino-cli 1.5.1):
+  750,468 B flash (38 %), 139,872 B RAM (26 %). Not flashed: the 2.x line (2.0.0 →
+  2.3.0) goes to the tower together, in the maintenance window of ceres card #295 item 7.
+
 ## [2.2.0] - 2026-09-13
 
 ### Added — the ack echoes the request's trace context
