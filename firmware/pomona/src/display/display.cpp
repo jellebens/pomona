@@ -27,8 +27,13 @@ static lv_obj_t *wifiIcon; // header status strip: red down / green up
 static lv_obj_t *mqttIcon;
 static lv_obj_t *blankShield; // full-screen touch catcher while blanked
 static bool blanked = false;
-static Tile tWaterTemp, tEc, tPh, tLevel, tProbe;
-static Tile tAirTemp, tRh, tPressure, tLux;
+// Home screen (owner 2026-09-15): six tiles in two rows of three. Water on
+// top (temp, EC, pH), air below (temp, humidity) + a tank-level placeholder.
+// Pressure, lux, the Grove level % and the probe status word left the home
+// screen; they still publish on MQTT. The placeholder waits for the
+// continuous level sensor (#270 / #283 A02YYUW).
+static Tile tWaterTemp, tEc, tPh;
+static Tile tAirTemp, tRh, tTank;
 static Readings lastReadings; // reapplied after screen rebuilds
 static int lastWifi = -1, lastMqtt = -1; // link icon change detection
 static lv_obj_t *otaStageLabel = nullptr; // OTA progress view (see below)
@@ -123,19 +128,20 @@ static void buildScreen() {
   lv_label_set_text(mqttIcon, LV_SYMBOL_ENVELOPE " MQTT");
   lv_obj_set_style_text_color(mqttIcon, COL_BAD, 0);
 
-  // two tile rows: water on top, air + level below
+  // two tile rows of three: water on top, air + tank level below
+  // (10 pad + 36 header + 10 + 190 + 10 + 190 + 10 = 456 of 480 px)
   lv_obj_t *row1 = makeRow(scr, 190);
   tWaterTemp = makeTile(row1, "water temp  degC");
   tEc = makeTile(row1, "EC  mS/cm");
   tPh = makeTile(row1, "pH");
-  tProbe = makeTile(row1, "water level");
 
   lv_obj_t *row2 = makeRow(scr, 190);
   tAirTemp = makeTile(row2, "air temp  degC");
   tRh = makeTile(row2, "humidity  %");
-  tPressure = makeTile(row2, "pressure  hPa");
-  tLux = makeTile(row2, "light  lux");
-  tLevel = makeTile(row2, "level  %");
+  tTank = makeTile(row2, "tank level");
+  // placeholder until the continuous level sensor lands (#270 / #283):
+  // dimmed, never updated by displayUpdate
+  lv_obj_set_style_text_color(tTank.value, COL_DIM, 0);
 
   // firmware version, bottom-right (dynamic from PomonaVersion.h)
   lv_obj_t *ver = lv_label_create(scr);
@@ -368,16 +374,6 @@ static void setFloatBanded(Tile &t, bool ok, float v, uint8_t decimals,
   lv_obj_set_style_text_color(t.value, c, 0);
 }
 
-static void setInt(Tile &t, bool ok, int v) {
-  if (!ok) {
-    lv_label_set_text(t.value, "--");
-    return;
-  }
-  char buf[12];
-  snprintf(buf, sizeof(buf), "%d", v);
-  lv_label_set_text(t.value, buf);
-}
-
 // ---- public API ------------------------------------------------------
 
 void displayInit() {
@@ -424,32 +420,11 @@ void displayUpdate(const Readings &r) {
     lv_label_set_text(tPh.value, "--");
     lv_obj_set_style_text_color(tPh.value, COL_TEXT, 0);
   }
-  // water level as a status word (owner semantics 2026-09-01, matches the
-  // Grafana tile): 2 pts = OK target fill / 1 LOW, 3-4 HIGH (amber) / 0 CRIT
-  // (pt 1 = 8.2 L, pt 3 = 9.7 L — docs/sensors/level-probe.md ladder)
-  if (r.probePoints < 0) {
-    lv_label_set_text(tProbe.value, "--");
-    lv_obj_set_style_text_color(tProbe.value, COL_TEXT, 0);
-  } else if (r.probePoints == 2) {
-    lv_label_set_text(tProbe.value, "OK");
-    lv_obj_set_style_text_color(tProbe.value, COL_OK, 0);
-  } else if (r.probePoints >= 3) {
-    lv_label_set_text(tProbe.value, "HIGH");
-    lv_obj_set_style_text_color(tProbe.value, COL_WARN, 0);
-  } else if (r.probePoints == 1) {
-    lv_label_set_text(tProbe.value, "LOW");
-    lv_obj_set_style_text_color(tProbe.value, COL_WARN, 0);
-  } else {
-    lv_label_set_text(tProbe.value, "CRIT");
-    lv_obj_set_style_text_color(tProbe.value, COL_BAD, 0);
-  }
-  setInt(tLevel, r.levelOk && r.levelPct >= 0, r.levelPct);
   setFloatBanded(tAirTemp, r.bmeOk, r.airTempC, 1,
                  BAND_ATEMP_G_LO, BAND_ATEMP_G_HI, BAND_ATEMP_A_LO, BAND_ATEMP_A_HI);
   setFloatBanded(tRh, r.bmeOk, r.humidityPct, 1,
                  BAND_RH_G_LO, BAND_RH_G_HI, BAND_RH_A_LO, BAND_RH_A_HI);
-  // pressure + lux stay neutral: no meaningful band (lux is a day/night
-  // rhythm indicator, not a target).
-  setFloat(tPressure, r.bmeOk, r.pressureHpa, 1);
-  setFloat(tLux, r.luxOk, r.lux, 0);
+  // tTank is a placeholder (#270 / #283): stays "--" until a continuous
+  // level reading exists. Pressure, lux, level % and the probe status word
+  // are MQTT-only now (network.cpp); the probe still drives the interlock.
 }
