@@ -50,12 +50,18 @@ bool controlWantsPublish();
 void controlMarkPublished();
 void controlForcePublish();
 
-// pomona/pump/override — "auto" | "on" | "off". Unknown payloads are ignored
-// and leave the previous value in place. An override can never make the pump
-// run while the level interlock is inhibiting it: firmware keeps the veto.
+// actuator/pump/set — "auto" | "on" | "off" (v1: pomona/pump/override). Unknown
+// payloads are ignored and leave the previous value in place. An override can
+// never make the pump run while the level interlock is inhibiting it: firmware
+// keeps the veto.
 void controlSetOverride(const char *payload);
 
-// pomona/control/mode — "establishment" | "established". Establishment is the
-// wetter first-fortnight cycle; see docs/planting-plan.md. Defaults to
-// establishment, which is the safer of the two for young transplants.
+// actuator/light/set — "auto" | "on" | "off" (new in 2.0.0, #263/#295): a human
+// or HA override of the photoperiod; "auto" hands the light back to the
+// schedule. Never persists across a reboot (boot = auto, the safe default).
+void controlSetLightOverride(const char *payload);
+
+// desired.stage (v1: pomona/control/mode) — "establishment" | "established".
+// Establishment is the wetter first-fortnight cycle; see docs/planting-plan.md.
+// Defaults to establishment, which is the safer of the two for young transplants.
 void controlSetMode(const char *payload);

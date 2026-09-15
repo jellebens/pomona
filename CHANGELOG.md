@@ -6,6 +6,67 @@ firmware semver from `firmware/libraries/PomonaVersion` (single source of
 truth, bumped by the deploy scripts). Tags `v<version>` mark each release
 merged to `master`.
 
+## [2.3.0] - 2026-09-15
+
+### Changed — the home screen (PR #102)
+- Six tiles in two rows of three replace the nine-tile grid: water temp, EC and pH
+  on top; air temp, humidity and a dimmed "tank level" placeholder below. Pressure,
+  lux, the Grove level % and the probe status word leave the screen (still published
+  on MQTT; the probe still drives the pump interlock). The placeholder waits for the
+  continuous level sensor (#270 / #283). Unused `setInt()` removed so the build stays
+  warning-free. Compiles clean for `arduino:mbed_giga:giga` (arduino-cli 1.5.1):
+  750,468 B flash (38 %), 139,872 B RAM (26 %). Not flashed: the 2.x line (2.0.0 →
+  2.3.0) goes to the tower together, in the maintenance window of ceres card #295 item 7.
+
+## [2.2.0] - 2026-09-13
+
+### Added — the ack echoes the request's trace context
+- A `dose/request` may carry a W3C `traceparent` (Vertumnus 0.13.0 puts it in
+  while a trace is live). Every `dose/result` for that request — a refusal at
+  request time or the `done` when the run ends — echoes the value unchanged, so
+  one Jaeger trace spans decision → broker → node → ack → judgement (ceres
+  ADR-0008 addendum). Opaque string, never parsed; requests without it produce
+  the 2.1.0 acks byte for byte. The event buffer grows 224 → 320 bytes so an ack
+  with the 55-char value never truncates.
+
+## [2.1.0] - 2026-09-12
+
+### Changed — the topic root is `ceres/`
+- Demeter is Ceres (ceres ADR-0012: one pantheon, Roman only). Every v2 topic
+  is `ceres/pomona-0001/…`; the controller is Vertumnus (`vertumnus-pomona-0001`),
+  the config service Annona. Nothing else changes; 2.0.0 was never on the tower.
+
+## [2.0.0] - 2026-09-12
+
+### Changed — BREAKING: the v2 wire (demeter ADR-0008)
+- Every topic moves to `demeter/pomona-0001/…`: `tele/<zone>/<metric>`
+  (+ `tele/node/rssi_dbm|uptime_s`), `sys/status` (LWT), `sys/health`,
+  `sys/diag/i2c_scan[/get]`, `sys/ota/url|result`, `actuator/pump/state|reason`,
+  `actuator/light/state`, `actuator/pump/set`, `desired`. The unit connects as
+  its own broker user `unit-pomona-0001` (client id the same). `docs/mqtt.md`
+  rewritten; the v1 tree is history the archive keeps.
+- `sys/meta` (retained, on connect): the node's self-description — type,
+  node, fw_version, contract 2, sensors, actuators, reservoir_l, and every
+  doser's calibration + caps.
+
+### Added
+- **The #224 dosing contract:** `dose/request` `{id, reagent, ml, rate}` is
+  converted with the node's OWN calibration (`PomonaCalibration.h` `DOSER_CAL`)
+  and checked against the node's OWN rails (`config.h`: per-command ml caps,
+  rolling 24 h ml caps, one channel at a time, 60 s absolute run cap); every
+  request is acked on `dose/result` `{id, status: done|refused|failed, ml, ms,
+  channel, reason, ts}`. A bench run (USB Serial `dose chN …` only — the MQTT
+  bench topic is gone) acks without an id.
+- `actuator/light/set` (`auto|on|off`): a human override of the photoperiod
+  (#263 wanted it for testability); resets to `auto` at boot.
+- `desired.stage` replaces `control/mode` as the establishment/established
+  switch (Demeter's registry publishes the document).
+- A tiny flat-JSON reader (`src/util/json.h`) for the two documents the node reads.
+
+### Docs
+- `docs/mqtt.md` is the node's view of ADR-0008; `docs/control-architecture.md`
+  topic names; the sketch README.
+
 ## [1.3.8] - 2026-09-10
 
 ### Fixed

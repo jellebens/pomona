@@ -22,7 +22,7 @@ One module per folder under `src/` (Arduino compiles the sketch root +
 | [`config.h`](config.h) | Pins, ADC, I²C addresses, intervals, blank timeout, WiFi SSID + MQTT host/port/user, topics |
 | [`src/sensors/`](src/sensors/sensors.h) | All v1 sensors → `Readings` struct with per-sensor validity flags |
 | [`src/network/`](src/network/network.h) | WiFi + MQTT connect, exponential-backoff reconnect, publishing, OTA trigger |
-| [`src/display/`](src/display/display.h) | LVGL current-readings screen, version bottom-right, idle blanking |
+| [`src/display/`](src/display/display.h) | LVGL home screen (water temp / EC / pH, air temp / humidity / tank-level placeholder), version bottom-right, idle blanking |
 | [`src/ota/`](src/ota/ota.h) | Arduino_Portenta_OTA download-and-apply (basic #243 slice) |
 | `secrets.h` | ONLY the two passwords (`WIFI_PASS`, `MQTT_PASS`) — **gitignored**, see below |
 
@@ -54,11 +54,17 @@ WiFiFirmwareUpdater` sketch over USB.
 
 ## MQTT
 
-Broker: the in-cluster EMQX at **`mqtt.lab.local:1883`**. Topics follow
-`pomona/<zone>/<metric>` — full schema, payloads and retain/LWT rules in
-**[docs/mqtt.md](../../docs/mqtt.md)** (proposed here, finalized with #222).
-Publish cadence 30 s; `pomona/unit/status` is retained online/offline with
-a broker LWT.
+Broker: the in-cluster EMQX at **`mqtt.lab.local:1883`**, as the unit's own
+user `unit-pomona-0001`. Since 2.0.0 (ceres card #295) the unit speaks the
+**v2 wire** `ceres/pomona-0001/…` of the ceres repo's ADR-0008:
+`tele/<zone>/<metric>` telemetry, `sys/status` (retained online/offline with
+a broker LWT), `sys/meta` (self-description incl. doser calibration + caps),
+`sys/health`, `actuator/<pump|light>/state|reason`, `dose/result` acks — full
+schema, payloads and retain rules in **[docs/mqtt.md](../../docs/mqtt.md)**.
+Publish cadence 30 s. It reads `actuator/<pump|light>/set`, `desired`
+(stage), `dose/request` (ml-based, with id — converted with the node's own
+calibration and refused beyond the node's own caps), `sys/ota/url`,
+`sys/diag/i2c_scan/get`.
 
 ## Control — pump + light (#260)
 
@@ -81,16 +87,17 @@ before serial, watchdog, display, sensors and WiFi — because a rebooting unit
 (OTA, watchdog, brown-out) must be in a known state before anything that can
 hang gets a chance to run.
 
-| Published (retained, QoS 1) | Payload |
+| Published (retained, QoS 1; below `ceres/pomona-0001/`) | Payload |
 |---|---|
-| `pomona/pump/request` | `on` / `off` |
-| `pomona/light/request` | `on` / `off` |
-| `pomona/pump/reason` | `boot_safe` / `schedule` / `settling` / `level_low` / `override` |
+| `actuator/pump/state` | `on` / `off` |
+| `actuator/light/state` | `on` / `off` |
+| `actuator/pump/reason` | `boot_safe` / `schedule` / `settling` / `level_low` / `override` |
 
 | Subscribed | Payload |
 |---|---|
-| `pomona/pump/override` | `auto` / `on` / `off` |
-| `pomona/control/mode` | `establishment` / `established` |
+| `actuator/pump/set` | `auto` / `on` / `off` (the interlock keeps the veto) |
+| `actuator/light/set` | `auto` / `on` / `off` (2.0.0; resets to auto at boot) |
+| `desired` | JSON; the node applies `stage`: `establishment` / `established` |
 
 Requests are republished on **every connect**, not only on change: HA may have
 been running its own schedule while the unit was away, so the retained value
