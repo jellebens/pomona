@@ -1,7 +1,8 @@
 // Pomona firmware v1 — display module (Trello #229).
 //
-// LVGL current-readings screen on the GIGA Display Shield (800x480 touch).
-// One tile per metric; unavailable sensors show "--"; firmware version in
+// LVGL home screen on the GIGA Display Shield (800x480 touch): six tiles,
+// water temp / EC / pH on top, air temp / humidity / tank level (placeholder
+// until #270) below. Unavailable sensors show "--"; firmware version in
 // the bottom-right corner; WiFi + MQTT status icons top-right (red down /
 // green up, live). Blanks the backlight after DISPLAY_BLANK_TIMEOUT_MS
 // idle and wakes on touch WITHOUT the waking touch pressing any UI
