@@ -22,7 +22,7 @@ One module per folder under `src/` (Arduino compiles the sketch root +
 | [`config.h`](config.h) | Pins, ADC, I²C addresses, intervals, blank timeout, WiFi SSID + MQTT host/port/user, topics |
 | [`src/sensors/`](src/sensors/sensors.h) | All v1 sensors → `Readings` struct with per-sensor validity flags |
 | [`src/network/`](src/network/network.h) | WiFi + MQTT connect, exponential-backoff reconnect, publishing, OTA trigger |
-| [`src/display/`](src/display/display.h) | LVGL current-readings screen, version bottom-right, idle blanking |
+| [`src/display/`](src/display/display.h) | LVGL home screen (water temp / EC / pH, air temp / humidity / tank-level placeholder), version bottom-right, idle blanking |
 | [`src/ota/`](src/ota/ota.h) | Arduino_Portenta_OTA download-and-apply (basic #243 slice) |
 | `secrets.h` | ONLY the two passwords (`WIFI_PASS`, `MQTT_PASS`) — **gitignored**, see below |
 
