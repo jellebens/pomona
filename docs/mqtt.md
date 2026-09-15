@@ -105,48 +105,61 @@ today the **stage** (the wetter establishment cycle vs. established, v1's
 
 | Topic | Payload | Retained | Who |
 |---|---|---|---|
-| `dose/request` | JSON `{"id": "<unique>", "reagent": "ph_down\|nutrient_a\|nutrient_b", "ml": 1.1, "rate": "full\|slow", "ts", "traceparent"?}` | **no**, QoS 1 | Ceres publishes, the unit subscribes |
-| `dose/result` | JSON `{"id", "reagent", "status": "done\|refused\|failed", "ml", "ms", "channel", "reason", "ts", "traceparent"?}` — `id` absent = a bench dose (foreign to Ceres → its lockout restarts) | **yes**, QoS 1 | node, on every request and on every bench run |
+| `pomona/dose/test` | `chN fwd <ms> [speed]` — v1 command channel (bench module, 10 s hard cap, one channel at a time) | no | Demeter publishes (active mode), unit subscribes |
+| `pomona/dose/result` | event line per run | **yes** | unit publishes; Demeter treats a live event it did not command as a foreign dose → lockout restarts |
+| `pomona/demeter/status` | `online` / `offline` (LWT) | **yes** | Demeter |
+| `pomona/demeter/mode` | `shadow` / `active` | **yes** | Demeter, on connect |
+| `pomona/demeter/decision` | JSON — ts, action, condition, reason, steps, `executed` | **yes** | Demeter, on every non-quiet decision |
+| `pomona/demeter/ledger` | JSON rolling 24 h dose ledger (v2 since controller 0.2.0: + pending dose response, settled responses, learned pH sensitivity, no-response streak) | **yes** | Demeter; reloaded at boot so a restart cannot forget the acid cap, lockout or what it learned |
 
-The node converts ml with **its own** calibration
-(`firmware/libraries/PomonaCalibration` `DOSER_CAL`, announced in `sys/meta`)
-and enforces **its own rails** — `config.h` `DOSE_MAX_ML_PER_CMD`
-(pH-Down 2 ml, A/B 10 ml), `DOSE_MAX_ML_PER_24H` (8 / 40 / 40 ml, rolling),
-one channel at a time, an absolute 60 s run cap — so the unit stays safe
-against a misbehaving controller. Every request is acked: a `refused` or
-`failed` dose never reached the tank and Ceres takes it back out of its
-ledger; `done` carries the ms actually run. The bench channel
-(`chN fwd|rev|stop [ms] [speed]`, 10 s cap) survives over USB Serial only
-(`dose chN …`).
+**Why the commands are non-retained and the ledger is retained:** a replayed
+dose command would dose twice (same reason as `ota_url`); a replayed ledger
+is exactly what a restarted controller needs.
 
-## Consumers
+**#224 firmware follow-up:** replace the bench channel with a first-class
+`pomona/dose/request` contract — ml-based payloads, per-command idempotency
+ids, explicit acks, and local rails (per-channel ml caps + daily budget
+mirrored in firmware) so the unit stays safe even against a misbehaving
+controller. Only Demeter's `runtime.py` transport changes.
 
-| Consumer | Reads | Writes |
+## #222 checklist (when finalizing)
+
+- Create the `pomona` broker account (+ ACL limited to `pomona/#`).
+- Point the Influx/Telegraf ingestion at the metric topics above.
+- Revisit payload format here if ingestion prefers JSON-per-zone — the
+  firmware's topic definitions sit in one place
+  ([`firmware/pomona/config.h`](../firmware/pomona/config.h)).
+
+## Archive — where every topic lands in InfluxDB (#290, ADR-0001)
+
+**Every `pomona/#` topic is archived in the `pomona` InfluxDB bucket with
+infinite retention** ([ADR-0001](adr/0001-telemetry-archived-forever.md);
+platform decision gitops ADR-0002). The gitops `landingzones/pomona` Telegraf
+bridge does the ingestion; the bucket and its retention are declared in
+`platform/influxdb-config` and reconciled hourly.
+
+| Topics | Measurement | How |
 |---|---|---|
-| Vertumnus (`vertumnus-pomona-0001`) | `ceres/pomona-0001/#`, `ceres/sys/mode` | `actuator/+/set`, `dose/request`, its `sys/role\|decision\|ledger`, `ceres/sys/status/vertumnus-pomona-0001` |
-| Robigus, Annona | `ceres/#` | `sys/alerts\|advice`, `sys/config`, `desired` |
-| Home Assistant (`homeassistant`) | `ceres/#` | `actuator/+/power_w`, `actuator/+/set` |
-| Telegraf archive (`telegraf-ceres`) | `ceres/#` | — (InfluxDB bucket `ceres`, forever) |
+| `pomona/water/+`, `pomona/air/+`, `pomona/unit/rssi_dbm`, `pomona/unit/uptime_s` | `pomona` | float `value`, tags `zone`/`metric` |
+| `pomona/unit/status`, `pomona/unit/fw_version`, `pomona/unit/sensors` | `pomona_meta` | string `value`, verbatim |
+| `pomona/dose/+`, `pomona/demeter/+`, `pomona/pump/+`, `pomona/light/+`, `pomona/control/+`, `pomona/unit/ota_result`, `pomona/unit/i2c_scan` | `pomona_events` | string `value`, **verbatim** (JSON stays JSON) — the lossless record |
+| `pomona/demeter/decision` | `demeter_decision` | parsed: tags `action`,`condition`,`stage`,`mode`; fields `executed`,`reason`,`ml`,`reagent`,`version`; point time = the document's `ts` |
+| `pomona/demeter/ledger` | `demeter_model` | parsed: `model.*` → `k`,`b`,`n`,`settle_s`,`rebound_ph_h`,`kf_level`,`kf_slope`,`kf_r`,`trough_ph`,`no_response_streak`,`overshoots`; `reagents.*.pumped_ml`; `pending.ml`/`pre_ph`; tag `last_dose_tier` |
+| Demeter's `demeter_*` Prometheus series | `prometheus` bucket, measurement `prometheus` | cluster-wide `remote_write` archive (field = metric name) |
 
-## v1 — history (firmware 1.x, `pomona/…`)
+Contract consequences:
 
-Until 2.0.0 the unit spoke its own tree: `pomona/<water|air>/<metric>`,
-`pomona/unit/{status,fw_version,sensors,rssi_dbm,uptime_s,i2c_scan,ota_url,ota_result}`,
-`pomona/pump/{request,reason,override,power}`, `pomona/light/request`,
-`pomona/control/mode`, the bench dose channel `pomona/dose/test` (`chN fwd
-<ms> [speed]`, no id, no ack) and `pomona/dose/result` (an event line), and
-the controller's own `pomona/demeter/{status,mode,decision,ledger}` (the
-`demeter` segment is a fact of the old wire, kept until it is retired). The
-InfluxDB `pomona` bucket keeps that era forever; the `ceres` bucket carries v2. The
-mapping v1 → v2 is the republish bridge's table in the gitops
-`platform/mqtt` README; the bridge and the v1 users (`pomona`,
-`pomona-demeter`, `pomona-ingest`) are retired once 2.0.0 is on the tower.
-
-### Trace context (2.2.0, ceres card #302)
-
-A `dose/request` may carry a W3C `traceparent` (and `tracestate`) next to its
-own fields — Vertumnus puts it in only while a trace is live. The node echoes
-`traceparent` unchanged in every `dose/result` for that request (a refusal at
-request time, the `done` when the run ends) and ignores it otherwise. Opaque
-string, never parsed or validated; the EMQX republish bridge copies payloads
-verbatim, so the value survives the v1 ↔ v2 hop. Ceres ADR-0008 addendum.
+- A **new topic** under any of the archived prefixes is archived with no
+  config change. A new top-level zone needs one line in the gitops Telegraf
+  config.
+- The parsed measurements read specific keys (`ts`, `action`, `condition`,
+  `steps[0].ml`, `steps[0].reagent`, `model.*`, `reagents.*.pumped_ml`);
+  **renaming one is a breaking change** made together with the gitops config.
+- **Retained topics replay on every Telegraf reconnect** → one duplicate
+  string point per retained topic at reconnect time in `pomona_events`.
+  `demeter_decision` is immune (document `ts` as point time).
+- Topics that were live but undocumented until #290 and are now archived:
+  `pomona/water/ph_raw_v` (raw electrode volts, always published),
+  `pomona/unit/i2c_scan` (retained JSON), `pomona/pump/override` (Demeter →
+  unit, `on`/`auto`, non-retained), `pomona/control/mode`
+  (`establishment`/`established`, subscribed).
