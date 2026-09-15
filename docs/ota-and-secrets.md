@@ -34,7 +34,8 @@ risks are secrets leaking through the repo, CI, or OTA artifacts.
    firmware reads them at boot. The sketch binary then contains **no
    secrets at all**, which makes OTA images clean — they can be built in
    CI, stored, and served without leaking anything. Re-provisioning = run
-   the provisioning sketch again over USB.
+   the provisioning sketch again over USB. Slot policy, the overwrite
+   design and the sketch: **[atecc-provisioning.md](atecc-provisioning.md)**.
 3. **Layer 3 — later, optional:** TLS client auth to mosquitto using an
    ECC key held in the ATECC608A (the key never leaves the chip; the
    broker gets a client cert). Replaces MQTT passwords entirely.
