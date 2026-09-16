@@ -144,12 +144,15 @@ const char TOPIC_DESIRED[] = MQTT_BASE "/desired";                    // subscri
 // dose/result (done|refused|failed). A result without an id is a bench dose.
 const char TOPIC_DOSE_REQUEST[] = MQTT_BASE "/dose/request";  // subscribed JSON {id, reagent, ml, rate, ts}
 const char TOPIC_DOSE_RESULT[] = MQTT_BASE "/dose/result";    // retained JSON, last action
-// THE NODE'S OWN RAILS — the unit stays safe against a misbehaving controller.
-// Per command: pH-Down 0.2 ml/L * 10 L; nutrients one feed of 10 ml. Per
-// rolling 24 h: twice Ceres's derived acid cap (0.4 ml/L), four feeds of A/B.
+// THE NODE'S OWN RAIL — ONE request is bounded, the day is not (owner
+// 2026-09-16, ceres card #315). The node stays safe against a runaway command;
+// how much goes in per day is the controller's call (ceres ADR-0004 removed
+// its daily acid cap on 2026-09-11). 2.3.0 shipped the retired playbook caps
+// (2 ml per command, 8 ml per 24 h) and refused every Ceres dose for a day.
+// Per command: pH-Down 4 ml (a regular dose is ~2 ml; Ceres's own rail in
+// gitops must not exceed this), nutrients one feed of 10 ml.
 // Channel 4 is idle (#287): 0 = every request refused.
-const float DOSE_MAX_ML_PER_CMD[4] = {2.0f, 10.0f, 10.0f, 0.0f};
-const float DOSE_MAX_ML_PER_24H[4] = {8.0f, 40.0f, 40.0f, 0.0f};
+const float DOSE_MAX_ML_PER_CMD[4] = {4.0f, 10.0f, 10.0f, 0.0f};
 const unsigned long DOSE_MAX_MS = 60000;      // absolute cap per run
 const unsigned long DOSE_TEST_MAX_MS = 10000; // hard cap per bench command (Serial "dose chN …")
 

@@ -6,6 +6,31 @@ firmware semver from `firmware/libraries/PomonaVersion` (single source of
 truth, bumped by the deploy scripts). Tags `v<version>` mark each release
 merged to `master`.
 
+## [Unreleased]
+
+### Changed — the node bounds one request, not the day (owner 2026-09-16, ceres card #315)
+- `DOSE_MAX_ML_PER_CMD` pH-Down 2.0 → 4.0 ml (`config.h`); a regular dose is
+  about 2 ml, so one command can carry a double. A/B stay at 10 ml.
+- The rolling 24 h budget is gone: `DOSE_MAX_ML_PER_24H`, the per-channel dose
+  ring and the `over 24h cap` refusal are removed (`dosing.cpp`), and `sys/meta`
+  no longer announces `max_ml_per_24h`. How much goes in per day is the
+  controller's decision — Ceres removed its own daily cap on 2026-09-11 (ADR-0004).
+- Why: 2.3.0 carried the retired playbook caps ("twice Ceres's derived acid
+  cap"), so from the moment it went live (2026-09-15 17:01) the node refused every
+  2.7 ml and 4.8 ml request with `over per-command cap 2.0 ml` and the tank
+  drifted to pH 8.5 in a day. The Vertumnus side (reading `max_ml_per_cmd` from
+  `sys/meta`, its gitops rail lowered to 4.0 ml) is ceres card #315.
+- Still enforced per request: the reagent must be known and calibrated, one
+  channel at a time, the absolute 60 s run cap, the 10 s bench cap.
+
+### Added — `firmware/tools/lzss_ota.py`, the `.ota` packager
+- Compresses an exported `.bin` the way the library's `LZSSDecoder` expects
+  (Okumura LZSS, EI 11 / EJ 4, space-filled window) and writes the Portenta
+  OTA header (length, CRC-32, magic `0x23410266`, version word). With `--ref`
+  it validates itself against a previously served image first: the 2.3.0 image
+  decodes to a 758,392 B binary and re-encodes to the identical 604,590 B
+  payload. Recipe in `firmware/pomona/README.md` ("Building the `.ota` image").
+
 ## [2.3.0] - 2026-09-15
 
 ### Changed — the home screen (PR #102)
