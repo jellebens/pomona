@@ -136,9 +136,26 @@ GIGA, so the basic OTA path is
 the QSPI OTA partition, stages it and reboots; the bootloader applies it.
 Progress/errors go to serial and retained `pomona/unit/ota_result`;
 success shows up as the new version on `pomona/unit/fw_version` (and on
-screen). Building the `.ota` image and the version-endpoint pull
-automation (periodic check against `POMONA_FW_VERSION`, cluster-served
-images) stay on card #243.
+screen). The version-endpoint pull automation (periodic check against
+`POMONA_FW_VERSION`) stays on card #243.
+
+**Building the `.ota` image** (ceres #315, 2026-09-16): compile with exported
+binaries and package the `.bin` with `firmware/tools/lzss_ota.py` — the exact
+inverse of the library's `LZSSDecoder` (EI 11 / EJ 4, window pre-filled with
+spaces) under the Portenta OTA header (length, CRC-32, magic `0x23410266`,
+version word). Validated against the served 2.3.0 image: it decodes with the
+script's own decoder and re-encodes to the same 604,590 B payload.
+
+```sh
+arduino-cli compile --fqbn arduino:mbed_giga:giga --libraries libraries --export-binaries pomona
+python3 tools/lzss_ota.py pomona/build/arduino.mbed_giga.giga/pomona.ino.bin pomona-<version>.ota --ref <a previously served .ota>
+```
+
+Then drop the file on the cluster's firmware share as
+`pomona/pomona-<version>.ota` (gitops `landingzones/ceres`, served at
+`http://firmware.lab.local/…`) and record the version in Annona
+(`PUT /units/<id>/firmware {version, url}`); the unit's Vertumnus publishes
+the URL to the node.
 
 ⚠ **One-time USB prereq before OTA works on hardware**: partition the QSPI
 flash (`STM32H747_System → QSPIFormat`; done on the bench unit 2026-08-27 —

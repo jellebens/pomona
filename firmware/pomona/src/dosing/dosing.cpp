@@ -44,25 +44,9 @@ static uint32_t activeEpoch = 0;
 static char activeTrace[64] = "";
 static char ackTrace[64] = "";
 
-// Rolling 24 h budget per channel: a small ring of (millis, ml).
-struct DoseLog { uint32_t ms; float ml; };
-static const int LOG_N = 32;
-static DoseLog doseLog[4][LOG_N];
-static int logHead[4] = {0, 0, 0, 0};
-static const uint32_t DAY_MS = 24UL * 60UL * 60UL * 1000UL;
-
-static float ml24h(int i) {
-  const uint32_t now = millis();
-  float sum = 0.0f;
-  for (int k = 0; k < LOG_N; k++)
-    if (doseLog[i][k].ml > 0.0f && (uint32_t)(now - doseLog[i][k].ms) < DAY_MS) sum += doseLog[i][k].ml;
-  return sum;
-}
-
-static void logDose(int i, float ml) {
-  doseLog[i][logHead[i]] = {millis(), ml};
-  logHead[i] = (logHead[i] + 1) % LOG_N;
-}
+// No rolling 24 h budget on the node (owner 2026-09-16, ceres card #315): the
+// node caps ONE request (DOSE_MAX_ML_PER_CMD, DOSE_MAX_MS); how much goes in
+// per day is the controller's decision (ceres ADR-0004 removed its daily cap).
 
 static void setEventRaw(const char *fmt, ...) {
   va_list ap;
@@ -121,7 +105,6 @@ void dosingInit() {
     ch[i]->period_ms(20);       // standard 50 Hz servo frame
     ch[i]->pulsewidth_us(1472); // DFRobot stop value from the first pulse
   }
-  memset(doseLog, 0, sizeof(doseLog));
 }
 
 // ---- the bench channel (Serial only since 2.0.0) -----------------------
@@ -198,12 +181,6 @@ void dosingHandleRequest(const char *json, uint32_t epochNow) {
     setAck(id, reagent, "refused", ml, 0, channel, why, epochNow);
     return;
   }
-  if (ml24h(i) + ml > DOSE_MAX_ML_PER_24H[i]) {
-    char why[64];
-    snprintf(why, sizeof(why), "over 24h cap %.1f ml (%.1f used)", (double)DOSE_MAX_ML_PER_24H[i], (double)ml24h(i));
-    setAck(id, reagent, "refused", ml, 0, channel, why, epochNow);
-    return;
-  }
   if (runningCh >= 0) {
     setAck(id, reagent, "refused", ml, 0, channel, "another channel is running", epochNow);
     return;
@@ -225,7 +202,6 @@ void dosingHandleRequest(const char *json, uint32_t epochNow) {
   activeMl = ml;
   activeEpoch = epochNow;
   snprintf(activeTrace, sizeof(activeTrace), "%s", ackTrace); // the "done" ack echoes it too
-  logDose(i, ml); // count it when it STARTS: a crash mid-dose over-counts, never under
   startRun(i, forwardUs(slow ? DOSER_CAL[i].slowSpeed : 100), ms);
   Serial.print("[DOSE] request ");
   Serial.print(id);
@@ -271,10 +247,9 @@ size_t dosingMetaJson(char *out, size_t n) {
     if (!DOSER_CAL[i].reagent[0]) continue;
     w += snprintf(out + w, n - w,
                   "%s\"%s\":{\"channel\":%d,\"ml_s_full\":%.2f,\"ml_s_slow\":%.2f,\"slow_speed\":%d,"
-                  "\"max_ml_per_cmd\":%.1f,\"max_ml_per_24h\":%.1f}",
+                  "\"max_ml_per_cmd\":%.1f}",
                   first ? "" : ",", DOSER_CAL[i].reagent, i + 1, (double)DOSER_CAL[i].fullMlS,
-                  (double)DOSER_CAL[i].slowMlS, DOSER_CAL[i].slowSpeed, (double)DOSE_MAX_ML_PER_CMD[i],
-                  (double)DOSE_MAX_ML_PER_24H[i]);
+                  (double)DOSER_CAL[i].slowMlS, DOSER_CAL[i].slowSpeed, (double)DOSE_MAX_ML_PER_CMD[i]);
     first = false;
   }
   if (w < n) w += snprintf(out + w, n - w, "}");
@@ -290,11 +265,9 @@ void dosingDebugStatus() {
     Serial.print(chPins[i]);
     Serial.print(" pulse ");
     Serial.print(lastUs[i]);
-    Serial.print("us  24h ");
-    Serial.print(ml24h(i), 2);
-    Serial.print("/");
-    Serial.print(DOSE_MAX_ML_PER_24H[i], 1);
-    Serial.print(" ml");
+    Serial.print("us  cap ");
+    Serial.print(DOSE_MAX_ML_PER_CMD[i], 1);
+    Serial.print(" ml/cmd");
     Serial.println(i == runningCh ? "  <RUNNING>" : "");
   }
 }

@@ -34,7 +34,7 @@ no clock yet).
 | Topic | Payload | Retained | Published |
 |---|---|---|---|
 | `sys/status` | `online` / `offline` | **yes**, QoS 1 | on connect; `offline` is the broker **LWT** |
-| `sys/meta` | JSON `{unit, type: "aeroponic_tower", node: "giga-r1", fw_version, contract: 2, sensors: [...], actuators: ["pump","light"], reservoir_l, dosers: {reagent: {channel, ml_s_full, ml_s_slow, slow_speed, max_ml_per_cmd, max_ml_per_24h}}, ts}` | **yes**, QoS 1 | on connect |
+| `sys/meta` | JSON `{unit, type: "aeroponic_tower", node: "giga-r1", fw_version, contract: 2, sensors: [...], actuators: ["pump","light"], reservoir_l, dosers: {reagent: {channel, ml_s_full, ml_s_slow, slow_speed, max_ml_per_cmd}}, ts}` | **yes**, QoS 1 | on connect |
 | `sys/health` | JSON availability map `{"water_temp":true,"ph_calibrated":false,…,"ts"}` | **yes**, QoS 1 | every publish cycle |
 | `sys/diag/i2c_scan` | JSON `{"found": n, "addrs": "0x23,0x76"}` | yes | every publish cycle and on `sys/diag/i2c_scan/get` |
 | `sys/diag/i2c_scan/get` | any payload → scan now | no | **subscribed** |
@@ -110,10 +110,11 @@ today the **stage** (the wetter establishment cycle vs. established, v1's
 
 The node converts ml with **its own** calibration
 (`firmware/libraries/PomonaCalibration` `DOSER_CAL`, announced in `sys/meta`)
-and enforces **its own rails** — `config.h` `DOSE_MAX_ML_PER_CMD`
-(pH-Down 2 ml, A/B 10 ml), `DOSE_MAX_ML_PER_24H` (8 / 40 / 40 ml, rolling),
-one channel at a time, an absolute 60 s run cap — so the unit stays safe
-against a misbehaving controller. Every request is acked: a `refused` or
+and enforces **its own rail per request** — `config.h` `DOSE_MAX_ML_PER_CMD`
+(pH-Down 4 ml, A/B 10 ml), one channel at a time, an absolute 60 s run cap —
+so the unit stays safe against a runaway command. There is deliberately **no
+daily budget on the node** (owner 2026-09-16, ceres card #315): how much goes in
+per day is the controller's decision. Every request is acked: a `refused` or
 `failed` dose never reached the tank and Ceres takes it back out of its
 ledger; `done` carries the ms actually run. The bench channel
 (`chN fwd|rev|stop [ms] [speed]`, 10 s cap) survives over USB Serial only
