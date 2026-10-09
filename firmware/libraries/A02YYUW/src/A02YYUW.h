@@ -28,9 +28,11 @@ public:
                                              // (the tower's echoes scatter ~7 %; two real readings
                                              // never sit 2:1 apart within one window)
   static const uint8_t ECHO_TOL_MIN_MM = 10; // ...or within 10 mm, whichever is wider
-  static const uint16_t MIN_MM = 30;     // the sensor's blind zone
+  static const uint16_t MIN_MM = 30;     // the sensor's blind zone: closer reads as MIN_MM (full)
   static const uint16_t MAX_MM = 4500;   // datasheet range
-  static const uint32_t STALE_MS = 3000; // no good frame this long -> absent
+  static const uint32_t STALE_MS = 3000; // no usable frame this long -> absent
+  static const int NEAR = -2;            // decode(): a valid frame inside the blind zone
+  static const int NO_ECHO = -3;         // decode(): a valid frame saying 0 mm / out of range
 
   explicit A02YYUW(HardwareSerial &port) : _port(port) {}
 
@@ -43,12 +45,15 @@ public:
   // (unplugged, unpowered) or has sent nothing usable for STALE_MS.
   int distanceMm() const;
 
-  // Running counters, for the bench / diagnostics.
+  // Running counters since boot, published in sys/health so a silent sensor can be told
+  // apart remotely: bad climbing = garbage on the line / no echo (0 mm, a tilted sensor);
+  // near climbing = water at the face; nothing climbing = no frames at all (wiring, power).
   uint32_t goodFrames() const { return _good; }
   uint32_t badFrames() const { return _bad; }
+  uint32_t nearFrames() const { return _near; }
 
-  // Frame check, exposed for tests: the distance in mm, or -1 when the
-  // checksum fails or the value is outside MIN_MM..MAX_MM.
+  // Frame check, exposed for tests: the distance in mm; NEAR for a valid frame of
+  // 1..MIN_MM-1 mm (blind zone); NO_ECHO for 0 mm or > MAX_MM; -1 for a bad checksum.
   static int decode(uint8_t h, uint8_t l, uint8_t sum);
 
   // True when `mm` is the double echo of a surface at `direct` mm (exposed for tests).
@@ -64,4 +69,5 @@ private:
   uint32_t _lastGoodMs = 0;
   uint32_t _good = 0;
   uint32_t _bad = 0;
+  uint32_t _near = 0;
 };

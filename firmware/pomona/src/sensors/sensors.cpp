@@ -186,6 +186,9 @@ static void readTank(Readings &r) {
   sonic.poll();
   r.tankDistMm = sonic.distanceMm();
   r.tankDistOk = r.tankDistMm >= 0;
+  r.sonicGood = sonic.goodFrames();
+  r.sonicBad = sonic.badFrames();
+  r.sonicNear = sonic.nearFrames();
   r.tankOk = r.tankDistOk && TANK_TABLE_N >= 2 && TANK_FULL_L > 0.0f;
   if (!r.tankOk) {
     r.tankPct = r.tankL = NAN;

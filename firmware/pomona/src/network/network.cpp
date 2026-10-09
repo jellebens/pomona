@@ -455,14 +455,18 @@ void networkPublish(const Readings &r) {
   pubInt(TOPIC_NODE_UPTIME, millis() / 1000);
 
   // sys/health — retained availability map: consumers see which metrics to expect
-  char buf[288];
+  // level_sonic_frames: the A02YYUW's counters since boot — a silent sensor's cause at a glance
+  // (bad climbing: garbage / no echo, e.g. tilted; near: water at the face; none: wiring/power).
+  char buf[352];
   snprintf(buf, sizeof(buf),
            "{\"water_temp\":%s,\"ph_calibrated\":%s,\"level_strip\":%s,"
            "\"level_probe\":%s,\"level_sonic\":%s,\"level_sonic_calibrated\":%s,"
+           "\"level_sonic_frames\":{\"good\":%lu,\"near\":%lu,\"bad\":%lu},"
            "\"bme280\":%s,\"bh1750\":%s,\"ts\":%lu}",
            r.waterTempOk ? "true" : "false", r.phOk ? "true" : "false",
            r.levelOk ? "true" : "false", r.probePoints >= 0 ? "true" : "false",
            r.tankDistOk ? "true" : "false", r.tankOk ? "true" : "false",
+           (unsigned long)r.sonicGood, (unsigned long)r.sonicNear, (unsigned long)r.sonicBad,
            r.bmeOk ? "true" : "false", r.luxOk ? "true" : "false",
            (unsigned long)networkEpochNow());
   pubSized(TOPIC_SYS_HEALTH, buf, true, 1);
