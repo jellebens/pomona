@@ -17,7 +17,9 @@ merged to `master`.
 
 ## [Unreleased]
 
-### Changed — the tank level in litres from a measured fill table; double echoes dropped (#283; release as 2.4.1)
+## [2.4.1] - 2026-10-09
+
+### Changed — the tank level in litres from a measured fill table; double echoes dropped (#283)
 - The tank **tapers**, so the two-point line of 2.4.0 is replaced by a distance → litres table measured on the
   tower on 2026-10-09 (0 L at 248 mm … 9.5 L at 46 mm, 13 points): `TANK_TABLE` / `TANK_FULL_L` in
   `PomonaCalibration.h`, interpolated linearly and clamped (`libraries/A02YYUW/src/TankTable.h`).
