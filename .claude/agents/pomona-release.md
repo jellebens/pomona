@@ -66,7 +66,9 @@ wsl -e bash -lc 'cd ~/repos/pomona && .claude/scripts/release-lock.sh acquire "<
 
 1. `git fetch origin && git checkout -b <topic> origin/develop`.
 2. Make the change. Keep `secrets.h` untouched and gitignored — it holds ONLY
-   `WIFI_PASS` and `MQTT_PASS`; everything non-secret is in `config.h`.
+   `WIFI_PASS` and `MQTT_PASS`; everything non-secret is in `config.h`. A
+   `secrets.h` is per checkout and nothing ties it to the broker: before the first
+   compile, pass the credential gate (Phase 3, step 0) — never assume a copy is current.
 3. Compile, from `~/repos/pomona/firmware`, and keep it warning-free:
    ```
    arduino-cli compile --fqbn arduino:mbed_giga:giga --libraries libraries pomona
@@ -93,6 +95,34 @@ change is on `develop`:
 
 The tools live in `~/ota-tools` (`lzss.py`, `bin2ota.py`, `venv/`). Build from a
 checkout that matches the `v<version>` tag exactly.
+
+**Step 0 — the credential gate (MANDATORY, before compiling; a failure is a STOP).**
+The image must carry the passwords the node connects with *now*. They are embedded
+verbatim in the binary of the image it runs, so check `secrets.h` against that:
+
+```
+wsl -e bash -lc 'cd ~/repos/pomona && .claude/scripts/check-secrets.sh ~/ota-tools/build-<running>/pomona.ino.bin firmware/pomona/secrets.h'
+```
+
+- `<running>` is the node's `fw_version` from `ceres/pomona-0001/sys/meta` (or
+  `vertumnusctl.sh pomona-0001 firmware`) — the last image proven to connect.
+- Exit 0 = both `WIFI_PASS` and `MQTT_PASS` match; build. Exit 1 = a mismatch or a
+  placeholder; exit 2 = cannot check (no reference build, no `secrets.h`). Either:
+  **STOP — the owner supplies the right `secrets.h`.** Never lift a password out of
+  a binary or shell history, and never change the broker's (or the AP's) password
+  to fit the image — both are owner-gated credential work.
+- The script prints only "matches" / "NOT in" and the length, never a value.
+- **Keep `~/ota-tools/build-<ver>/` of every image that reached the node** — it is
+  the reference for the next release's gate.
+
+Why this gate exists (2026-10-09): 2.3.2 was built from the main checkout's
+`secrets.h` (last touched 2026-09-15), whose `MQTT_PASS` was not the broker's — the
+broker password had been reset that day and the 2.3.1 build carried the new value
+from a since-deleted worktree. The flash succeeded, then the broker refused
+`unit-pomona-0001` (`bad_username_or_password`). The OTA trigger only arrives over
+MQTT, so no corrected image could reach the node; with USB unavailable the only way
+back was an owner-approved broker password change. This gate fails that build in
+seconds (`check-secrets.sh` against `build-2.3.1` → exit 1).
 
 ```
 wsl -e bash -lc 'cd ~/repos/pomona/firmware && arduino-cli compile --fqbn arduino:mbed_giga:giga --libraries libraries --output-dir ~/ota-tools/build-<ver> pomona
@@ -176,7 +206,10 @@ Rails and gotchas:
   the broker refuses `bad_username_or_password`. Confirm the node comes back
   ONLINE (not just on-screen). If it loops on auth, capture its CONNECT and
   compare the password field to `secrets.h`; the durable fix is a USB reflash with
-  the current `secrets.h`. Password/credential work is **owner-gated**.
+  the current `secrets.h`. Password/credential work is **owner-gated**. Phase 3's
+  credential gate exists so this never happens: a node refused by the broker
+  cannot receive another OTA (the trigger is MQTT-only), so the mismatch must be
+  caught BEFORE the build, not diagnosed after the flash.
 
 Wait for `vertumnusctl.sh pomona-0001` to show `online: true`, `node_firmware:
 <ver>`, `contract: v2`, fresh readings. Use a bounded poll or a Monitor; do not

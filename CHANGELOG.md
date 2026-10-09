@@ -8,6 +8,18 @@ merged to `master`.
 
 ## [Unreleased]
 
+### Added — the credential gate of the release flow
+- `.claude/scripts/check-secrets.sh <running.bin> [secrets.h]`: checks that `WIFI_PASS` and
+  `MQTT_PASS` from `secrets.h` are embedded in the binary of the image the node runs now — the
+  passwords it last connected with. Prints only "matches" / "NOT in" and the length, never a value;
+  exit 0 = build, 1 = mismatch or placeholder, 2 = cannot check. The `pomona-release` runbook makes
+  it Phase 3, step 0 (a failure is a STOP: the owner supplies the right `secrets.h`), and says to
+  keep `~/ota-tools/build-<ver>/` of every flashed image as the next gate's reference.
+- Why: 2.3.2 (2026-10-09) was built from a stale `secrets.h`; the node flashed, then the broker
+  refused it, and with the OTA trigger MQTT-only no corrected image could reach it — recovery took a
+  power cycle and an owner-approved broker password change. The gate fails that build
+  (against `build-2.3.1`: exit 1).
+
 ## [2.3.2] - 2026-10-09
 
 ### Fixed — NTP is retried until it answers
