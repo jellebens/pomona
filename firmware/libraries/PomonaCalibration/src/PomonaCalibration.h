@@ -28,6 +28,15 @@ const float PH_V_ACID = 2.074f;    // 2026-09-10, pH 4.00 buffer @ 26.1 C (settl
 // Validation: pH 10.01 buffer read 0.979 V vs 0.982 V predicted — linear.
 // History (2026-08-28 anchors 1.56/2.10): same slope, ~0.03 V offset drift.
 
+// Tank level: A02YYUW ultrasonic above the reservoir (docs/sensors/level-sonic.md).
+// Two distances, sensor face -> water surface, read on the tower with the pump
+// OFF and the water settled: at FULL (UNIT_RESERVOIR_L in the tank) and at EMPTY
+// (the reservoir floor, or the lowest level the pump still draws from). NAN = not
+// yet calibrated: the node then publishes the raw distance only. Volume between the
+// two is linear, i.e. it assumes straight reservoir walls.
+const float TANK_DIST_FULL_MM = NAN;
+const float TANK_DIST_EMPTY_MM = NAN;
+
 // DFR0523 dosing channels (docs/dosing/dfr0523.md — 2026-09-09 recalibration on
 // the FINAL wiring and tube runs). ml/s is per channel AND per speed: the
 // speed->flow curve is nonlinear, never interpolate; use speed 50 for fine

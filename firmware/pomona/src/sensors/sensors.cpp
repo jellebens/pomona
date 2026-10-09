@@ -15,7 +15,8 @@
 #include <DallasTemperature.h>
 #include <GroveWaterLevel.h>   // libraries/GroveWaterLevel
 #include <PhotoLevelProbe.h>   // libraries/PhotoLevelProbe
-#include <PomonaCalibration.h> // EC_CAL_K, PH_V_NEUTRAL, PH_V_ACID
+#include <A02YYUW.h>           // libraries/A02YYUW
+#include <PomonaCalibration.h> // EC_CAL_K, PH_V_NEUTRAL, PH_V_ACID, TANK_DIST_*
 
 static Adafruit_BME280 bme;
 static BH1750 lux(ADDR_BH1750);
@@ -23,6 +24,7 @@ static OneWire oneWire(PIN_ONEWIRE);
 static DallasTemperature ds18b20(&oneWire);
 static GroveWaterLevel level(Wire, GroveWaterLevel::DEFAULT_WET_THRESHOLD);
 static PhotoLevelProbe probe(PIN_PROBE);
+static A02YYUW sonic(SONIC_SERIAL);
 
 static bool bmeUp = false;
 static bool luxUp = false;
@@ -173,6 +175,26 @@ void sensorsInit() {
     Serial.println("DS18B20 NOT FOUND on D2 — check 4.7k pull-up");
 
   probe.begin();
+  sonic.begin(); // streams on its own; absence shows as no frames
+}
+
+void sensorsPoll() { sonic.poll(); }
+
+// A02YYUW distance -> how full the tank is. Further from the sensor = less
+// water. Clamped: a slosh above FULL or a reading below EMPTY is not news.
+static void readTank(Readings &r) {
+  sonic.poll();
+  r.tankDistMm = sonic.distanceMm();
+  r.tankDistOk = r.tankDistMm >= 0;
+  r.tankOk = r.tankDistOk && !isnan(TANK_DIST_FULL_MM) && !isnan(TANK_DIST_EMPTY_MM) &&
+             TANK_DIST_EMPTY_MM > TANK_DIST_FULL_MM;
+  if (!r.tankOk) {
+    r.tankPct = r.tankL = NAN;
+    return;
+  }
+  float pct = 100.0f * (TANK_DIST_EMPTY_MM - r.tankDistMm) / (TANK_DIST_EMPTY_MM - TANK_DIST_FULL_MM);
+  r.tankPct = constrain(pct, 0.0f, 100.0f);
+  r.tankL = r.tankPct / 100.0f * UNIT_RESERVOIR_L;
 }
 
 void sensorsRead(Readings &r) {
@@ -191,6 +213,7 @@ void sensorsRead(Readings &r) {
   r.levelPct = r.levelOk ? level.percent() : -1;
 
   r.probePoints = probe.points(); // blocks ~250 ms max when no signal
+  readTank(r);
 
   r.bmeOk = tryBme();
   if (r.bmeOk) {

@@ -20,6 +20,7 @@ Sensor drivers shared between sketches live in [`libraries/`](libraries/):
 |---|---|
 | [`GroveWaterLevel`](libraries/GroveWaterLevel/src/GroveWaterLevel.h) | Grove 10 cm level strip driver (0x77+0x78): raw pads, wet threshold, wet count / percent / depth. |
 | [`PhotoLevelProbe`](libraries/PhotoLevelProbe/src/PhotoLevelProbe.h) | CQRSENYW003 contact photoelectric probe driver: frequency measurement → submerged points 0–4. |
+| [`A02YYUW`](libraries/A02YYUW/src/A02YYUW.h) | DFRobot A02YYUW ultrasonic driver: non-blocking UART frame parser → median distance in mm (the tank level). |
 | [`PomonaCalibration`](libraries/PomonaCalibration/src/PomonaCalibration.h) | EC/pH calibration constants — single source of truth, record calibration results here (procedures: [docs/sensors/](../docs/sensors/README.md)). |
 | [`PomonaVersion`](libraries/PomonaVersion/src/PomonaVersion.h) | Firmware semver — see Versioning below. |
 

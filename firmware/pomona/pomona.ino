@@ -127,6 +127,7 @@ void loop() {
   mbed::Watchdog::get_instance().kick();
 
   pollSerialCommands(); // USB bench commands (#284)
+  sensorsPoll(); // A02YYUW streams ~5-10 frames/s: keep its UART drained
   networkService(); // reconnect state machine + MQTT keepalive + OTA trigger
 
   displayLinkStatus(wifiConnected(), mqttConnected()); // live status icons

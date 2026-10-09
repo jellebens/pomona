@@ -31,9 +31,10 @@ Shared libraries (via `--libraries ../libraries` / sketchbook = `firmware/`):
 bumped by the deploy scripts — printed in the boot banner together with
 `__DATE__`/`__TIME__` build info, and shown bottom-right on screen),
 [`PomonaCalibration`](../libraries/PomonaCalibration/src/PomonaCalibration.h)
-(EC/pH calibration constants — record calibration results there),
+(EC/pH/tank calibration constants — record calibration results there),
 [`GroveWaterLevel`](../libraries/GroveWaterLevel/src/GroveWaterLevel.h),
-[`PhotoLevelProbe`](../libraries/PhotoLevelProbe/src/PhotoLevelProbe.h).
+[`PhotoLevelProbe`](../libraries/PhotoLevelProbe/src/PhotoLevelProbe.h),
+[`A02YYUW`](../libraries/A02YYUW/src/A02YYUW.h).
 
 **Absent sensors are handled gracefully:** every sensor is optional at
 runtime — a missing sensor's metrics are skipped on MQTT, shown as `--` on
