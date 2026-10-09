@@ -58,9 +58,9 @@ read availability from `sys/health`, not from sentinels.
 | `tele/water/ec_ms_cm` | mS/cm, 2 decimals | always (analog — no absence detection; ~0 when unplugged) |
 | `tele/water/ph` | pH, 2 decimals | only once pH is calibrated (PomonaCalibration) |
 | `tele/water/ph_raw_v` | probe volts, 3 decimals | always (calibration/drift aid) |
-| `tele/water/level_pct` | 0–100, 1 decimal | A02YYUW answered **and** `TANK_DIST_*` calibrated (since 2.4.0); otherwise the Grove strip, integer, if it answered — never both |
-| `tele/water/volume_l` | litres, 2 decimals (`level_pct` of `reservoir_l`) | A02YYUW answered and calibrated (2.4.0) |
-| `tele/water/level_distance_mm` | sensor face → water surface, mm, integer (median of ~7 frames) | A02YYUW answered (calibration aid — published uncalibrated too) |
+| `tele/water/level_pct` | 0–100, 1 decimal — `volume_l` as a share of full (`TANK_FULL_L`, 9.5 L) | A02YYUW answered **and** its fill table is set (since 2.4.0; the table since 2.4.1); otherwise the Grove strip, integer, if it answered — never both |
+| `tele/water/volume_l` | litres, 2 decimals, from the measured fill table (the tank tapers) | A02YYUW answered and the table is set (2.4.0; the table since 2.4.1) |
+| `tele/water/level_distance_mm` | sensor face → water surface, mm, integer (median of 15 frames, double echoes dropped since 2.4.1) | A02YYUW answered |
 | `tele/water/level_points` | 0–4 (CQRSENYW003 ladder; a TOP-UP gauge, blind below 8.2 L) | probe signal present |
 | `tele/air/temp_c`, `tele/air/humidity_pct`, `tele/air/pressure_hpa` | °C / %RH / hPa, 1 decimal | BME280 answered |
 | `tele/air/lux` | lux, integer | BH1750 answered |
