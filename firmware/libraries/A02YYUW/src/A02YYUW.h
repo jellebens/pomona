@@ -11,7 +11,10 @@
 // poll() is non-blocking: call it every loop() so the UART buffer never
 // overflows, and read distanceMm() whenever a value is wanted. A slosh or an
 // echo off the tower wall shows up as a single wild frame, so the value is
-// the median of the last WINDOW good frames. Wiring: docs/sensors/level-sonic.md.
+// the median of the last WINDOW good frames — after dropping the DOUBLE ECHOES:
+// over a flat surface the pulse can bounce water -> sensor face -> water and
+// arrive at twice the distance (2.4.0 on the tower: 320-355 mm for a 160-175 mm
+// surface, often enough to win the median). Wiring: docs/sensors/level-sonic.md.
 
 #pragma once
 
@@ -19,7 +22,12 @@
 
 class A02YYUW {
 public:
-  static const uint8_t WINDOW = 7;       // frames in the median (~1-2 s of data)
+  static const uint8_t WINDOW = 15;      // frames in the median (~2-3 s): wide enough that a
+                                         // direct frame is there to unmask the echoes
+  static const uint8_t ECHO_TOL_PCT = 10;    // a frame within 10 % of 2x another frame is its echo
+                                             // (the tower's echoes scatter ~7 %; two real readings
+                                             // never sit 2:1 apart within one window)
+  static const uint8_t ECHO_TOL_MIN_MM = 10; // ...or within 10 mm, whichever is wider
   static const uint16_t MIN_MM = 30;     // the sensor's blind zone
   static const uint16_t MAX_MM = 4500;   // datasheet range
   static const uint32_t STALE_MS = 3000; // no good frame this long -> absent
@@ -42,6 +50,9 @@ public:
   // Frame check, exposed for tests: the distance in mm, or -1 when the
   // checksum fails or the value is outside MIN_MM..MAX_MM.
   static int decode(uint8_t h, uint8_t l, uint8_t sum);
+
+  // True when `mm` is the double echo of a surface at `direct` mm (exposed for tests).
+  static bool isEcho(uint16_t mm, uint16_t direct);
 
 private:
   HardwareSerial &_port;

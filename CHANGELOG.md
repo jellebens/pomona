@@ -6,7 +6,32 @@ firmware semver from `firmware/libraries/PomonaVersion` (single source of
 truth, bumped by the deploy scripts). Tags `v<version>` mark each release
 merged to `master`.
 
+## [2.4.0] - 2026-10-09
+
+### Added
+- the tank level from the A02YYUW ultrasonic (#270 / #283)
+- the credential gate — check secrets.h against the running image before any build
+
+### Other
+- 2.4.0 — the tank level from the A02YYUW ultrasonic (#283); changelog
+
 ## [Unreleased]
+
+## [2.4.1] - 2026-10-09
+
+### Changed — the tank level in litres from a measured fill table; double echoes dropped (#283)
+- The tank **tapers**, so the two-point line of 2.4.0 is replaced by a distance → litres table measured on the
+  tower on 2026-10-09 (0 L at 248 mm … 9.5 L at 46 mm, 13 points): `TANK_TABLE` / `TANK_FULL_L` in
+  `PomonaCalibration.h`, interpolated linearly and clamped (`libraries/A02YYUW/src/TankTable.h`).
+  `TANK_DIST_FULL_MM` / `TANK_DIST_EMPTY_MM` are gone. The node now publishes `level_pct` and `volume_l`.
+- **Full is 9.5 L** (10 L would sit ~40 mm from the face, near the 30 mm blind zone): `level_pct` is a share of
+  9.5 L and `UNIT_RESERVOIR_L` in `sys/meta` is 9.5 (Annona's `reservoir_l` was set to 9.5 the same night).
+- **Double echo:** the sensor often reported twice the true distance (320–355 mm over a 160–175 mm surface — the
+  pulse bouncing water → face → water), enough to win the median. The driver now drops every frame within 10 %
+  (min 10 mm) of twice another frame in its window, and the window grows from 7 to 15 frames (~2–3 s) so a
+  direct frame is there to unmask them.
+- Host-tested: an echo-dominated window (6 echoes, 3 direct) reads the water; the table's points, midpoints and
+  clamps. `docs/sensors/level-sonic.md`: the fill-table procedure, the recorded table, the echo.
 
 ## [2.4.0] - 2026-10-09
 

@@ -36,11 +36,28 @@ void A02YYUW::poll() {
   }
 }
 
+bool A02YYUW::isEcho(uint16_t mm, uint16_t direct) {
+  int twice = 2 * (int)direct;
+  int tol = twice * ECHO_TOL_PCT / 100;
+  if (tol < ECHO_TOL_MIN_MM) tol = ECHO_TOL_MIN_MM;
+  return abs((int)mm - twice) <= tol;
+}
+
 int A02YYUW::distanceMm() const {
   if (_count == 0 || millis() - _lastGoodMs > STALE_MS) return -1;
+  // Drop the double echoes: a frame at ~2x another frame in the window is the pulse that went
+  // water -> sensor face -> water -> sensor (seen on the tower: 320-355 mm for a 160-175 mm
+  // surface). Keyed on the window's own frames, so it works whichever of the two dominates.
   uint16_t s[WINDOW];
-  for (uint8_t i = 0; i < _count; i++) s[i] = _ring[i];
-  for (uint8_t i = 1; i < _count; i++) { // insertion sort, n <= 7
+  uint8_t n = 0;
+  for (uint8_t i = 0; i < _count; i++) {
+    bool echo = false;
+    for (uint8_t j = 0; j < _count && !echo; j++)
+      echo = j != i && isEcho(_ring[i], _ring[j]);
+    if (!echo) s[n++] = _ring[i];
+  }
+  if (n == 0) return -1; // cannot happen (the shortest frame is never an echo); defensive
+  for (uint8_t i = 1; i < n; i++) { // insertion sort, n <= WINDOW
     uint16_t v = s[i];
     int8_t j = i - 1;
     while (j >= 0 && s[j] > v) {
@@ -49,5 +66,5 @@ int A02YYUW::distanceMm() const {
     }
     s[j + 1] = v;
   }
-  return s[_count / 2];
+  return s[n / 2];
 }

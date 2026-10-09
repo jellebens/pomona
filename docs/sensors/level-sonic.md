@@ -33,29 +33,44 @@ node publishes `ceres/pomona-0001/tele/water/level_distance_mm` every 30 s.
 Hold a flat object at a measured distance: the value should agree to ±1 cm.
 `--` on the tile = no valid frame for 3 s → check TX on D19 and 3V3/GND.
 
-## Calibration (on the tower)
+## Calibration (on the tower) — a measured fill table
 
-Two readings, **pump OFF and the water settled** (≥ 5 min; the tower holds
-water in transit while it runs):
+The tank **tapers** (narrower at the bottom): a litre is ~12 mm of height near
+the top and ~25 mm near the floor, so two points and a straight line are wrong.
+Distance → litres is a table, `TANK_TABLE` in
+`firmware/libraries/PomonaCalibration/src/PomonaCalibration.h`, interpolated
+linearly between points and clamped at both ends (`libraries/A02YYUW/src/TankTable.h`).
+The node publishes `level_pct` (of `TANK_FULL_L`) and `volume_l`, and the tile
+shows litres, green ≥ 60 %, amber ≥ 30 %, red below.
 
-1. **FULL** — reservoir at its nominal `reservoir_l` (10 L). Read the
-   `level_distance_mm` (tile or MQTT, take the value that repeats) →
-   `TANK_DIST_FULL_MM`.
-2. **EMPTY** — the reservoir floor (or the lowest level the pump still draws
-   from, if that is the useful zero). Either drain it once, or measure the
-   depth of the full water column with a ruler and add it to the FULL reading
-   → `TANK_DIST_EMPTY_MM`.
+To (re)measure it — after moving the sensor or changing the tank:
 
-Record both in `firmware/libraries/PomonaCalibration/src/PomonaCalibration.h`
-with the date, rebuild and roll out. From then on the node publishes
-`level_pct` and `volume_l`, and the tile shows litres, green ≥ 60 %, amber
-≥ 30 %, red below.
+1. **Pump OFF** (`vertumnusctl.sh pomona-0001 pump off`) and keep it off. A
+   Vertumnus restart puts it back on `auto`, so hold any ceres release meanwhile.
+2. Drain the tank to a puddle; note the reading — that is 0 L.
+3. Pour in **known volumes** — 0.5 L steps near the bottom, 1 L above — and
+   after each wait for two equal `level_distance_mm` readings (≈ 1 min).
+4. Put the pairs in `TANK_TABLE`, fullest first; set `TANK_FULL_L` to the
+   volume you call full. Rebuild, roll out, put the pump back on `auto`.
 
-Assumption: litres are linear between EMPTY and FULL — straight reservoir
-walls. If the reservoir tapers, add a mid-point and revisit.
+Full is **9.5 L**, not 10 L: 10 L would sit ~40 mm from the face, too close to
+the 30 mm blind zone. Annona's `reservoir_l` is 9.5 to match (config v14).
 
-### Recorded values
+### Recorded table — 2026-10-09 21:56–22:14 CEST
 
-| Date | FULL mm | EMPTY mm | Notes |
-|---|---|---|---|
-| — | — | — | not yet calibrated |
+| L in tank | 0 | 0.5 | 1.0 | 1.5 | 2.0 | 2.5 | 3.0 | 3.5 | 4.0 | 4.5 | 5.5 | 6.5 | 9.5 |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| mm | 248 | 227 | 215 | 201 | 185 | 173 | 156 | 135 | 121 | 113 | 92 | 80 | 46 |
+
+6.5 → 9.5 L was a single 3 L pour, so the top of the curve is one straight
+segment. Sensor face → floor ≈ 248–260 mm.
+
+## The double echo
+
+Over a flat surface the pulse can bounce water → sensor face → water and come
+back at **twice the distance**: on the tower 320–355 mm for a 160–175 mm
+surface, often enough to win a plain median (2.4.0 then read a well-filled tank
+as nearly empty). Since 2.4.1 the driver drops every frame within 10 % of twice
+another frame in its 15-frame window. Damping the mount helps too: a flat lid
+right around the face reflects best — mount the face flush, or ring it with a
+little foam or felt.

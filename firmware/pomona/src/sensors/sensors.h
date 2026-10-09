@@ -23,9 +23,9 @@ struct Readings {
   int probePoints = -1; // CQRSENYW003: 0 dry .. 4, -1 = no signal
   bool tankDistOk = false; // A02YYUW answered (#283)
   int tankDistMm = -1;     // sensor face -> water surface, median
-  bool tankOk = false;     // ...and TANK_DIST_* are calibrated
-  float tankPct = NAN;     // 0..100 between the EMPTY and FULL distances
-  float tankL = NAN;       // tankPct of UNIT_RESERVOIR_L
+  bool tankOk = false;     // ...and the fill table (PomonaCalibration TANK_TABLE) is set
+  float tankPct = NAN;     // tankL as a share of TANK_FULL_L
+  float tankL = NAN;       // litres from the fill table
   // air
   bool bmeOk = false;
   float airTempC = NAN;

@@ -29,13 +29,20 @@ const float PH_V_ACID = 2.074f;    // 2026-09-10, pH 4.00 buffer @ 26.1 C (settl
 // History (2026-08-28 anchors 1.56/2.10): same slope, ~0.03 V offset drift.
 
 // Tank level: A02YYUW ultrasonic above the reservoir (docs/sensors/level-sonic.md).
-// Two distances, sensor face -> water surface, read on the tower with the pump
-// OFF and the water settled: at FULL (UNIT_RESERVOIR_L in the tank) and at EMPTY
-// (the reservoir floor, or the lowest level the pump still draws from). NAN = not
-// yet calibrated: the node then publishes the raw distance only. Volume between the
-// two is linear, i.e. it assumes straight reservoir walls.
-const float TANK_DIST_FULL_MM = NAN;
-const float TANK_DIST_EMPTY_MM = NAN;
+// The tank TAPERS (narrower at the bottom), so distance -> litres is a measured
+// table, not a line. Fill of 2026-10-09 21:56-22:14 CEST: the tank emptied to a
+// puddle, known volumes poured in, pump off, settled readings. 6.5 -> 9.5 L was one
+// 3 L pour (no points between). FULL is 9.5 L by the owner's choice — 10 L would sit
+// ~40 mm from the face, too near the 30 mm blind zone. Sorted fullest first.
+// Re-measure after moving the sensor or changing the tank; an empty table = the node
+// publishes the raw distance only.
+#include <TankTable.h> // libraries/A02YYUW
+const TankPoint TANK_TABLE[] = {
+    {46, 9.5}, {80, 6.5}, {92, 5.5}, {113, 4.5}, {121, 4.0}, {135, 3.5}, {156, 3.0},
+    {173, 2.5}, {185, 2.0}, {201, 1.5}, {215, 1.0}, {227, 0.5}, {248, 0.0},
+};
+const unsigned TANK_TABLE_N = sizeof(TANK_TABLE) / sizeof(TANK_TABLE[0]);
+const float TANK_FULL_L = 9.5f; // 100 % — the volume at the table's first point
 
 // DFR0523 dosing channels (docs/dosing/dfr0523.md — 2026-09-09 recalibration on
 // the FINAL wiring and tube runs). ml/s is per channel AND per speed: the
