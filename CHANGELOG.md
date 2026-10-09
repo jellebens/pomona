@@ -8,6 +8,22 @@ merged to `master`.
 
 ## [Unreleased]
 
+### Added — the tank level from the A02YYUW ultrasonic (#270 / #283; release as 2.4.0)
+- New library `firmware/libraries/A02YYUW`: a non-blocking parser of the sensor's 9600-baud
+  `0xFF H L SUM` frames (checksum, 30–4500 mm range, resync after a bad frame) that reports the
+  median of the last 7 good frames, or -1 after 3 s without one. `sensorsPoll()` drains the UART every
+  `loop()`; the sensor is on `Serial2` (TX → D19), powered from 3V3, its RX wire floating.
+- Calibration `TANK_DIST_FULL_MM` / `TANK_DIST_EMPTY_MM` in `PomonaCalibration.h` (NAN until read on
+  the tower — procedure in `docs/sensors/level-sonic.md`). Volume is linear between the two.
+- MQTT: `tele/water/level_distance_mm` always when the sensor answers; once calibrated
+  `tele/water/level_pct` (now the ultrasonic's — the Grove strip only fills it when no calibrated
+  ultrasonic exists) and `tele/water/volume_l`. `sys/health` gains `level_sonic` and
+  `level_sonic_calibrated`; `sys/meta.sensors` lists `level_sonic`.
+- Screen: the tank tile is live — litres, green from 60 %, amber from 30 %, red below; before
+  calibration the raw distance (`212mm`, dimmed) so the calibration session can read it off the tower.
+- The level probe still drives the pump interlock; nothing acts on the ultrasonic yet.
+- Ceres: vertumnus 0.27.0 subscribes the three topics and exports them as `ceres_reading{metric}`.
+
 ### Added — the credential gate of the release flow
 - `.claude/scripts/check-secrets.sh <running.bin> [secrets.h]`: checks that `WIFI_PASS` and
   `MQTT_PASS` from `secrets.h` are embedded in the binary of the image the node runs now — the

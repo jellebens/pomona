@@ -25,6 +25,7 @@ LVGL screen are the firmware v1 card (#229); cluster-side ingestion is #222.
 | Sensor | Interface | GIGA connection | Address | Doc |
 |---|---|---|---|---|
 | CQRSENYW003 level probe | frequency (open collector) | **D3** (internal pull-up) | — | [sensors/level-probe.md](sensors/level-probe.md) |
+| A02YYUW ultrasonic (tank level) | UART 9600 (`Serial2`) | sensor TX (white) → **D19 / RX1**; RX (yellow) floating; red → **3V3** | — | [sensors/level-sonic.md](sensors/level-sonic.md) |
 | Grove water level 10 cm (optional) | I²C | SDA/SCL header pins | 0x77 + 0x78 | [sensors/level-strip.md](sensors/level-strip.md) |
 | DS18B20 (water temp) | 1-Wire | **D2**, 4.7 kΩ pull-up to 3V3 | — | [sensors/water-temp.md](sensors/water-temp.md) |
 | Grove TDS (EC) | analog | **A0** | — | [sensors/ec-tds.md](sensors/ec-tds.md) |

@@ -237,7 +237,7 @@ static void publishMeta() {
   char buf[720];
   snprintf(buf, sizeof(buf),
            "{\"unit\":\"%s\",\"type\":\"%s\",\"node\":\"%s\",\"fw_version\":\"%s\",\"contract\":%d,"
-           "\"sensors\":[\"water_temp\",\"ec\",\"ph\",\"level_points\",\"bme280\",\"bh1750\"],"
+           "\"sensors\":[\"water_temp\",\"ec\",\"ph\",\"level_points\",\"level_sonic\",\"bme280\",\"bh1750\"],"
            "\"actuators\":[\"pump\",\"light\"],\"reservoir_l\":%.1f,%s,\"ts\":%lu}",
            MQTT_UNIT_ID, UNIT_TYPE, UNIT_NODE, POMONA_FW_VERSION, MQTT_CONTRACT, (double)UNIT_RESERVOIR_L,
            dosers, (unsigned long)networkEpochNow());
@@ -431,7 +431,15 @@ void networkPublish(const Readings &r) {
   pubFloat(TOPIC_WATER_EC, r.ecMsCm, 2); // analog: always published
   if (r.phOk) pubFloat(TOPIC_WATER_PH, r.ph, 2);
   if (!isnan(r.phRawV)) pubFloat(TOPIC_WATER_PH_RAW, r.phRawV, 3); // calibration/drift aid
-  if (r.levelOk) pubInt(TOPIC_WATER_LEVEL_PCT, r.levelPct);
+  // level_pct: the calibrated ultrasonic owns it (#283); the Grove strip only
+  // when no calibrated ultrasonic is there — never both on one topic.
+  if (r.tankOk) {
+    pubFloat(TOPIC_WATER_LEVEL_PCT, r.tankPct, 1);
+    pubFloat(TOPIC_WATER_VOLUME, r.tankL, 2);
+  } else if (r.levelOk) {
+    pubInt(TOPIC_WATER_LEVEL_PCT, r.levelPct);
+  }
+  if (r.tankDistOk) pubInt(TOPIC_WATER_LEVEL_DIST, r.tankDistMm); // calibration aid
   if (r.probePoints >= 0) pubInt(TOPIC_WATER_LEVEL_POINTS, r.probePoints);
 
   // air
@@ -447,12 +455,14 @@ void networkPublish(const Readings &r) {
   pubInt(TOPIC_NODE_UPTIME, millis() / 1000);
 
   // sys/health — retained availability map: consumers see which metrics to expect
-  char buf[224];
+  char buf[288];
   snprintf(buf, sizeof(buf),
            "{\"water_temp\":%s,\"ph_calibrated\":%s,\"level_strip\":%s,"
-           "\"level_probe\":%s,\"bme280\":%s,\"bh1750\":%s,\"ts\":%lu}",
+           "\"level_probe\":%s,\"level_sonic\":%s,\"level_sonic_calibrated\":%s,"
+           "\"bme280\":%s,\"bh1750\":%s,\"ts\":%lu}",
            r.waterTempOk ? "true" : "false", r.phOk ? "true" : "false",
            r.levelOk ? "true" : "false", r.probePoints >= 0 ? "true" : "false",
+           r.tankDistOk ? "true" : "false", r.tankOk ? "true" : "false",
            r.bmeOk ? "true" : "false", r.luxOk ? "true" : "false",
            (unsigned long)networkEpochNow());
   pubSized(TOPIC_SYS_HEALTH, buf, true, 1);

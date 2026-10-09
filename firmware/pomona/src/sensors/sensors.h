@@ -21,6 +21,11 @@ struct Readings {
   bool levelOk = false; // Grove strip is optional hardware
   int levelPct = -1;
   int probePoints = -1; // CQRSENYW003: 0 dry .. 4, -1 = no signal
+  bool tankDistOk = false; // A02YYUW answered (#283)
+  int tankDistMm = -1;     // sensor face -> water surface, median
+  bool tankOk = false;     // ...and TANK_DIST_* are calibrated
+  float tankPct = NAN;     // 0..100 between the EMPTY and FULL distances
+  float tankL = NAN;       // tankPct of UNIT_RESERVOIR_L
   // air
   bool bmeOk = false;
   float airTempC = NAN;
@@ -32,6 +37,7 @@ struct Readings {
 
 void sensorsInit(); // I2C scan + first init attempts (absent sensors OK)
 void sensorsRead(Readings &r); // blocking sweep, worst case ~1.5 s
+void sensorsPoll(); // every loop(): drain the A02YYUW UART (non-blocking)
 
 // Rescan the I2C bus and write the found addresses into out as a comma
 // list ("0x23,0x76"; empty string = nothing found). Returns the count.

@@ -15,6 +15,11 @@ const int PIN_TDS = A2;    // Grove TDS, powered from 3V3 (perm wiring 2026-09-1
 const int PIN_PH = A1;     // SEN0169-V2 via DFR0504 isolator
 const int PIN_ONEWIRE = 1; // DS18B20 data via Rnaenaor T2 (perm wiring 2026-09-09; bench: D2). Pull-up on the board. NOTE: D1 belongs to a hardware UART — that port is now off-limits (A02YYUW level sensor must use another Serial).
 const int PIN_PROBE = 3;   // CQRSENYW003 green wire (open collector; probe REMOVED 2026-09-03, pin kept reserved)
+// A02YYUW ultrasonic tank level (#283): UART, 9600 8N1. Sensor TX (white) ->
+// D19 / RX1; sensor RX (yellow) left FLOATING (processed-value mode, nothing
+// to send). Power it from 3V3 so its TX swings 3.3 V — the GIGA is not 5 V
+// tolerant. D0/D1 (Serial1) is taken by the DS18B20 on D1.
+#define SONIC_SERIAL Serial2
 // DFR0523 dosing pumps (#284-287): PPM signal per channel, back on the
 // bench-proven D4-D7 block (owner + meter, 2026-09-09). The perm-wiring
 // move to D10-D13 failed: on the GIGA only D10 of that block produces
@@ -128,6 +133,8 @@ const char TOPIC_WATER_PH[] = MQTT_BASE "/tele/water/ph";
 const char TOPIC_WATER_PH_RAW[] = MQTT_BASE "/tele/water/ph_raw_v"; // always published (calibration/drift)
 const char TOPIC_WATER_LEVEL_PCT[] = MQTT_BASE "/tele/water/level_pct";
 const char TOPIC_WATER_LEVEL_POINTS[] = MQTT_BASE "/tele/water/level_points";
+const char TOPIC_WATER_LEVEL_DIST[] = MQTT_BASE "/tele/water/level_distance_mm"; // A02YYUW raw, always (calibration aid)
+const char TOPIC_WATER_VOLUME[] = MQTT_BASE "/tele/water/volume_l";              // A02YYUW, once calibrated
 const char TOPIC_AIR_TEMP[] = MQTT_BASE "/tele/air/temp_c";
 const char TOPIC_AIR_RH[] = MQTT_BASE "/tele/air/humidity_pct";
 const char TOPIC_AIR_PRESSURE[] = MQTT_BASE "/tele/air/pressure_hpa";
@@ -177,3 +184,7 @@ const float BAND_ATEMP_G_LO = 18.0f, BAND_ATEMP_G_HI = 28.0f;
 const float BAND_ATEMP_A_LO = 12.0f, BAND_ATEMP_A_HI = 32.0f;
 const float BAND_RH_G_LO = 40.0f, BAND_RH_G_HI = 70.0f;
 const float BAND_RH_A_LO = 30.0f, BAND_RH_A_HI = 80.0f;
+// Tank (#283), percent of full: green from 60 %, amber from 30 %, red below —
+// red means top up today. Only a lower edge: a full tank is never a problem.
+const float BAND_TANK_G_LO_PCT = 60.0f;
+const float BAND_TANK_A_LO_PCT = 30.0f;

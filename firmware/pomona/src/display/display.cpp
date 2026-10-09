@@ -28,10 +28,9 @@ static lv_obj_t *mqttIcon;
 static lv_obj_t *blankShield; // full-screen touch catcher while blanked
 static bool blanked = false;
 // Home screen (owner 2026-09-15): six tiles in two rows of three. Water on
-// top (temp, EC, pH), air below (temp, humidity) + a tank-level placeholder.
-// Pressure, lux, the Grove level % and the probe status word left the home
-// screen; they still publish on MQTT. The placeholder waits for the
-// continuous level sensor (#270 / #283 A02YYUW).
+// top (temp, EC, pH), air below (temp, humidity) + the tank level from the
+// A02YYUW ultrasonic (#283). Pressure, lux, the Grove level % and the probe
+// status word left the home screen; they still publish on MQTT.
 static Tile tWaterTemp, tEc, tPh;
 static Tile tAirTemp, tRh, tTank;
 static Readings lastReadings; // reapplied after screen rebuilds
@@ -138,10 +137,7 @@ static void buildScreen() {
   lv_obj_t *row2 = makeRow(scr, 190);
   tAirTemp = makeTile(row2, "air temp  degC");
   tRh = makeTile(row2, "humidity  %");
-  tTank = makeTile(row2, "tank level");
-  // placeholder until the continuous level sensor lands (#270 / #283):
-  // dimmed, never updated by displayUpdate
-  lv_obj_set_style_text_color(tTank.value, COL_DIM, 0);
+  tTank = makeTile(row2, "tank  L");
 
   // firmware version, bottom-right (dynamic from PomonaVersion.h)
   lv_obj_t *ver = lv_label_create(scr);
@@ -424,7 +420,22 @@ void displayUpdate(const Readings &r) {
                  BAND_ATEMP_G_LO, BAND_ATEMP_G_HI, BAND_ATEMP_A_LO, BAND_ATEMP_A_HI);
   setFloatBanded(tRh, r.bmeOk, r.humidityPct, 1,
                  BAND_RH_G_LO, BAND_RH_G_HI, BAND_RH_A_LO, BAND_RH_A_HI);
-  // tTank is a placeholder (#270 / #283): stays "--" until a continuous
-  // level reading exists. Pressure, lux, level % and the probe status word
-  // are MQTT-only now (network.cpp); the probe still drives the interlock.
+  // Tank (#283): litres, colored on how full it is. Uncalibrated -> the raw
+  // distance in mm, neutral, so the calibration session has a number to read.
+  // Pressure, lux, level % and the probe status word are MQTT-only
+  // (network.cpp); the probe still drives the interlock.
+  if (r.tankOk) {
+    setFloat(tTank, true, r.tankL, 1);
+    lv_color_t c = r.tankPct >= BAND_TANK_G_LO_PCT   ? COL_OK
+                   : r.tankPct >= BAND_TANK_A_LO_PCT ? COL_WARN
+                                                     : COL_BAD;
+    lv_obj_set_style_text_color(tTank.value, c, 0);
+  } else if (r.tankDistOk) {
+    char buf[16];
+    snprintf(buf, sizeof(buf), "%dmm", r.tankDistMm);
+    lv_label_set_text(tTank.value, buf);
+    lv_obj_set_style_text_color(tTank.value, COL_DIM, 0);
+  } else {
+    setFloat(tTank, false, NAN, 1);
+  }
 }
