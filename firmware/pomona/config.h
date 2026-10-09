@@ -112,7 +112,7 @@ const char MQTT_CLIENT_ID[] = "unit-" MQTT_UNIT_ID;
 #define UNIT_TYPE "aeroponic_tower"        // selects Ceres's profile
 #define UNIT_NODE "giga-r1"                // the board, informational
 #define MQTT_CONTRACT 2
-const float UNIT_RESERVOIR_L = 10.0f;      // announced in sys/meta; the config document is authoritative
+const float UNIT_RESERVOIR_L = 9.5f;       // announced in sys/meta (= TANK_FULL_L since 2.4.1); the config document is authoritative
 
 // -- the system layer the NODE publishes
 const char TOPIC_SYS_STATUS[] = MQTT_BASE "/sys/status";   // retained + LWT: online|offline
@@ -134,7 +134,7 @@ const char TOPIC_WATER_PH_RAW[] = MQTT_BASE "/tele/water/ph_raw_v"; // always pu
 const char TOPIC_WATER_LEVEL_PCT[] = MQTT_BASE "/tele/water/level_pct";
 const char TOPIC_WATER_LEVEL_POINTS[] = MQTT_BASE "/tele/water/level_points";
 const char TOPIC_WATER_LEVEL_DIST[] = MQTT_BASE "/tele/water/level_distance_mm"; // A02YYUW raw, always (calibration aid)
-const char TOPIC_WATER_VOLUME[] = MQTT_BASE "/tele/water/volume_l";              // A02YYUW, once calibrated
+const char TOPIC_WATER_VOLUME[] = MQTT_BASE "/tele/water/volume_l";              // A02YYUW through the fill table (2.4.1)
 const char TOPIC_AIR_TEMP[] = MQTT_BASE "/tele/air/temp_c";
 const char TOPIC_AIR_RH[] = MQTT_BASE "/tele/air/humidity_pct";
 const char TOPIC_AIR_PRESSURE[] = MQTT_BASE "/tele/air/pressure_hpa";

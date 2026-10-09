@@ -180,21 +180,19 @@ void sensorsInit() {
 
 void sensorsPoll() { sonic.poll(); }
 
-// A02YYUW distance -> how full the tank is. Further from the sensor = less
-// water. Clamped: a slosh above FULL or a reading below EMPTY is not news.
+// A02YYUW distance -> litres through the measured fill table (the tank tapers),
+// clamped to the table's ends: a slosh above FULL or a reading past the floor is not news.
 static void readTank(Readings &r) {
   sonic.poll();
   r.tankDistMm = sonic.distanceMm();
   r.tankDistOk = r.tankDistMm >= 0;
-  r.tankOk = r.tankDistOk && !isnan(TANK_DIST_FULL_MM) && !isnan(TANK_DIST_EMPTY_MM) &&
-             TANK_DIST_EMPTY_MM > TANK_DIST_FULL_MM;
+  r.tankOk = r.tankDistOk && TANK_TABLE_N >= 2 && TANK_FULL_L > 0.0f;
   if (!r.tankOk) {
     r.tankPct = r.tankL = NAN;
     return;
   }
-  float pct = 100.0f * (TANK_DIST_EMPTY_MM - r.tankDistMm) / (TANK_DIST_EMPTY_MM - TANK_DIST_FULL_MM);
-  r.tankPct = constrain(pct, 0.0f, 100.0f);
-  r.tankL = r.tankPct / 100.0f * UNIT_RESERVOIR_L;
+  r.tankL = tankLitres(TANK_TABLE, TANK_TABLE_N, (float)r.tankDistMm);
+  r.tankPct = constrain(100.0f * r.tankL / TANK_FULL_L, 0.0f, 100.0f);
 }
 
 void sensorsRead(Readings &r) {

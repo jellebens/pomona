@@ -8,7 +8,7 @@ first-power-on checklist — stays in [../wiring.md](../wiring.md).
 | Sensor | Measures | Interface / pin | Status | Doc |
 |---|---|---|---|---|
 | CQRobot CQRSENYW003 probe | water level (top-up ladder) | frequency / D3 | ✅ wired + calibrated 2026-08-25 | [level-probe.md](level-probe.md) |
-| DFRobot A02YYUW (SEN0311) | water level (continuous, litres) | UART / D19 (`Serial2`) | firmware ready (2.4.0); to wire + calibrate | [level-sonic.md](level-sonic.md) |
+| DFRobot A02YYUW (SEN0311) | water level (continuous, litres) | UART / D19 (`Serial2`) | ✅ wired 2026-10-09 (2.4.0); fill table measured 2026-10-09, in 2.4.1 | [level-sonic.md](level-sonic.md) |
 | Grove 10 cm level strip | water level (coarse range, optional) | I²C 0x77+0x78 | mount test pending | [level-strip.md](level-strip.md) |
 | DS18B20 | water temperature | 1-Wire / D2 (via old pH module's T2) | ✅ wired + ice-bath verified 2026-08-25 | [water-temp.md](water-temp.md) |
 | Grove TDS | EC / nutrients | analog / A0 | to wire; cal blocked on 1413 µS/cm fluid | [ec-tds.md](ec-tds.md) |
