@@ -8,6 +8,24 @@ merged to `master`.
 
 ## [Unreleased]
 
+## [2.3.2] - 2026-10-09
+
+### Fixed — NTP is retried until it answers
+- The photoperiod needs wall-clock time, and the node asked NTP once at connect and
+  then every 6 h — **also after a failed attempt**. With no clock the light is held
+  off (the safe failure), so one lost packet at boot meant up to 6 h of a dark tower.
+  It happened on 2026-10-09: the tower was moved indoors, rebooted twice
+  (12:41 and 12:56 CEST), missed its one attempt and held the light off from
+  12:41 — the 6 h retry would have come at ~19:00, an hour before lights-out.
+- A failed attempt is now retried after `NTP_RETRY_MS` (60 s), alternating
+  `NTP_HOST` (`pool.ntp.org`) and `NTP_HOST_FALLBACK` (`time.cloudflare.com`), until
+  one answers; the 6 h resync applies only after a success. Each attempt stays
+  bounded by `NTP_TIMEOUT_MS` (1.2 s), well inside the 30 s watchdog. The pump never
+  consulted the clock and still does not.
+- Compiles clean for `arduino:mbed_giga:giga`: 750,340 B flash (38 %), 138,848 B RAM (26 %).
+
+## [2.3.1] - 2026-09-17 (on the tower since 2026-09-17 01:12; released to `master` with 2.3.2)
+
 ### Changed — the node bounds one request, not the day (owner 2026-09-16, ceres card #315)
 - `DOSE_MAX_ML_PER_CMD` pH-Down 2.0 → 4.0 ml (`config.h`); a regular dose is
   about 2 ml, so one command can carry a double. A/B stay at 10 ml.

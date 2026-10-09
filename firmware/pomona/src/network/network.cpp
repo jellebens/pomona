@@ -41,6 +41,7 @@ static WiFiUDP ntpUdp;
 static uint32_t epochAtSync = 0;   // 0 = never synced
 static uint32_t millisAtSync = 0;
 static uint32_t nextNtpMs = 0;
+static uint8_t ntpFailures = 0; // consecutive; odd = ask the fallback host next
 
 uint32_t networkEpochNow() {
   if (epochAtSync == 0) return 0;
@@ -48,33 +49,57 @@ uint32_t networkEpochNow() {
 }
 
 // One NTP round trip, bounded by NTP_TIMEOUT_MS so the loop never stalls.
-static void ntpSync() {
+// True when the clock was set from the answer.
+static bool ntpSync(const char *host) {
   uint8_t pkt[48] = {0};
   pkt[0] = 0b11100011; // LI = 3 (unsynchronised), version 4, mode 3 (client)
-  if (!ntpUdp.begin(2390)) return;
-  ntpUdp.beginPacket(NTP_HOST, 123);
-  ntpUdp.write(pkt, sizeof(pkt));
-  ntpUdp.endPacket();
+  if (!ntpUdp.begin(2390)) return false;
+  bool ok = false;
+  if (ntpUdp.beginPacket(host, 123)) {
+    ntpUdp.write(pkt, sizeof(pkt));
+    ntpUdp.endPacket();
 
-  uint32_t t0 = millis();
-  while (millis() - t0 < NTP_TIMEOUT_MS) {
-    if (ntpUdp.parsePacket() >= 48) {
-      ntpUdp.read(pkt, sizeof(pkt));
-      // Transmit timestamp, seconds since 1900, bytes 40..43.
-      uint32_t secs1900 = ((uint32_t)pkt[40] << 24) | ((uint32_t)pkt[41] << 16) |
-                          ((uint32_t)pkt[42] << 8) | (uint32_t)pkt[43];
-      const uint32_t SEVENTY_YEARS = 2208988800UL;
-      if (secs1900 > SEVENTY_YEARS) {
-        epochAtSync = secs1900 - SEVENTY_YEARS;
-        millisAtSync = millis();
-        Serial.print("ntp: epoch ");
-        Serial.println(epochAtSync);
+    uint32_t t0 = millis();
+    while (millis() - t0 < NTP_TIMEOUT_MS) {
+      if (ntpUdp.parsePacket() >= 48) {
+        ntpUdp.read(pkt, sizeof(pkt));
+        // Transmit timestamp, seconds since 1900, bytes 40..43.
+        uint32_t secs1900 = ((uint32_t)pkt[40] << 24) | ((uint32_t)pkt[41] << 16) |
+                            ((uint32_t)pkt[42] << 8) | (uint32_t)pkt[43];
+        const uint32_t SEVENTY_YEARS = 2208988800UL;
+        if (secs1900 > SEVENTY_YEARS) {
+          epochAtSync = secs1900 - SEVENTY_YEARS;
+          millisAtSync = millis();
+          ok = true;
+          Serial.print("ntp: epoch ");
+          Serial.print(epochAtSync);
+          Serial.print(" from ");
+          Serial.println(host);
+        }
+        break;
       }
-      break;
+      delay(10);
     }
-    delay(10);
   }
   ntpUdp.stop();
+  return ok;
+}
+
+// The next NTP attempt: the full resync interval after a success, NTP_RETRY_MS
+// after a failure (alternating hosts) — never 6 h of a dark tower for one lost
+// packet at connect.
+static void ntpService() {
+  const char *host = (ntpFailures & 1) ? NTP_HOST_FALLBACK : NTP_HOST;
+  if (ntpSync(host)) {
+    ntpFailures = 0;
+    nextNtpMs = millis() + NTP_RESYNC_MS;
+  } else {
+    if (ntpFailures < 255) ntpFailures++;
+    nextNtpMs = millis() + NTP_RETRY_MS;
+    Serial.print("ntp: no answer from ");
+    Serial.print(host);
+    Serial.println(", retry in 60 s");
+  }
 }
 
 // ---- publishing helpers ----------------------------------------------
@@ -339,10 +364,7 @@ void networkService() {
     }
     const char *doseEv = dosingTakeEvent();
     if (doseEv) pubSized(TOPIC_DOSE_RESULT, doseEv, true, 1); // retained: last action / ack
-    if ((int32_t)(millis() - nextNtpMs) >= 0) {
-      nextNtpMs = millis() + NTP_RESYNC_MS;
-      ntpSync();
-    }
+    if ((int32_t)(millis() - nextNtpMs) >= 0) ntpService();
     // Actuator decisions are published on change, not on the 30 s metric
     // cadence: a stop is worth telling HA about immediately.
     if (controlWantsPublish()) networkPublishControl();

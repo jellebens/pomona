@@ -110,7 +110,9 @@ could predate the outage.
 
 ### Photoperiod, and the one clock dependency
 
-The light needs wall-clock time, and NTP at connect is the only source. With no
+The light needs wall-clock time, and NTP is the only source: asked at connect, then every
+6 h; a failed attempt is retried after 60 s, alternating `pool.ntp.org` and
+`time.cloudflare.com`, until one answers (2.3.2 — 2.3.1 waited the full 6 h). With no
 clock the light is held **off** and the pump falls back to the day cycle:
 lights stuck off costs growth, lights stuck on at night costs the plants their
 dark period, so off is the safe failure. `TZ_OFFSET_MINUTES` in `config.h` is a

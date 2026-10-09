@@ -79,8 +79,14 @@ const uint32_t LEVEL_INHIBIT_AFTER_MS = 24UL * 60UL * 60UL * 1000UL; // confirme
 // NTP: the photoperiod needs wall-clock time and this is the only source. The
 // PUMP never consults it — that path is millis() only and works with no
 // network at all.
+// A failed attempt is retried after NTP_RETRY_MS, alternating with the fallback
+// host, until one answers (2.3.2): until then the light is held off, and 2.3.1
+// waited the full 6 h after one failed try at connect (2026-10-09: the tower was
+// moved, rebooted, missed its one attempt, and lost the day's light).
 #define NTP_HOST "pool.ntp.org"
+#define NTP_HOST_FALLBACK "time.cloudflare.com"
 const uint32_t NTP_RESYNC_MS = 6UL * 60UL * 60UL * 1000UL; // re-sync every 6 h
+const uint32_t NTP_RETRY_MS = 60UL * 1000UL;                // after a failed attempt
 const uint32_t NTP_TIMEOUT_MS = 1200; // short: the watchdog is 30 s, do not stall the loop
 
 // ---- WiFi / MQTT connection (non-secret — passwords in secrets.h) ----

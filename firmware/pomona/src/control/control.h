@@ -14,7 +14,7 @@
 //     missing clock. This is the survival-critical path and it has no
 //     dependencies beyond the board being powered.
 //   * The LIGHT photoperiod needs wall-clock time, and the only source is NTP
-//     at first connect. With no time it holds the light OFF and reports
+//     (from connect; retried every minute until it answers, 2.3.2). With no time it holds the light OFF and reports
 //     "no_time" — lights stuck off costs growth, lights stuck on at night
 //     costs the plants their dark period, so off is the safe failure.
 
