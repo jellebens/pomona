@@ -8,7 +8,9 @@ merged to `master`.
 
 ## [Unreleased]
 
-### Added — the tank level from the A02YYUW ultrasonic (#270 / #283; release as 2.4.0)
+## [2.4.0] - 2026-10-09
+
+### Added — the tank level from the A02YYUW ultrasonic (#270 / #283)
 - New library `firmware/libraries/A02YYUW`: a non-blocking parser of the sensor's 9600-baud
   `0xFF H L SUM` frames (checksum, 30–4500 mm range, resync after a bad frame) that reports the
   median of the last 7 good frames, or -1 after 3 s without one. `sensorsPoll()` drains the UART every

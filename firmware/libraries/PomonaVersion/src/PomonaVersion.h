@@ -12,4 +12,4 @@
 // the root is ceres/pomona-0001/… — Demeter became Ceres before anything v2 was flashed. Set by
 // hand for the breaking release; deploy it with `-Bump none`. 2.3.0: the home screen
 // (six tiles) — a feature on the not-yet-flashed 2.x line, set by hand the same way.
-#define POMONA_FW_VERSION "2.3.2"
+#define POMONA_FW_VERSION "2.4.0"
