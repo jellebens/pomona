@@ -17,7 +17,9 @@ merged to `master`.
 
 ## [Unreleased]
 
-### Fixed — the tank table for the lid-closed mount; the blind zone reads full; frame counters (#283; release as 2.4.2)
+## [2.4.2] - 2026-10-09
+
+### Fixed — the tank table for the lid-closed mount; the blind zone reads full; frame counters (#283)
 - 2.4.1's table was read with the sensor lower than its final place. With the lid closed, 10 L reads a steady
   76 mm (pump off), so the table is shifted +36 mm (shape unchanged: 10 L at 76 mm … 0 L at 284 mm, 14 points)
   and **full is 10 L** again — 46 mm clear of the 30 mm blind zone. `UNIT_RESERVOIR_L` back to 10.
