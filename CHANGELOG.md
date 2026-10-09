@@ -17,6 +17,23 @@ merged to `master`.
 
 ## [Unreleased]
 
+## [2.4.2] - 2026-10-09
+
+### Fixed — the tank table for the lid-closed mount; the blind zone reads full; frame counters (#283)
+- 2.4.1's table was read with the sensor lower than its final place. With the lid closed, 10 L reads a steady
+  76 mm (pump off), so the table is shifted +36 mm (shape unchanged: 10 L at 76 mm … 0 L at 284 mm, 14 points)
+  and **full is 10 L** again — 46 mm clear of the 30 mm blind zone. `UNIT_RESERVOIR_L` back to 10.
+- Known: while the pump runs the sensor reads ~37–47 mm at a full tank (the return water crosses the beam), i.e.
+  "full" mid-cycle; read the level with the pump off. Not filtered yet.
+- **The blind zone reads as full** instead of going silent: a valid frame of 1–29 mm counts as 30 mm (→ 10 L,
+  100 %). A frame of 0 mm stays "no echo" — what a tilted sensor sends — so a knocked sensor never reads full.
+  On 2026-10-09 22:15–22:42 the sensor sat tilted after the last pour and the node published nothing.
+- `sys/health` gains `level_sonic_frames: {good, near, bad}`, the driver's counters since boot, so a silent
+  sensor's cause shows remotely: `bad` climbing = garbage / no echo (tilted), `near` = water at the face, none
+  climbing = no frames at all (wiring, power).
+- Fixed in the driver on the way: a valid "no echo" frame's checksum byte is 0xFF, which the resync took for a
+  new header and lost the next frame; resync now only follows a checksum failure.
+
 ## [2.4.1] - 2026-10-09
 
 ### Changed — the tank level in litres from a measured fill table; double echoes dropped (#283)

@@ -35,7 +35,7 @@ no clock yet).
 |---|---|---|---|
 | `sys/status` | `online` / `offline` | **yes**, QoS 1 | on connect; `offline` is the broker **LWT** |
 | `sys/meta` | JSON `{unit, type: "aeroponic_tower", node: "giga-r1", fw_version, contract: 2, sensors: [...], actuators: ["pump","light"], reservoir_l, dosers: {reagent: {channel, ml_s_full, ml_s_slow, slow_speed, max_ml_per_cmd}}, ts}` | **yes**, QoS 1 | on connect |
-| `sys/health` | JSON availability map `{"water_temp":true,"ph_calibrated":false,…,"ts"}` | **yes**, QoS 1 | every publish cycle |
+| `sys/health` | JSON availability map `{"water_temp":true,"ph_calibrated":false,…,"level_sonic":true,"level_sonic_calibrated":true,"level_sonic_frames":{"good":n,"near":n,"bad":n},…,"ts"}` — `level_sonic_frames` (2.4.2) are the A02YYUW's counters since boot (`docs/sensors/level-sonic.md`) | **yes**, QoS 1 | every publish cycle |
 | `sys/diag/i2c_scan` | JSON `{"found": n, "addrs": "0x23,0x76"}` | yes | every publish cycle and on `sys/diag/i2c_scan/get` |
 | `sys/diag/i2c_scan/get` | any payload → scan now | no | **subscribed** |
 | `sys/ota/url` | http(s) URL of a `.ota` image — **command, the unit subscribes**; publish **non-retained** (a retained URL would re-flash on every reconnect) | no | **subscribed** (basic OTA, #243) |
@@ -58,7 +58,7 @@ read availability from `sys/health`, not from sentinels.
 | `tele/water/ec_ms_cm` | mS/cm, 2 decimals | always (analog — no absence detection; ~0 when unplugged) |
 | `tele/water/ph` | pH, 2 decimals | only once pH is calibrated (PomonaCalibration) |
 | `tele/water/ph_raw_v` | probe volts, 3 decimals | always (calibration/drift aid) |
-| `tele/water/level_pct` | 0–100, 1 decimal — `volume_l` as a share of full (`TANK_FULL_L`, 9.5 L) | A02YYUW answered **and** its fill table is set (since 2.4.0; the table since 2.4.1); otherwise the Grove strip, integer, if it answered — never both |
+| `tele/water/level_pct` | 0–100, 1 decimal — `volume_l` as a share of full (`TANK_FULL_L`, 10 L since 2.4.2; 100 inside the blind zone) | A02YYUW answered **and** its fill table is set (since 2.4.0; the table since 2.4.1); otherwise the Grove strip, integer, if it answered — never both |
 | `tele/water/volume_l` | litres, 2 decimals, from the measured fill table (the tank tapers) | A02YYUW answered and the table is set (2.4.0; the table since 2.4.1) |
 | `tele/water/level_distance_mm` | sensor face → water surface, mm, integer (median of 15 frames, double echoes dropped since 2.4.1) | A02YYUW answered |
 | `tele/water/level_points` | 0–4 (CQRSENYW003 ladder; a TOP-UP gauge, blind below 8.2 L) | probe signal present |
