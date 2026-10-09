@@ -6,6 +6,15 @@ firmware semver from `firmware/libraries/PomonaVersion` (single source of
 truth, bumped by the deploy scripts). Tags `v<version>` mark each release
 merged to `master`.
 
+## [2.4.0] - 2026-10-09
+
+### Added
+- the tank level from the A02YYUW ultrasonic (#270 / #283)
+- the credential gate — check secrets.h against the running image before any build
+
+### Other
+- 2.4.0 — the tank level from the A02YYUW ultrasonic (#283); changelog
+
 ## [Unreleased]
 
 ### Added — the tank level from the A02YYUW ultrasonic (#270 / #283; release as 2.4.0)
