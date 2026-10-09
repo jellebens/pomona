@@ -112,7 +112,7 @@ const char MQTT_CLIENT_ID[] = "unit-" MQTT_UNIT_ID;
 #define UNIT_TYPE "aeroponic_tower"        // selects Ceres's profile
 #define UNIT_NODE "giga-r1"                // the board, informational
 #define MQTT_CONTRACT 2
-const float UNIT_RESERVOIR_L = 9.5f;       // announced in sys/meta (= TANK_FULL_L since 2.4.1); the config document is authoritative
+const float UNIT_RESERVOIR_L = 10.0f;      // announced in sys/meta (= TANK_FULL_L: 10 L since 2.4.2, lid-closed mount); the config document is authoritative
 
 // -- the system layer the NODE publishes
 const char TOPIC_SYS_STATUS[] = MQTT_BASE "/sys/status";   // retained + LWT: online|offline

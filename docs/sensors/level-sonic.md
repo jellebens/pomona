@@ -53,17 +53,41 @@ To (re)measure it — after moving the sensor or changing the tank:
 4. Put the pairs in `TANK_TABLE`, fullest first; set `TANK_FULL_L` to the
    volume you call full. Rebuild, roll out, put the pump back on `auto`.
 
-Full is **9.5 L**, not 10 L: 10 L would sit ~40 mm from the face, too close to
-the 30 mm blind zone. Annona's `reservoir_l` is 9.5 to match (config v14).
+**Only the sensor height changed?** Then the shape holds: read the distance at a
+known volume and shift every point by the difference — that is how 2.4.2 got its table.
 
-### Recorded table — 2026-10-09 21:56–22:14 CEST
+### The table in force (2.4.2) — lid closed, the final mount
+
+Full is **10 L at 76 mm** (a steady reading 2026-10-09 22:50–22:55, lid closed,
+pump off) — 46 mm clear of the 30 mm blind zone. Annona's `reservoir_l` is 10.
+
+| L in tank | 0 | 0.5 | 1.0 | 1.5 | 2.0 | 2.5 | 3.0 | 3.5 | 4.0 | 4.5 | 5.5 | 6.5 | 9.5 | 10 |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| mm | 284 | 263 | 251 | 237 | 221 | 209 | 192 | 171 | 157 | 149 | 128 | 116 | 82 | 76 |
+
+**Read it with the pump off.** While the pump runs the sensor reads ~37–47 mm
+at a full tank — the water falling back from the tower crosses the beam — so a
+reading taken mid-cycle says "full" whatever the level.
+
+### The fill it comes from — 2026-10-09 21:56–22:14 CEST, sensor 36 mm lower
 
 | L in tank | 0 | 0.5 | 1.0 | 1.5 | 2.0 | 2.5 | 3.0 | 3.5 | 4.0 | 4.5 | 5.5 | 6.5 | 9.5 |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | mm | 248 | 227 | 215 | 201 | 185 | 173 | 156 | 135 | 121 | 113 | 92 | 80 | 46 |
 
 6.5 → 9.5 L was a single 3 L pour, so the top of the curve is one straight
-segment. Sensor face → floor ≈ 248–260 mm.
+segment. 2.4.1 shipped this fill as is (full 9.5 L at 46 mm); with the lid
+closed the face sits 36 mm higher.
+
+## The blind zone and a silent sensor
+
+Closer than 30 mm the sensor cannot measure. Since 2.4.2 a valid frame of
+1–29 mm counts as 30 mm, i.e. **full** — the tank is never silent for being
+too full. A frame of **0 mm** means "no echo" and stays invalid: that is what a
+**tilted** sensor sends (2026-10-09 22:15–22:42: knocked during a pour, the
+node published nothing). `sys/health.level_sonic_frames` tells the cases apart
+remotely: `bad` climbing = no echo / garbage (tilted, obstructed), `near`
+climbing = water at the face, nothing climbing = no frames (wiring, power).
 
 ## The double echo
 

@@ -5,7 +5,8 @@
 int A02YYUW::decode(uint8_t h, uint8_t l, uint8_t sum) {
   if ((uint8_t)(0xFF + h + l) != sum) return -1;
   int mm = h * 256 + l;
-  if (mm < MIN_MM || mm > MAX_MM) return -1; // blind zone / no echo
+  if (mm == 0 || mm > MAX_MM) return NO_ECHO; // 0 = no echo (a tilted sensor), > range = nothing
+  if (mm < MIN_MM) return NEAR;          // inside the blind zone: the water is AT the face
   return mm;
 }
 
@@ -20,13 +21,18 @@ void A02YYUW::poll() {
     if (_pos < 4) continue;
     _pos = 0;
     int mm = decode(_frame[1], _frame[2], _frame[3]);
-    if (mm < 0) {
+    if (mm == NEAR) {
+      _near++;
+      mm = MIN_MM; // counts as the closest distance the sensor can tell: the tank is full
+    } else if (mm < 0) {
       _bad++;
-      // A data byte of 0xFF may have been a real header: resync on it.
-      if (_frame[3] == 0xFF) _frame[_pos++] = 0xFF;
+      // A checksum failure: a data byte of 0xFF may have been a real header — resync on it.
+      // Not after a valid NO_ECHO frame: its checksum byte is legitimately 0xFF (0 mm).
+      if (mm != NO_ECHO && _frame[3] == 0xFF) _frame[_pos++] = 0xFF;
       continue;
+    } else {
+      _good++;
     }
-    _good++;
     uint32_t now = millis();
     if (now - _lastGoodMs > STALE_MS) _count = _next = 0; // back after a gap: forget the old water
     _lastGoodMs = now;

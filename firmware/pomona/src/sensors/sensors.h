@@ -26,6 +26,7 @@ struct Readings {
   bool tankOk = false;     // ...and the fill table (PomonaCalibration TANK_TABLE) is set
   float tankPct = NAN;     // tankL as a share of TANK_FULL_L
   float tankL = NAN;       // litres from the fill table
+  uint32_t sonicGood = 0, sonicBad = 0, sonicNear = 0; // A02YYUW frame counters since boot (sys/health)
   // air
   bool bmeOk = false;
   float airTempC = NAN;
