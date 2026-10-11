@@ -89,6 +89,22 @@ node published nothing). `sys/health.level_sonic_frames` tells the cases apart
 remotely: `bad` climbing = no echo / garbage (tilted, obstructed), `near`
 climbing = water at the face, nothing climbing = no frames (wiring, power).
 
+## What is not the surface (2.4.3)
+
+Since 2.4.3 a reading becomes litres only when it is plausibly the water surface and steady
+(`tankJudge` in `TankTable.h`); otherwise the node publishes no `level_pct` / `volume_l` and says
+why in `sys/health.level_sonic_state`:
+
+| state | reading | what it was on the tower |
+|---|---|---|
+| `splash` | nearer than FULL (76 mm) by more than 15 mm, blind-zone frames included | the return water falling past the sensor during a pump run (33–53 mm, read as "10 L" by 2.4.2), foam |
+| `no_echo` | farther than EMPTY (284 mm) by more than 15 + 5 = 20 mm | a **wet face** — condensation over 25 °C water after the move indoors read 240–720 mm (2.4.2: "0 L" for a day) |
+| `unsteady` | the last 6 sweeps (30 s) disagree by more than 15 mm, or fewer than 6 yet | a face drying or wetting; the first 30 s after boot |
+| `ok` | everything else; the table still clamps the last few mm at either end | with the pump running and a dry face: 86–87 mm = 9.06 L |
+
+Keep the face dry and out of the return stream: mount it where nothing falls past it, give it a drip
+edge, let the headspace breathe. The raw `level_distance_mm` is still published every cycle.
+
 ## The double echo
 
 Over a flat surface the pulse can bounce water → sensor face → water and come

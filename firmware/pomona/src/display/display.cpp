@@ -431,8 +431,11 @@ void displayUpdate(const Readings &r) {
                                                      : COL_BAD;
     lv_obj_set_style_text_color(tTank.value, c, 0);
   } else if (r.tankDistOk) {
+    // 2.4.3: a reading that is not the surface says why (splash / no_echo / unsteady);
+    // uncalibrated keeps the raw mm for the calibration session.
     char buf[16];
-    snprintf(buf, sizeof(buf), "%dmm", r.tankDistMm);
+    if (r.tankCalibrated) snprintf(buf, sizeof(buf), "%s", r.tankState);
+    else snprintf(buf, sizeof(buf), "%dmm", r.tankDistMm);
     lv_label_set_text(tTank.value, buf);
     lv_obj_set_style_text_color(tTank.value, COL_DIM, 0);
   } else {

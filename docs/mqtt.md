@@ -35,7 +35,7 @@ no clock yet).
 |---|---|---|---|
 | `sys/status` | `online` / `offline` | **yes**, QoS 1 | on connect; `offline` is the broker **LWT** |
 | `sys/meta` | JSON `{unit, type: "aeroponic_tower", node: "giga-r1", fw_version, contract: 2, sensors: [...], actuators: ["pump","light"], reservoir_l, dosers: {reagent: {channel, ml_s_full, ml_s_slow, slow_speed, max_ml_per_cmd}}, ts}` | **yes**, QoS 1 | on connect |
-| `sys/health` | JSON availability map `{"water_temp":true,"ph_calibrated":false,…,"level_sonic":true,"level_sonic_calibrated":true,"level_sonic_frames":{"good":n,"near":n,"bad":n},…,"ts"}` — `level_sonic_frames` (2.4.2) are the A02YYUW's counters since boot (`docs/sensors/level-sonic.md`) | **yes**, QoS 1 | every publish cycle |
+| `sys/health` | JSON availability map `{"water_temp":true,"ph_calibrated":false,…,"level_sonic":true,"level_sonic_calibrated":true,"level_sonic_frames":{"good":n,"near":n,"bad":n},…,"ts"}` — `level_sonic_frames` (2.4.2) are the A02YYUW's counters since boot; `level_sonic_state` (2.4.3) says whether the last reading was the surface: `ok|splash|no_echo|unsteady|absent|uncalibrated` — only `ok` publishes `level_pct`/`volume_l` (`docs/sensors/level-sonic.md`) | **yes**, QoS 1 | every publish cycle |
 | `sys/diag/i2c_scan` | JSON `{"found": n, "addrs": "0x23,0x76"}` | yes | every publish cycle and on `sys/diag/i2c_scan/get` |
 | `sys/diag/i2c_scan/get` | any payload → scan now | no | **subscribed** |
 | `sys/ota/url` | http(s) URL of a `.ota` image — **command, the unit subscribes**; publish **non-retained** (a retained URL would re-flash on every reconnect) | no | **subscribed** (basic OTA, #243) |

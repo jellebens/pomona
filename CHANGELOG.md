@@ -17,6 +17,26 @@ merged to `master`.
 
 ## [Unreleased]
 
+## [2.4.3] - 2026-10-11
+
+### Fixed — a tank reading is litres only when it is the water surface (#283)
+- 2.4.2 clamped every distance to the fill table's ends, so readings the sensor could not mean became
+  confident numbers. On the tower: the return water falling past the sensor during a pump run read
+  33–53 mm → **"10 L"**; a wet face (condensation over 25 °C water since the tower moved indoors) read
+  240–720 mm, jumping minute to minute → **"0 L" from 2026-10-10 ~15:00 for over a day**, while the tank
+  held ~9 L (the owner's figure with the pump running; the dry sensor read 86–87 mm = 9.06 L).
+- `tankJudge` (`TankTable.h`) now classifies each reading: **splash** (nearer than FULL by > 15 mm — the
+  tank cannot fill past its full mark; this includes the blind-zone frames 2.4.2 read as full),
+  **no_echo** (farther than EMPTY by > 20 mm — the floor is 284 mm away), **unsteady** (the last 6 sweeps,
+  30 s, disagree by > 15 mm, or fewer than 6 yet), else **ok**. Only `ok` publishes `level_pct` /
+  `volume_l`; the raw `level_distance_mm` is still published always (calibration aid).
+- `sys/health` gains `level_sonic_state` (`ok|splash|no_echo|unsteady|absent|uncalibrated`);
+  `level_sonic_calibrated` now means "the fill table is set" (2.4.2: table set AND sensor answering).
+  The screen's tank tile shows the state word instead of a litre figure it cannot vouch for.
+- Host-tested against the tower's own readings (87 mm → ok 9.06 L; 38 → splash; 30 → splash;
+  391/651 → no_echo; jumping 120 → unsteady). 752,140 B flash (38 %), 26 % RAM; credential gate passed
+  against `build-2.4.2`.
+
 ## [2.4.2] - 2026-10-09
 
 ### Fixed — the tank table for the lid-closed mount; the blind zone reads full; frame counters (#283)

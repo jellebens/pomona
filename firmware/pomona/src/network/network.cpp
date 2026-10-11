@@ -462,11 +462,13 @@ void networkPublish(const Readings &r) {
            "{\"water_temp\":%s,\"ph_calibrated\":%s,\"level_strip\":%s,"
            "\"level_probe\":%s,\"level_sonic\":%s,\"level_sonic_calibrated\":%s,"
            "\"level_sonic_frames\":{\"good\":%lu,\"near\":%lu,\"bad\":%lu},"
+           "\"level_sonic_state\":\"%s\","
            "\"bme280\":%s,\"bh1750\":%s,\"ts\":%lu}",
            r.waterTempOk ? "true" : "false", r.phOk ? "true" : "false",
            r.levelOk ? "true" : "false", r.probePoints >= 0 ? "true" : "false",
-           r.tankDistOk ? "true" : "false", r.tankOk ? "true" : "false",
+           r.tankDistOk ? "true" : "false", r.tankCalibrated ? "true" : "false",
            (unsigned long)r.sonicGood, (unsigned long)r.sonicNear, (unsigned long)r.sonicBad,
+           r.tankState,
            r.bmeOk ? "true" : "false", r.luxOk ? "true" : "false",
            (unsigned long)networkEpochNow());
   pubSized(TOPIC_SYS_HEALTH, buf, true, 1);

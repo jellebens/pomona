@@ -23,7 +23,9 @@ struct Readings {
   int probePoints = -1; // CQRSENYW003: 0 dry .. 4, -1 = no signal
   bool tankDistOk = false; // A02YYUW answered (#283)
   int tankDistMm = -1;     // sensor face -> water surface, median
-  bool tankOk = false;     // ...and the fill table (PomonaCalibration TANK_TABLE) is set
+  bool tankCalibrated = false; // the fill table (PomonaCalibration TANK_TABLE) is set
+  bool tankOk = false;     // ...and the reading is the water surface: plausible + steady (2.4.3)
+  const char *tankState = "absent"; // ok|splash|no_echo|unsteady|absent|uncalibrated (sys/health)
   float tankPct = NAN;     // tankL as a share of TANK_FULL_L
   float tankL = NAN;       // litres from the fill table
   uint32_t sonicGood = 0, sonicBad = 0, sonicNear = 0; // A02YYUW frame counters since boot (sys/health)

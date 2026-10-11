@@ -180,8 +180,26 @@ void sensorsInit() {
 
 void sensorsPoll() { sonic.poll(); }
 
-// A02YYUW distance -> litres through the measured fill table (the tank tapers),
-// clamped to the table's ends: a slosh above FULL or a reading past the floor is not news.
+// The last TANK_STEADY_N sweeps' distances (one per SENSOR_READ_MS): litres only when
+// they agree (2.4.3) — a wet face jumps hundreds of mm between sweeps.
+static const uint8_t TANK_STEADY_N = 6; // 6 x 5 s = 30 s
+static int tankRecent[TANK_STEADY_N];
+static uint8_t tankRecentN = 0, tankRecentNext = 0;
+
+static float tankSpreadMm() {
+  if (tankRecentN < TANK_STEADY_N) return NAN;
+  int lo = tankRecent[0], hi = tankRecent[0];
+  for (uint8_t i = 1; i < TANK_STEADY_N; i++) {
+    lo = min(lo, tankRecent[i]);
+    hi = max(hi, tankRecent[i]);
+  }
+  return (float)(hi - lo);
+}
+
+// A02YYUW distance -> litres through the measured fill table (the tank tapers), but only
+// for a reading that is the water surface (TankTable.h tankJudge): a splash nearer than
+// FULL, a pulse that never came back off the water (past the floor), or readings that do
+// not agree publish no litres at all — "no level" is true, "10 L" / "0 L" would not be.
 static void readTank(Readings &r) {
   sonic.poll();
   r.tankDistMm = sonic.distanceMm();
@@ -189,11 +207,25 @@ static void readTank(Readings &r) {
   r.sonicGood = sonic.goodFrames();
   r.sonicBad = sonic.badFrames();
   r.sonicNear = sonic.nearFrames();
-  r.tankOk = r.tankDistOk && TANK_TABLE_N >= 2 && TANK_FULL_L > 0.0f;
-  if (!r.tankOk) {
-    r.tankPct = r.tankL = NAN;
+  r.tankCalibrated = TANK_TABLE_N >= 2 && TANK_FULL_L > 0.0f;
+  r.tankOk = false;
+  r.tankPct = r.tankL = NAN;
+  if (!r.tankDistOk) {
+    tankRecentN = tankRecentNext = 0; // back after a gap: judge the new water afresh
+    r.tankState = "absent";
     return;
   }
+  tankRecent[tankRecentNext] = r.tankDistMm;
+  tankRecentNext = (tankRecentNext + 1) % TANK_STEADY_N;
+  if (tankRecentN < TANK_STEADY_N) tankRecentN++;
+  if (!r.tankCalibrated) {
+    r.tankState = "uncalibrated";
+    return;
+  }
+  TankRead s = tankJudge(TANK_TABLE, TANK_TABLE_N, (float)r.tankDistMm, tankSpreadMm());
+  r.tankState = tankReadName(s);
+  if (s != TankRead::Ok) return;
+  r.tankOk = true;
   r.tankL = tankLitres(TANK_TABLE, TANK_TABLE_N, (float)r.tankDistMm);
   r.tankPct = constrain(100.0f * r.tankL / TANK_FULL_L, 0.0f, 100.0f);
 }

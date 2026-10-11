@@ -27,3 +27,41 @@ inline float tankLitres(const TankPoint *points, unsigned n, float mm) {
   }
   return points[n - 1].litres; // not reached
 }
+
+// Is a distance the water surface at all? (pomona 2.4.3, #283)
+//
+// 2.4.2 clamped every distance to the table's ends, so a reading the sensor could not
+// mean became a confident number: on the tower 2026-10-10/11 the return water falling
+// past the sensor during a pump run read 33-53 mm -> "10 L", and a wet face (condensation
+// over 25 C water) read 240-720 mm, jumping minute to minute -> "0 L" for a day, while
+// the tank held ~9 L. Now a reading is litres only when it is plausible AND steady:
+//   * Splash   — nearer than FULL by more than TANK_SPLASH_MARGIN_MM: the return stream,
+//                foam, a drop on the face. The tank cannot fill past its full mark.
+//   * NoEcho   — farther than EMPTY by more than TANK_FAR_MARGIN_MM: the floor is 284 mm
+//                away, so the pulse did not come back off the water (a wet or tilted face).
+//   * Unsteady — the last readings disagree by more than TANK_STEADY_MM.
+// Between FULL-margin and FULL (or EMPTY and EMPTY+margin) a reading still clamps.
+enum class TankRead : unsigned char { Ok, Splash, NoEcho, Unsteady };
+
+const float TANK_SPLASH_MARGIN_MM = 15.0f;
+const float TANK_FAR_MARGIN_MM = 20.0f;
+const float TANK_STEADY_MM = 15.0f;
+
+// spreadMm: max - min of the recent readings (the caller's window), NAN = not enough yet.
+inline TankRead tankJudge(const TankPoint *points, unsigned n, float mm, float spreadMm) {
+  if (n == 0) return TankRead::NoEcho;
+  if (mm < points[0].mm - TANK_SPLASH_MARGIN_MM) return TankRead::Splash;
+  if (mm > points[n - 1].mm + TANK_FAR_MARGIN_MM) return TankRead::NoEcho;
+  if (isnan(spreadMm) || spreadMm > TANK_STEADY_MM) return TankRead::Unsteady;
+  return TankRead::Ok;
+}
+
+inline const char *tankReadName(TankRead s) {
+  switch (s) {
+  case TankRead::Ok: return "ok";
+  case TankRead::Splash: return "splash";
+  case TankRead::NoEcho: return "no_echo";
+  case TankRead::Unsteady: return "unsteady";
+  }
+  return "?";
+}
