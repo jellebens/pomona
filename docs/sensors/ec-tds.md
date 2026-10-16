@@ -20,6 +20,16 @@ side prevents their ground loop), board dry above the waterline.
 no-signal symptom (wrong signal wire/pin), not a calibration problem.
 A plausible uncalibrated reading in 1413 µS/cm fluid is ~1–2 mS/cm.
 
+## Between pump runs (2.4.4)
+
+The probe reads the circulation pump: while it runs the reading climbs (1.43 → 1.81 and
+1.63 → 1.96 mS/cm on the tower, the step within seconds of each switch), with the pump off it is
+steady. pH is isolated (DFR0504) and is not affected; this board is not. Until it gets its own
+isolator, the published `ec_ms_cm` is taken only with the pump off for 2 min and held through the
+next run (`src/sensors/ec_hold.h`; dropped after 45 min); `ec_live_ms_cm` is every sweep's raw
+reading. With an isolator fitted the two should agree pump on and off — then the hold can go.
+Fitting one is a wiring change: recalibrate (below).
+
 ## Conversion & calibration
 
 Firmware applies the standard cubic TDS curve with temperature

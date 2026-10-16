@@ -43,6 +43,10 @@ const uint8_t ADDR_BH1750 = 0x23;
 // ---- timing ----------------------------------------------------------
 const uint32_t SENSOR_READ_MS = 5000;       // sensor sweep + screen refresh
 const uint32_t MQTT_PUBLISH_MS = 30000;     // publish cadence (docs/mqtt.md)
+// EC between pump runs (2.4.4, src/sensors/ec_hold.h): the probe reads the pump, so EC is taken
+// only with the pump off this long and held through the run; a hold older than the max is dropped.
+const uint32_t EC_PUMP_SETTLE_MS = 2UL * 60UL * 1000UL;
+const uint32_t EC_HOLD_MAX_MS = 45UL * 60UL * 1000UL;
 const uint32_t NET_RETRY_MIN_MS = 5000;     // reconnect backoff, doubles...
 const uint32_t NET_RETRY_MAX_MS = 60000;    // ...up to this cap
 const int WIFI_BEGIN_ATTEMPTS = 3;          // WiFi.begin tries per connect
@@ -128,7 +132,8 @@ const char TOPIC_SYS_OTA_RESULT[] = MQTT_BASE "/sys/ota/result"; // retained
 const char TOPIC_NODE_RSSI[] = MQTT_BASE "/tele/node/rssi_dbm";
 const char TOPIC_NODE_UPTIME[] = MQTT_BASE "/tele/node/uptime_s";
 const char TOPIC_WATER_TEMP[] = MQTT_BASE "/tele/water/temp_c";
-const char TOPIC_WATER_EC[] = MQTT_BASE "/tele/water/ec_ms_cm";
+const char TOPIC_WATER_EC[] = MQTT_BASE "/tele/water/ec_ms_cm";            // between pump runs (2.4.4)
+const char TOPIC_WATER_EC_LIVE[] = MQTT_BASE "/tele/water/ec_live_ms_cm";  // every sweep, pump on or off
 const char TOPIC_WATER_PH[] = MQTT_BASE "/tele/water/ph";
 const char TOPIC_WATER_PH_RAW[] = MQTT_BASE "/tele/water/ph_raw_v"; // always published (calibration/drift)
 const char TOPIC_WATER_LEVEL_PCT[] = MQTT_BASE "/tele/water/level_pct";

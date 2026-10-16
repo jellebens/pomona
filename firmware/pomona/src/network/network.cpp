@@ -428,7 +428,8 @@ void networkPublish(const Readings &r) {
 
   // water — only what the sensors actually answered (docs/mqtt.md)
   if (r.waterTempOk) pubFloat(TOPIC_WATER_TEMP, r.waterTempC, 1);
-  pubFloat(TOPIC_WATER_EC, r.ecMsCm, 2); // analog: always published
+  pubFloat(TOPIC_WATER_EC, r.ecMsCm, 2); // analog: always published — between pump runs since 2.4.4
+  pubFloat(TOPIC_WATER_EC_LIVE, r.ecLiveMsCm, 2); // this sweep's reading, pump on or off
   if (r.phOk) pubFloat(TOPIC_WATER_PH, r.ph, 2);
   if (!isnan(r.phRawV)) pubFloat(TOPIC_WATER_PH_RAW, r.phRawV, 3); // calibration/drift aid
   // level_pct: the calibrated ultrasonic owns it (#283); the Grove strip only
@@ -457,18 +458,18 @@ void networkPublish(const Readings &r) {
   // sys/health — retained availability map: consumers see which metrics to expect
   // level_sonic_frames: the A02YYUW's counters since boot — a silent sensor's cause at a glance
   // (bad climbing: garbage / no echo, e.g. tilted; near: water at the face; none: wiring/power).
-  char buf[352];
+  char buf[400];
   snprintf(buf, sizeof(buf),
            "{\"water_temp\":%s,\"ph_calibrated\":%s,\"level_strip\":%s,"
            "\"level_probe\":%s,\"level_sonic\":%s,\"level_sonic_calibrated\":%s,"
            "\"level_sonic_frames\":{\"good\":%lu,\"near\":%lu,\"bad\":%lu},"
-           "\"level_sonic_state\":\"%s\","
+           "\"level_sonic_state\":\"%s\",\"ec_held\":%s,"
            "\"bme280\":%s,\"bh1750\":%s,\"ts\":%lu}",
            r.waterTempOk ? "true" : "false", r.phOk ? "true" : "false",
            r.levelOk ? "true" : "false", r.probePoints >= 0 ? "true" : "false",
            r.tankDistOk ? "true" : "false", r.tankCalibrated ? "true" : "false",
            (unsigned long)r.sonicGood, (unsigned long)r.sonicNear, (unsigned long)r.sonicBad,
-           r.tankState,
+           r.tankState, r.ecHeld ? "true" : "false",
            r.bmeOk ? "true" : "false", r.luxOk ? "true" : "false",
            (unsigned long)networkEpochNow());
   pubSized(TOPIC_SYS_HEALTH, buf, true, 1);

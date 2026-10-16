@@ -17,6 +17,24 @@ merged to `master`.
 
 ## [Unreleased]
 
+## [2.4.4] - 2026-10-16
+
+### Changed — EC is read between pump runs (ceres ADR-0020)
+- The EC probe reads the pump: with the pump running the un-isolated TDS board reads high
+  (2026-10-06/07: 1.43 off → 1.81 on; 2026-10-15/16: 1.63 off → 1.96 on), the step within seconds
+  of each switch; pH, behind its DFR0504 isolator, is unaffected. Ceres 0.28.0 refuses to act on
+  an EC whose pump states disagree, so EC control had stopped (0.29.0 alerts `ec_untrusted`).
+- Until the EC probe gets an isolator, `tele/water/ec_ms_cm` is measured only with the pump OFF
+  for 2 min (`EC_PUMP_SETTLE_MS`) and that value is held through the run and the settle after it
+  (`src/sensors/ec_hold.h`); a hold older than 45 min (`EC_HOLD_MAX_MS` — an override, a long mix)
+  is dropped for the live reading, and the live reading is used until the first pump-off value
+  after a boot. The screen shows the same value.
+- New `tele/water/ec_live_ms_cm`: this sweep's reading, pump on or off — the pump's effect stays
+  visible in the archive. `sys/health.ec_held` says whether the published EC is a held value.
+- Host-tested on the 2026-10-15/16 pattern (15 min on at 1.95 / 15 off at 1.63): only 1.63 is
+  published after the first pump-off spell. 752,404 B flash (38 %), 26 % RAM; credential gate passed
+  against `build-2.4.3`.
+
 ## [2.4.3] - 2026-10-11
 
 ### Fixed — a tank reading is litres only when it is the water surface (#283)

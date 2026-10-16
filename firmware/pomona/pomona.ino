@@ -21,8 +21,10 @@
 #include "src/network/network.h"
 #include "src/ota/ota.h"
 #include "src/sensors/sensors.h"
+#include "src/sensors/ec_hold.h"
 
 static Readings readings;
+static EcHold ecHold(EC_PUMP_SETTLE_MS, EC_HOLD_MAX_MS); // 2.4.4: EC between pump runs
 static uint32_t lastReadMs = 0;
 static uint32_t lastPublishMs = 0;
 
@@ -136,6 +138,8 @@ void loop() {
   if (now - lastReadMs >= SENSOR_READ_MS) {
     lastReadMs = now;
     sensorsRead(readings); // blocking, worst case ~1.5 s (see sensors.h)
+    readings.ecLiveMsCm = readings.ecMsCm;
+    readings.ecMsCm = ecHold.apply(readings.ecLiveMsCm, controlPumpOn(), now, &readings.ecHeld);
     displayUpdate(readings);
   }
 

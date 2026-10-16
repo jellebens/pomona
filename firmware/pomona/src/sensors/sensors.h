@@ -13,7 +13,9 @@ struct Readings {
   // water
   bool waterTempOk = false;
   float waterTempC = NAN;
-  float ecMsCm = NAN;  // analog — no absence detection, reads ~0 V unplugged
+  float ecMsCm = NAN;  // analog — no absence detection, reads ~0 V unplugged; the held value since 2.4.4
+  float ecLiveMsCm = NAN; // this sweep's reading, pump on or off (2.4.4)
+  bool ecHeld = false;    // ecMsCm is the last pump-off value, held through a pump run (2.4.4)
   float ecRawV = NAN;
   bool phOk = false;   // false until PH_V_* calibration is recorded
   float ph = NAN;

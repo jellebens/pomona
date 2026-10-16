@@ -55,7 +55,8 @@ read availability from `sys/health`, not from sentinels.
 | Topic | Payload | Published |
 |---|---|---|
 | `tele/water/temp_c` | °C, 1 decimal | DS18B20 answered |
-| `tele/water/ec_ms_cm` | mS/cm, 2 decimals | always (analog — no absence detection; ~0 when unplugged) |
+| `tele/water/ec_ms_cm` | mS/cm, 2 decimals | always (analog — no absence detection; ~0 when unplugged); since 2.4.4 measured with the pump off and held through a run (`sys/health.ec_held`) |
+| `tele/water/ec_live_ms_cm` | mS/cm, 2 decimals | always (2.4.4): every sweep's reading, pump on or off |
 | `tele/water/ph` | pH, 2 decimals | only once pH is calibrated (PomonaCalibration) |
 | `tele/water/ph_raw_v` | probe volts, 3 decimals | always (calibration/drift aid) |
 | `tele/water/level_pct` | 0–100, 1 decimal — `volume_l` as a share of full (`TANK_FULL_L`, 10 L since 2.4.2; 100 inside the blind zone) | A02YYUW answered **and** its fill table is set (since 2.4.0; the table since 2.4.1); otherwise the Grove strip, integer, if it answered — never both |
