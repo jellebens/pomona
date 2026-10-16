@@ -17,6 +17,17 @@ merged to `master`.
 
 ## [Unreleased]
 
+## [2.4.5] - 2026-10-16
+
+### Changed — the tank table for the remounted sensor (#283)
+- The old mount heard something before the water: a steady 87 mm (9.06 L on the 2.4.2 table)
+  while the tank held a little more than 5 L. The sensor was remounted (new holes, DFRobot's
+  34.0 / 72.6 mm pattern) and measured pump off with known volumes: 5.5 L = 110 mm, 7.5 L = 66,
+  8.0 L = 56, 9.0 L = 37 (~20 mm per litre). The table's top is those points; below 5.5 L the
+  2026-10-09 shape is kept, shifted −18 mm (to verify once at a known low volume). At this mount
+  10 L would be inside the 30 mm blind zone, so 9.0 L is the top of the table ("9 L or more").
+  Credential gate passed against `build-2.4.4`.
+
 ## [2.4.4] - 2026-10-16
 
 ### Changed — EC is read between pump runs (ceres ADR-0020)

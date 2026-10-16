@@ -56,7 +56,22 @@ To (re)measure it — after moving the sensor or changing the tank:
 **Only the sensor height changed?** Then the shape holds: read the distance at a
 known volume and shift every point by the difference — that is how 2.4.2 got its table.
 
-### The table in force (2.4.2) — lid closed, the final mount
+### The table in force (2.4.5) — the sensor remounted 2026-10-16
+
+New holes in the lid (two transducers 34.0 mm apart, M3 holes 72.6 mm apart: DFRobot's
+drawing). Measured pump off with known volumes: 5.5 L = 110 mm, 7.5 L = 66, 8.0 L = 56,
+9.0 L = 37 — a straight ~20 mm per litre. Below 5.5 L the 2026-10-09 shape, shifted −18 mm
+(to be verified). 10 L would be inside the blind zone at this mount, so the top of the table is
+**9.0 L**: do not fill above ~9 L, or raise the sensor.
+
+| L in tank | 0 | 0.5 | 1.0 | 1.5 | 2.0 | 2.5 | 3.0 | 3.5 | 4.0 | 4.5 | 5.5 | 7.5 | 8.0 | 9.0 |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| mm | 266 | 245 | 233 | 219 | 203 | 191 | 174 | 153 | 139 | 131 | 110 | 66 | 56 | 37 |
+
+The old mount's readings were wrong (87 mm at ~5 L — it heard something before the water), so
+the 2.4.2 table below describes that mount only.
+
+### The table of 2.4.2 — lid closed, the old mount
 
 Full is **10 L at 76 mm** (a steady reading 2026-10-09 22:50–22:55, lid closed,
 pump off) — 46 mm clear of the 30 mm blind zone. Annona's `reservoir_l` is 10.
