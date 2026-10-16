@@ -56,6 +56,16 @@ To (re)measure it — after moving the sensor or changing the tank:
 **Only the sensor height changed?** Then the shape holds: read the distance at a
 known volume and shift every point by the difference — that is how 2.4.2 got its table.
 
+### Read between pump runs (2.4.6)
+
+While the pump runs a litre or two is up in the tower and the surface is choppy (98–126 mm and
+no-echo spikes at 9 L), and the tower drains back for minutes after a stop (8.74 L a minute after a
+run, 9.0 L after half an hour). Since 2.4.6 the level is taken only once the pump has been off
+5 min (`LEVEL_PUMP_SETTLE_MS`) and held through the next run (dropped after 45 min, then the live
+reading): `level_distance_mm`, `level_pct` and `volume_l` are that value, `level_distance_live_mm`
+is every sweep's raw median, `sys/health.level_held` says which. A dead sensor still reads absent
+once the pump is off.
+
 ### The table in force (2.4.5) — the sensor remounted 2026-10-16
 
 New holes in the lid (two transducers 34.0 mm apart, M3 holes 72.6 mm apart: DFRobot's

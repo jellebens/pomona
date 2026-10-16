@@ -17,6 +17,17 @@ merged to `master`.
 
 ## [Unreleased]
 
+## [2.4.6] - 2026-10-16
+
+### Changed — the tank level is read between pump runs (#283)
+- While the pump runs a litre or two is up in the tower and the surface is choppy (98–126 mm and
+  no-echo spikes at 9 L), and it drains back for minutes after a stop (8.74 L a minute after a run,
+  9.0 L after half an hour). The level (`level_distance_mm`, `level_pct`, `volume_l`) is now taken
+  only once the pump has been off 5 min and held through the next run (the same hold as EC's,
+  `src/sensors/ec_hold.h`; dropped after 45 min). A steady line that only falls as the plants drink.
+- New `tele/water/level_distance_live_mm`: every sweep's raw median. `sys/health.level_held` says
+  whether the level is a held value. Credential gate passed against `build-2.4.5`.
+
 ## [2.4.5] - 2026-10-16
 
 ### Changed — the tank table for the remounted sensor (#283)

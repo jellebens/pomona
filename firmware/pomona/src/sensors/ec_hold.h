@@ -10,7 +10,7 @@
 //
 // If the pump runs longer than EC_HOLD_MAX_MS (an override, a long mix), a held value is too old
 // to stand for the water: the live reading is published again. Header-only so the host test can
-// include it.
+// include it. Since 2.4.6 the tank level uses the same hold (its own settle: the tower drains back).
 
 #pragma once
 

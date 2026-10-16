@@ -47,6 +47,12 @@ const uint32_t MQTT_PUBLISH_MS = 30000;     // publish cadence (docs/mqtt.md)
 // only with the pump off this long and held through the run; a hold older than the max is dropped.
 const uint32_t EC_PUMP_SETTLE_MS = 2UL * 60UL * 1000UL;
 const uint32_t EC_HOLD_MAX_MS = 45UL * 60UL * 1000UL;
+// The tank level between pump runs (2.4.6): while the pump runs a litre or two is up in the tower
+// and the surface is choppy (98-126 mm and no-echo spikes at 9 L), and it drains back for minutes
+// after a stop (8.74 L a minute after a run, 9.0 L after half an hour). Taken with the pump off this
+// long, held through the run; a hold older than the max is dropped for the live reading.
+const uint32_t LEVEL_PUMP_SETTLE_MS = 5UL * 60UL * 1000UL;
+const uint32_t LEVEL_HOLD_MAX_MS = 45UL * 60UL * 1000UL;
 const uint32_t NET_RETRY_MIN_MS = 5000;     // reconnect backoff, doubles...
 const uint32_t NET_RETRY_MAX_MS = 60000;    // ...up to this cap
 const int WIFI_BEGIN_ATTEMPTS = 3;          // WiFi.begin tries per connect
@@ -138,7 +144,8 @@ const char TOPIC_WATER_PH[] = MQTT_BASE "/tele/water/ph";
 const char TOPIC_WATER_PH_RAW[] = MQTT_BASE "/tele/water/ph_raw_v"; // always published (calibration/drift)
 const char TOPIC_WATER_LEVEL_PCT[] = MQTT_BASE "/tele/water/level_pct";
 const char TOPIC_WATER_LEVEL_POINTS[] = MQTT_BASE "/tele/water/level_points";
-const char TOPIC_WATER_LEVEL_DIST[] = MQTT_BASE "/tele/water/level_distance_mm"; // A02YYUW raw, always (calibration aid)
+const char TOPIC_WATER_LEVEL_DIST[] = MQTT_BASE "/tele/water/level_distance_mm"; // the distance the litres come from (held, 2.4.6)
+const char TOPIC_WATER_LEVEL_DIST_LIVE[] = MQTT_BASE "/tele/water/level_distance_live_mm"; // A02YYUW raw, every sweep (2.4.6)
 const char TOPIC_WATER_VOLUME[] = MQTT_BASE "/tele/water/volume_l";              // A02YYUW through the fill table (2.4.1)
 const char TOPIC_AIR_TEMP[] = MQTT_BASE "/tele/air/temp_c";
 const char TOPIC_AIR_RH[] = MQTT_BASE "/tele/air/humidity_pct";
