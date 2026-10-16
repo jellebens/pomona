@@ -53,7 +53,13 @@ void controlInit() {
   reason = PumpReason::BootSafe;
   dirty = true;
   cycleStartMs = millis();
-  cycleOnPhase = false;
+  // 2.4.7: the cycle starts with a RUN, not an off spell. The pump stays off through setup (the safe
+  // state above); the first servicePump() switches it on. A reboot — an OTA, a power cut, a crash —
+  // has already cost the roots their misting for the downtime, and starting off added a whole off
+  // spell on top (15 min establishment, 45 day / 105 night established): on 2026-10-16 two OTAs in
+  // 14 min left the pump off from 13:58 to ~14:27. Erring wet is recoverable, erring dry is not; the
+  // level interlock still vetoes it first.
+  cycleOnPhase = true;
   levelState = Level::Normal;
   levelStateSinceMs = millis();
 }

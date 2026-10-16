@@ -17,6 +17,17 @@ merged to `master`.
 
 ## [Unreleased]
 
+## [2.4.7] - 2026-10-16
+
+### Changed — after a boot the pump runs first
+- The duty cycle started in its OFF phase at every boot, so a reboot added a whole off spell
+  (15 min in establishment, 45 by day / 105 at night established) to the downtime itself: two OTAs
+  within 14 min on 2026-10-16 left the pump off from 13:58 to ~14:27. Every boot (an update, a power
+  cut, a crash) now starts the cycle with a run (`PUMP_ON_MS`), then the normal off spell. The pump
+  is still off through setup, and the level interlock and an operator override still take
+  precedence. Erring wet is recoverable, erring dry is not. Credential gate passed against
+  `build-2.4.6`.
+
 ## [2.4.6] - 2026-10-16
 
 ### Changed — the tank level is read between pump runs (#283)

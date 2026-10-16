@@ -107,7 +107,8 @@ could predate the outage.
 ### Pump duty cycle
 
 15 min on, then off for 15 min (establishment) / 45 min (established, day) /
-105 min (established, night). Runs on `millis()` only — no clock needed.
+105 min (established, night). Runs on `millis()` only — no clock needed. Since 2.4.7 every boot
+(an update, a power cut) starts the cycle with a run: the roots get water first, the off spell after.
 
 ### Photoperiod, and the one clock dependency
 
