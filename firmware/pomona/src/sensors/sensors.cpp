@@ -16,7 +16,6 @@
 #include <GroveWaterLevel.h>   // libraries/GroveWaterLevel
 #include <PhotoLevelProbe.h>   // libraries/PhotoLevelProbe
 #include <A02YYUW.h>           // libraries/A02YYUW
-#include "ec_hold.h"            // the pump-off hold, for the level too (2.4.6)
 #include <PomonaCalibration.h> // EC_CAL_K, PH_V_NEUTRAL, PH_V_ACID, TANK_DIST_*
 
 static Adafruit_BME280 bme;
@@ -181,11 +180,6 @@ void sensorsInit() {
 
 void sensorsPoll() { sonic.poll(); }
 
-// 2.4.6: the tank level is read between pump runs (ec_hold.h, the same hold as EC's)
-static EcHold levelHold(LEVEL_PUMP_SETTLE_MS, LEVEL_HOLD_MAX_MS);
-static bool pumpOnNow = false;
-void sensorsSetPumpOn(bool on) { pumpOnNow = on; }
-
 // The last TANK_STEADY_N sweeps' distances (one per SENSOR_READ_MS): litres only when
 // they agree (2.4.3) — a wet face jumps hundreds of mm between sweeps.
 static const uint8_t TANK_STEADY_N = 6; // 6 x 5 s = 30 s
@@ -208,13 +202,12 @@ static float tankSpreadMm() {
 // not agree publish no litres at all — "no level" is true, "10 L" / "0 L" would not be.
 static void readTank(Readings &r) {
   sonic.poll();
+  // 2.4.8: the level is this sweep's reading, pump on or off — the 2.4.6 pump-off hold is gone
+  // (owner: the real readings, in the reports too). A run reads lower and choppier; tankJudge
+  // still keeps litres off an unsteady surface.
   r.tankDistLiveMm = sonic.distanceMm();
-  // 2.4.6: the surface while the pump runs is choppy and a litre or two lower; the level is the
-  // settled pump-off value, held through the run (a dead sensor still reads absent when the pump is off)
-  bool held = false;
-  float d = levelHold.apply(r.tankDistLiveMm >= 0 ? (float)r.tankDistLiveMm : NAN, pumpOnNow, millis(), &held);
-  r.tankHeld = held;
-  r.tankDistMm = (held || r.tankDistLiveMm >= 0) && !isnan(d) ? (int)lroundf(d) : -1;
+  r.tankHeld = false;
+  r.tankDistMm = r.tankDistLiveMm;
   r.tankDistOk = r.tankDistMm >= 0;
   r.sonicGood = sonic.goodFrames();
   r.sonicBad = sonic.badFrames();

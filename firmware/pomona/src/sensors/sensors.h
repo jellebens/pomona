@@ -24,9 +24,9 @@ struct Readings {
   int levelPct = -1;
   int probePoints = -1; // CQRSENYW003: 0 dry .. 4, -1 = no signal
   bool tankDistOk = false; // A02YYUW answered (#283)
-  int tankDistMm = -1;     // sensor face -> water surface: the pump-off value, held through a run (2.4.6)
-  int tankDistLiveMm = -1; // this sweep's median, pump on or off (2.4.6)
-  bool tankHeld = false;   // tankDistMm is the last settled pump-off value (2.4.6)
+  int tankDistMm = -1;     // sensor face -> water surface, this sweep's median (live again since 2.4.8)
+  int tankDistLiveMm = -1; // the same reading — kept for the level_distance_live_mm topic (2.4.6)
+  bool tankHeld = false;   // always false since 2.4.8 (the level hold is gone); sys/health.level_held
   bool tankCalibrated = false; // the fill table (PomonaCalibration TANK_TABLE) is set
   bool tankOk = false;     // ...and the reading is the water surface: plausible + steady (2.4.3)
   const char *tankState = "absent"; // ok|splash|no_echo|unsteady|absent|uncalibrated (sys/health)
@@ -45,7 +45,6 @@ struct Readings {
 void sensorsInit(); // I2C scan + first init attempts (absent sensors OK)
 void sensorsRead(Readings &r); // blocking sweep, worst case ~1.5 s
 void sensorsPoll(); // every loop(): drain the A02YYUW UART (non-blocking)
-void sensorsSetPumpOn(bool on); // the pump state the level hold keys on (2.4.6) — before each sensorsRead
 
 // Rescan the I2C bus and write the found addresses into out as a comma
 // list ("0x23,0x76"; empty string = nothing found). Returns the count.

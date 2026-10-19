@@ -66,6 +66,14 @@ reading): `level_distance_mm`, `level_pct` and `volume_l` are that value, `level
 is every sweep's raw median, `sys/health.level_held` says which. A dead sensor still reads absent
 once the pump is off.
 
+**Undone in 2.4.8 (2026-10-19).** The hold hid what the sensor saw: from 16 Oct ~23:30 it held
+30 mm — the sensor's blind-zone floor, every frame `near`, zero good frames — for two and a half
+days, through every pump run, and the reports showed a steady 9.00 L. The owner wants the real
+readings, in the reports too. `level_distance_mm`, `level_pct` and `volume_l` are this sweep's
+reading again, pump on or off; a run reads lower and choppier, and `tankJudge` still publishes no
+litres for an unsteady surface. `level_distance_live_mm` stays (the same value) and
+`sys/health.level_held` stays, always `false`, so no reader breaks.
+
 ### The table in force (2.4.5) — the sensor remounted 2026-10-16
 
 New holes in the lid (two transducers 34.0 mm apart, M3 holes 72.6 mm apart: DFRobot's

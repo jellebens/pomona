@@ -137,7 +137,6 @@ void loop() {
   uint32_t now = millis();
   if (now - lastReadMs >= SENSOR_READ_MS) {
     lastReadMs = now;
-    sensorsSetPumpOn(controlPumpOn()); // the level hold keys on it (2.4.6)
     sensorsRead(readings); // blocking, worst case ~1.5 s (see sensors.h)
     readings.ecLiveMsCm = readings.ecMsCm;
     readings.ecMsCm = ecHold.apply(readings.ecLiveMsCm, controlPumpOn(), now, &readings.ecHeld);

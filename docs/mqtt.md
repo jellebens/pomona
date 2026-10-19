@@ -56,7 +56,7 @@ read availability from `sys/health`, not from sentinels.
 |---|---|---|
 | `tele/water/temp_c` | °C, 1 decimal | DS18B20 answered |
 | `tele/water/ec_ms_cm` | mS/cm, 2 decimals | always (analog — no absence detection; ~0 when unplugged); since 2.4.4 measured with the pump off and held through a run (`sys/health.ec_held`) |
-| `tele/water/level_distance_live_mm` | mm, integer | when the A02YYUW answers (2.4.6): every sweep's raw median; `level_distance_mm`, `level_pct` and `volume_l` are the pump-off value held through a run (`sys/health.level_held`) |
+| `tele/water/level_distance_live_mm` | mm, integer | when the A02YYUW answers (2.4.6): every sweep's raw median. Since 2.4.8 the same value as `level_distance_mm` — the level is live again, pump on or off, and `sys/health.level_held` is always `false` (2.4.6–2.4.7 held the pump-off value through a run) |
 | `tele/water/ec_live_ms_cm` | mS/cm, 2 decimals | always (2.4.4): every sweep's reading, pump on or off |
 | `tele/water/ph` | pH, 2 decimals | only once pH is calibrated (PomonaCalibration) |
 | `tele/water/ph_raw_v` | probe volts, 3 decimals | always (calibration/drift aid) |

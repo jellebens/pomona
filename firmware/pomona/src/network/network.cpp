@@ -440,8 +440,8 @@ void networkPublish(const Readings &r) {
   } else if (r.levelOk) {
     pubInt(TOPIC_WATER_LEVEL_PCT, r.levelPct);
   }
-  if (r.tankDistOk) pubInt(TOPIC_WATER_LEVEL_DIST, r.tankDistMm); // the distance the litres come from (held)
-  if (r.tankDistLiveMm >= 0) pubInt(TOPIC_WATER_LEVEL_DIST_LIVE, r.tankDistLiveMm); // raw: calibration aid
+  if (r.tankDistOk) pubInt(TOPIC_WATER_LEVEL_DIST, r.tankDistMm); // every sweep, pump on or off (2.4.8)
+  if (r.tankDistLiveMm >= 0) pubInt(TOPIC_WATER_LEVEL_DIST_LIVE, r.tankDistLiveMm); // the same value since 2.4.8
   if (r.probePoints >= 0) pubInt(TOPIC_WATER_LEVEL_POINTS, r.probePoints);
 
   // air

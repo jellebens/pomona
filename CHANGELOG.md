@@ -17,6 +17,17 @@ merged to `master`.
 
 ## [Unreleased]
 
+## [2.4.8] - 2026-10-19
+
+### Changed — the tank level is live again (#283)
+- Undoes 2.4.6's level hold. `level_distance_mm`, `level_pct` and `volume_l` are each sweep's
+  reading again, pump on or off, so MQTT, Prometheus and the dashboards show what the sensor reads
+  (owner: "I want to see the real readings also in the reports"). The hold had shown a steady
+  30 mm / 9.00 L for two and a half days while every A02YYUW frame was `near` (the blind-zone floor,
+  zero good frames). A pump run reads lower and choppier; `tankJudge` still publishes no litres for
+  an unsteady surface. `level_distance_live_mm` (now the same value) and `sys/health.level_held`
+  (always `false`) stay, so no reader breaks. The EC hold (2.4.4) is unchanged.
+
 ## [2.4.7] - 2026-10-16
 
 ### Changed — after a boot the pump runs first
