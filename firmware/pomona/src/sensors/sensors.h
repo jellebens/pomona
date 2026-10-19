@@ -29,7 +29,7 @@ struct Readings {
   bool tankHeld = false;   // always false since 2.4.8 (the level hold is gone); sys/health.level_held
   bool tankCalibrated = false; // the fill table (PomonaCalibration TANK_TABLE) is set
   bool tankOk = false;     // ...and the reading is the water surface: plausible + steady (2.4.3)
-  const char *tankState = "absent"; // ok|splash|no_echo|unsteady|absent|uncalibrated (sys/health)
+  const char *tankState = "absent"; // ok|splash|no_echo|unsteady|near|absent|uncalibrated (sys/health)
   float tankPct = NAN;     // tankL as a share of TANK_FULL_L
   float tankL = NAN;       // litres from the fill table
   uint32_t sonicGood = 0, sonicBad = 0, sonicNear = 0; // A02YYUW frame counters since boot (sys/health)

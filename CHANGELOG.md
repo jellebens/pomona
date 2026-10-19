@@ -17,6 +17,16 @@ merged to `master`.
 
 ## [Unreleased]
 
+## [2.4.9] - 2026-10-19
+
+### Changed — a sensor pinned at its blind-zone floor says `near` (#283)
+- A tank reading at or under the A02YYUW's 30 mm floor (the median of its frames; a frame inside
+  the blind zone reads as 30 mm) is now judged `near` by `tankJudge`: `sys/health.level_sonic_state`
+  = `near`, `level_distance_mm` still publishes the raw value, and no `level_pct` / `volume_l` —
+  the same as `no_echo`. At the 2.4.5 mount FULL (9.0 L) is 37 mm, within the 15 mm splash margin
+  of the floor, so a pinned sensor passed as `ok`: 2026-10-16..19 every frame was `near` (zero good)
+  and the node reported 30 mm / 9.00 L for two and a half days. The tile shows `near`.
+
 ## [2.4.8] - 2026-10-19
 
 ### Changed — the tank level is live again (#283)

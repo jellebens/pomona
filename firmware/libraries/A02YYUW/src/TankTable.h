@@ -40,16 +40,25 @@ inline float tankLitres(const TankPoint *points, unsigned n, float mm) {
 //   * NoEcho   — farther than EMPTY by more than TANK_FAR_MARGIN_MM: the floor is 284 mm
 //                away, so the pulse did not come back off the water (a wet or tilted face).
 //   * Unsteady — the last readings disagree by more than TANK_STEADY_MM.
+//   * Near     — (2.4.9) at or under the sensor's blind-zone floor: most frames said "closer
+//                than I can measure" (water, a drop or the return stream at the face). The
+//                2.4.5 mount's FULL (37 mm) sits within the splash margin of the 30 mm floor,
+//                so a pinned sensor passed as Ok: 30 mm -> "9.00 L" for 2.5 days, 2026-10-16..19,
+//                every frame `near`, zero good.
 // Between FULL-margin and FULL (or EMPTY and EMPTY+margin) a reading still clamps.
-enum class TankRead : unsigned char { Ok, Splash, NoEcho, Unsteady };
+enum class TankRead : unsigned char { Ok, Splash, NoEcho, Unsteady, Near };
 
 const float TANK_SPLASH_MARGIN_MM = 15.0f;
 const float TANK_FAR_MARGIN_MM = 20.0f;
 const float TANK_STEADY_MM = 15.0f;
 
 // spreadMm: max - min of the recent readings (the caller's window), NAN = not enough yet.
-inline TankRead tankJudge(const TankPoint *points, unsigned n, float mm, float spreadMm) {
+// floorMm: the sensor's blind-zone floor (A02YYUW::MIN_MM), the distance it reports for a
+// frame inside the blind zone.
+inline TankRead tankJudge(const TankPoint *points, unsigned n, float mm, float spreadMm,
+                          float floorMm) {
   if (n == 0) return TankRead::NoEcho;
+  if (mm <= floorMm) return TankRead::Near;
   if (mm < points[0].mm - TANK_SPLASH_MARGIN_MM) return TankRead::Splash;
   if (mm > points[n - 1].mm + TANK_FAR_MARGIN_MM) return TankRead::NoEcho;
   if (isnan(spreadMm) || spreadMm > TANK_STEADY_MM) return TankRead::Unsteady;
@@ -62,6 +71,7 @@ inline const char *tankReadName(TankRead s) {
   case TankRead::Splash: return "splash";
   case TankRead::NoEcho: return "no_echo";
   case TankRead::Unsteady: return "unsteady";
+  case TankRead::Near: return "near";
   }
   return "?";
 }
