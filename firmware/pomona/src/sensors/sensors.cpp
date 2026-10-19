@@ -198,8 +198,9 @@ static float tankSpreadMm() {
 
 // A02YYUW distance -> litres through the measured fill table (the tank tapers), but only
 // for a reading that is the water surface (TankTable.h tankJudge): a splash nearer than
-// FULL, a pulse that never came back off the water (past the floor), or readings that do
-// not agree publish no litres at all — "no level" is true, "10 L" / "0 L" would not be.
+// FULL, a pulse that never came back off the water (past the floor), readings that do
+// not agree, or (2.4.9) a sensor pinned at its blind-zone floor publish no litres at all —
+// "no level" is true, "10 L" / "0 L" / "9.00 L" would not be.
 static void readTank(Readings &r) {
   sonic.poll();
   // 2.4.8: the level is this sweep's reading, pump on or off — the 2.4.6 pump-off hold is gone
@@ -227,7 +228,8 @@ static void readTank(Readings &r) {
     r.tankState = "uncalibrated";
     return;
   }
-  TankRead s = tankJudge(TANK_TABLE, TANK_TABLE_N, (float)r.tankDistMm, tankSpreadMm());
+  TankRead s = tankJudge(TANK_TABLE, TANK_TABLE_N, (float)r.tankDistMm, tankSpreadMm(),
+                         (float)A02YYUW::MIN_MM);
   r.tankState = tankReadName(s);
   if (s != TankRead::Ok) return;
   r.tankOk = true;

@@ -122,6 +122,11 @@ node published nothing). `sys/health.level_sonic_frames` tells the cases apart
 remotely: `bad` climbing = no echo / garbage (tilted, obstructed), `near`
 climbing = water at the face, nothing climbing = no frames (wiring, power).
 
+**Since 2.4.9 the floor is not "full".** At the 2.4.5 mount FULL (9.0 L) is 37 mm, so a sensor
+pinned at 30 mm — 2026-10-16..19, every frame `near`, zero good, two and a half days — passed as
+`ok` and reported 9.00 L. A reading at the 30 mm floor (most of the window's frames in the blind
+zone) is now `level_sonic_state` = `near`: `level_distance_mm` = 30, no litres.
+
 ## What is not the surface (2.4.3)
 
 Since 2.4.3 a reading becomes litres only when it is plausibly the water surface and steady
@@ -130,9 +135,10 @@ why in `sys/health.level_sonic_state`:
 
 | state | reading | what it was on the tower |
 |---|---|---|
-| `splash` | nearer than FULL (76 mm) by more than 15 mm, blind-zone frames included | the return water falling past the sensor during a pump run (33–53 mm, read as "10 L" by 2.4.2), foam |
+| `splash` | nearer than FULL (76 mm) by more than 15 mm, blind-zone frames included until 2.4.9 (now `near`) | the return water falling past the sensor during a pump run (33–53 mm, read as "10 L" by 2.4.2), foam |
 | `no_echo` | farther than EMPTY (284 mm) by more than 15 + 5 = 20 mm | a **wet face** — condensation over 25 °C water after the move indoors read 240–720 mm (2.4.2: "0 L" for a day) |
 | `unsteady` | the last 6 sweeps (30 s) disagree by more than 15 mm, or fewer than 6 yet | a face drying or wetting; the first 30 s after boot |
+| `near` (2.4.9) | at the 30 mm blind-zone floor — most frames closer than the sensor can measure; checked first | 2026-10-16..19: every frame `near`, zero good, for 2.5 days — 2.4.8 and earlier called it `ok`, 9.00 L |
 | `ok` | everything else; the table still clamps the last few mm at either end | with the pump running and a dry face: 86–87 mm = 9.06 L |
 
 Keep the face dry and out of the return stream: mount it where nothing falls past it, give it a drip
