@@ -17,6 +17,22 @@ merged to `master`.
 
 ## [Unreleased]
 
+## [2.4.10] - 2026-10-20
+
+### Changed — the tank table for the remounted sensor (#283)
+- The A02YYUW was remounted on 2026-10-19 with its two transducer bosses clear of the lid. The
+  2.4.5 table no longer fit: with exactly 10 L in the tank it read 36 mm, which that table called
+  9.0 L. The new `TANK_TABLE` comes from the owner's fill of 2026-10-20, pump off and settled:
+  - before the fill, ~88 mm;
+  - "almost 4 L" poured in;
+  - then 10 L = 36 mm.
+- Between 10 L and ~6.1 L the table is a straight line, ~13 mm per litre. That is what the
+  2026-10-09 fill measured near the top, where the tank is widest. Below 6.1 L the 2026-10-09
+  shape is shifted −33 mm to meet 88 mm.
+- 10 L is FULL again, clear of the 30 mm blind-zone floor.
+- Points (mm → L): 36→10, 49→9, 63→8, 76→7, 88→6.1, 95→5.5, 116→4.5, 124→4, 138→3.5, 159→3,
+  176→2.5, 188→2, 204→1.5, 218→1, 230→0.5, 251→0.
+
 ## [2.4.9] - 2026-10-19
 
 ### Changed — a sensor pinned at its blind-zone floor says `near` (#283)

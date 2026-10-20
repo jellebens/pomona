@@ -46,10 +46,19 @@ const float PH_V_ACID = 2.074f;    // 2026-09-10, pH 4.00 buffer @ 26.1 C (settl
 // 2026-10-09 fill's shape is kept (21 mm/L at 4.5-5.5 L, it joins), shifted -18 mm to meet 110 mm
 // (verify once with a known volume when the tank runs low). 10 L would sit inside the 30 mm blind
 // zone at this mount: 9.0 L is the top — "9 L or more".
+//
+// 2.4.10 — the sensor REMOUNTED again (2026-10-19, its two transducer bosses clear of the lid):
+// the 2.4.5 points no longer hold. The owner's fill of 2026-10-20, pump off and settled: before
+// it ~88 mm (85-90 over the afternoon's pump-off spells), "almost 4 L" poured in, then exactly
+// 10 L = 36 mm. So 10 L = 36 and ~6.1 L = 88: ~13 mm per litre, as the 2026-10-09 fill measured
+// near the top (~12 mm/L; the tank tapers). Straight between the two; below 6.1 L the
+// 2026-10-09 shape, shifted -33 mm to meet 88 mm (verify once with a known volume when the tank
+// runs low). 10 L is FULL again, 6 mm clear of the 30 mm blind-zone floor (2.4.9 says `near`
+// there).
 #include <TankTable.h> // libraries/A02YYUW
 const TankPoint TANK_TABLE[] = {
-    {37, 9.0}, {56, 8.0}, {66, 7.5}, {110, 5.5}, {131, 4.5}, {139, 4.0}, {153, 3.5},
-    {174, 3.0}, {191, 2.5}, {203, 2.0}, {219, 1.5}, {233, 1.0}, {245, 0.5}, {266, 0.0},
+    {36, 10.0}, {49, 9.0}, {63, 8.0}, {76, 7.0}, {88, 6.1}, {95, 5.5}, {116, 4.5}, {124, 4.0},
+    {138, 3.5}, {159, 3.0}, {176, 2.5}, {188, 2.0}, {204, 1.5}, {218, 1.0}, {230, 0.5}, {251, 0.0},
 };
 const unsigned TANK_TABLE_N = sizeof(TANK_TABLE) / sizeof(TANK_TABLE[0]);
 const float TANK_FULL_L = 10.0f; // 100 % — the volume at the table's first point

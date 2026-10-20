@@ -74,7 +74,26 @@ reading again, pump on or off; a run reads lower and choppier, and `tankJudge` s
 litres for an unsteady surface. `level_distance_live_mm` stays (the same value) and
 `sys/health.level_held` stays, always `false`, so no reader breaks.
 
-### The table in force (2.4.5) — the sensor remounted 2026-10-16
+### The table in force (2.4.10) — the sensor remounted 2026-10-19
+
+The sensor was remounted with its two transducer bosses clear of the lid (they must not touch the
+plastic). With exactly **10 L** in the tank it read **36 mm**, pump off and settled, on 2026-10-20.
+Before that fill it read ~88 mm, and the owner had poured in "almost 4 L", so ~6.1 L = 88 mm.
+
+- **10 L to 6.1 L:** a straight line between those two points, ~13 mm per litre. That matches the
+  2026-10-09 fill near the top of the tapered tank.
+- **Below 6.1 L:** the 2026-10-09 shape, shifted −33 mm. Verify it once with a known volume when
+  the tank runs low.
+- **Full is 10 L again**, 6 mm clear of the 30 mm floor (where 2.4.9 says `near`).
+
+| L in tank | 0 | 0.5 | 1.0 | 1.5 | 2.0 | 2.5 | 3.0 | 3.5 | 4.0 | 4.5 | 5.5 | 6.1 | 7.0 | 8.0 | 9.0 | 10.0 |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| mm | 251 | 230 | 218 | 204 | 188 | 176 | 159 | 138 | 124 | 116 | 95 | 88 | 76 | 63 | 49 | 36 |
+
+Since annona 0.12.0 (ceres ADR-0022) Ceres records the settled pump-off `volume_l` as the unit's
+reservoir volume, so this table is now what the doses are sized for.
+
+### The table of 2.4.5 — the sensor remounted 2026-10-16
 
 New holes in the lid (two transducers 34.0 mm apart, M3 holes 72.6 mm apart: DFRobot's
 drawing). Measured pump off with known volumes: 5.5 L = 110 mm, 7.5 L = 66, 8.0 L = 56,
